@@ -55,10 +55,10 @@ engine.ExecuteScript(@"Console.WriteLine('Hello World, from ' + name)");
 ```
 
 ### Feature List:
-* For loops
-* For .. in iterators
-* For .. of iterators
-* Switch case statement
+* for loops
+* for .. in iterators
+* for .. of iterators
+* switch case statement
 * functions
 * arrow functions
 * object destructring
@@ -67,9 +67,9 @@ engine.ExecuteScript(@"Console.WriteLine('Hello World, from ' + name)");
 * if else statements
 * while, do while statements
 * conditional statements
-* Rest and Spread elements (...)
-* Template literals
-* Tagged Template literals
+* rest and spread elements (...)
+* template literals
+* tagged Template literals
 * try catch finally statement
 * throw statement
 * new expression (constructor)
@@ -78,7 +78,7 @@ engine.ExecuteScript(@"Console.WriteLine('Hello World, from ' + name)");
 * binary operators
 * unary operators
 * flow statements (break, continue, return)
-* Optional chaining
+* optional chaining
 * typeof operator
 * instanceof operator
 * in operator
