@@ -8,7 +8,7 @@
         /// - deleting variables
         /// - updating variable values
         /// </summary>
-        internal bool IsReadOnly { get; set; }
+        bool IsReadOnly { get; set; }
 
         /// <summary>
         /// A frozen scope can not accept new variable definitions,
@@ -16,12 +16,12 @@
         /// is possible. 
         /// eg: Function Scope (Closure) is a frozen scope.
         /// </summary>
-        internal bool IsFrozen { get; set; }
+        bool IsFrozen { get; set; }
 
         /// <summary>
         /// Returns true if this is the global scope.
         /// </summary>
-        internal bool IsGlobalScope { get; }
+        bool IsGlobalScope { get; }
 
         /// <summary>
         /// Creates a new child scope.

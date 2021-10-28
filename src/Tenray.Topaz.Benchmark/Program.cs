@@ -9,8 +9,8 @@ namespace Tenray.Topaz.Benchmark
         {
             var sw = new Stopwatch();
             var b = new Benchmark1();
-
-            if (true)
+            var runTopaz = true;
+            if (runTopaz)
             {
                 sw.Start();
                 b.RunTopaz();
