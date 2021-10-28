@@ -1,2 +1,2 @@
-# topaz
+# Topaz
 Multithreaded Javascript Engine for .NET
