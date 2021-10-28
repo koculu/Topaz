@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Jint" Version="3.0.0-beta-2035" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tenray.Topaz\Tenray.Topaz.csproj" />
+  </ItemGroup>
+
+</Project>

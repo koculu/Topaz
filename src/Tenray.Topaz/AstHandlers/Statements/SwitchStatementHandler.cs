@@ -1,0 +1,71 @@
+﻿using Esprima.Ast;
+using Tenray.Topaz.Core;
+using Tenray.Topaz.Expressions;
+
+namespace Tenray.Topaz.Statements
+{
+    internal class SwitchStatementHandler
+    {
+        internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
+        {
+            var expr = (SwitchStatement)statement;
+            var testValue = scriptExecutor.ExecuteExpressionAndGetValue(expr.Discriminant);
+            var cases = expr.Cases;
+            var len = cases.Count;
+            var matchedAnyCase = false;
+            SwitchCase defaultCase = null;
+            for (var i = 0; i < len; ++i)
+            {
+                var @case = cases[i];
+                var test = @case.Test;
+                if (test == null)
+                {
+                    defaultCase = @case;
+                    continue;
+                }
+                var caseValue = scriptExecutor.ExecuteExpressionAndGetValue(test);
+                var comparison = matchedAnyCase ?
+                    null :
+                    BinaryExpressionHandler
+                    .ExecuteBinaryOperator(scriptExecutor,
+                    BinaryOperator.StrictlyEqual,
+                    testValue, caseValue);
+                if (matchedAnyCase || JavascriptTypeUtility.IsObjectTrue(comparison))
+                {
+                    matchedAnyCase = true;
+                    var list = @case.Consequent;
+                    var jlen = list.Count;
+                    for (var j = 0; j < jlen; ++j)
+                    {
+                        var result = scriptExecutor.ExecuteStatement(list[j]);
+                        if (result is ReturnWrapper)
+                            return result;
+                        if (result is BreakWrapper)
+                            return scriptExecutor.GetNullOrUndefined();
+                        if (result is ContinueWrapper)
+                            return result;
+                    }
+                }
+            }
+
+            if (defaultCase != null)
+            {
+                var list = defaultCase.Consequent;
+                var jlen = list.Count;
+                for (var j = 0; j < jlen; ++j)
+                {
+                    var result = scriptExecutor.ExecuteStatement(list[j]);
+                    if (result is ReturnWrapper)
+                        return result;
+                    if (result is BreakWrapper)
+                        return scriptExecutor.GetNullOrUndefined();
+                    if (result is ContinueWrapper)
+                        return result;
+                }
+            }
+
+            return scriptExecutor.GetNullOrUndefined();
+        }
+    }
+
+}
