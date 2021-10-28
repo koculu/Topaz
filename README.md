@@ -7,7 +7,7 @@ Multithreaded Javascript Engine for .NET
 
 2. I needed fine control in the language syntax and rules for my project.
 I could not find any engine that provides such features.
-For example, I want to turn off 'undefined' and treat all as 'null', or I want 'var' scope to be in declaration scope but not in the global scope.
+For example, I want to turn off 'undefined' and treat all as 'null', or I want 'assignments without variable kind' scope to be in declaration scope but not in the global scope.
 
 3. Another important need is to turn off every null pointer exception including function call or member access of a 'null' object. These will ease the life of non-experienced developers to write scripts without putting everywhere question marks (condition operator, null checks) or getting annoying errors.
 
