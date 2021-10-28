@@ -19,11 +19,15 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
+      working-directory: ./src
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+      working-directory: ./src
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      working-directory: ./src
     - name: Pack with dotnet
-      run: dotnet pack --output artifacts --configuration Release -p:PackageVersion=$GITHUB_RUN_ID
+      run: dotnet pack --output artifacts --configuration Release -p:PackageVersion=$GITHUB_RUN_ID      
+      working-directory: ./src
     
