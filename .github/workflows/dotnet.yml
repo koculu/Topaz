@@ -27,7 +27,3 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
       working-directory: ./src
-    - name: Pack with dotnet
-      run: dotnet pack --output artifacts --configuration Release -p:PackageVersion=$GITHUB_RUN_ID      
-      working-directory: ./src
-    
