@@ -10,8 +10,7 @@ namespace Tenray.Topaz.Statements
         internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
         {
             var expr = (ExpressionStatement)statement;
-            return await scriptExecutor.ExecuteExpressionAndGetValueAsync (expr.Expression);
+            return await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr.Expression);
         }
     }
-
 }

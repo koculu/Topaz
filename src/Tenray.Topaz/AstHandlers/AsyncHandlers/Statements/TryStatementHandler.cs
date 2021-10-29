@@ -41,5 +41,4 @@ namespace Tenray.Topaz.Statements
             }
         }
     }
-
 }

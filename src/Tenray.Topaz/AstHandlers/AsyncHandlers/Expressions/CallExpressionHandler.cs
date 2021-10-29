@@ -33,16 +33,7 @@ namespace Tenray.Topaz.Expressions
                 args.Add(await scriptExecutor.ExecuteExpressionAndGetValueAsync(arg));
             }
             var callee = await scriptExecutor.ExecuteStatementAsync(expr.Callee);
-            var result = await scriptExecutor.CallFunctionAsync(callee, args, expr.Optional);
-            if (result == null)
-                return null;
-            if (result is Task || result is ValueTask)
-            {
-                dynamic awaitable = result;
-                if (result.GetType().IsGenericType)
-                    return await awaitable;
-                await awaitable;
-            }
+            var result = await scriptExecutor.CallFunctionAsync(callee, args, expr.Optional);            
             return result;
         }
     }

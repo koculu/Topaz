@@ -13,7 +13,7 @@ namespace Tenray.Topaz.Expressions
         internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression)
         {
             var expr = (NewExpression)expression;
-            var callee = scriptExecutor.ExecuteExpressionAndGetValue(expr.Callee);
+            var callee = await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr.Callee);
             if (callee is not TypeWrapper typeWrapper)
             {
                 Exceptions.ThrowCanNotCallConstructor(callee);
