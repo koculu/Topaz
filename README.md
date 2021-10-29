@@ -117,7 +117,7 @@ I appreciate any feedback and contributions to the project.
 
 ## Topaz Engine Options:
 
-```
+```c#
   VarScopeBehavior: FunctionScope | DeclarationScope
 
   AssignmentWithoutDefinitionBehavior:
