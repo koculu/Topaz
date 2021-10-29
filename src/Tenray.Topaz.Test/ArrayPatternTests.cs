@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using System;
 using System.Collections;
 using Tenray.Topaz.Utility;
 

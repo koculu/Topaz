@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Options;
 
@@ -82,6 +83,26 @@ namespace Tenray.Topaz
         public void SetValueAndKind(string name, object value, VariableKind variableKind)
         {
             GlobalScope.SetValueAndKind(name, value, variableKind);
+        }
+
+        public async Task ExecuteScriptAsync(string code)
+        {
+            await GlobalScope.ExecuteScriptAsync(code);
+        }
+
+        public async Task<object> ExecuteExpressionAsync(string code)
+        {
+            return await GlobalScope.ExecuteExpressionAsync(code);
+        }
+
+        public async Task<object> InvokeFunctionAsync(string name, params object[] args)
+        {
+            return await GlobalScope.InvokeFunctionAsync(name, args);
+        }
+
+        public async Task<object> InvokeFunctionAsync(object functionObject, params object[] args)
+        {
+            return await GlobalScope.InvokeFunctionAsync(functionObject, args);
         }
     }
 }

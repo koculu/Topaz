@@ -3,7 +3,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class IdentifierHandler
+    internal static partial class IdentifierHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {

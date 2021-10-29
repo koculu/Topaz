@@ -7,7 +7,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class NewExpressionHandler
+    internal static partial class NewExpressionHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {

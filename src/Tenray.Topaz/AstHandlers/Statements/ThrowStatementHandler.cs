@@ -4,7 +4,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class ThrowStatementHandler
+    internal static partial class ThrowStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

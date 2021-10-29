@@ -1,6 +1,8 @@
 ﻿using Jint;
 using System;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Tenray.Topaz.Benchmark
 {
@@ -40,5 +42,32 @@ for (var i = 0 ; i < 100000; ++i) {
             var jintEngine = new Engine();
             jintEngine.Execute(Code);
         }
+
+        public void Playground()
+        {
+            var topazEngine = new TopazEngine();
+            topazEngine.AddType<Uri>("Uri");
+            topazEngine.AddType<HttpClient>("HttpClient");
+            topazEngine.AddType(typeof(Console), "Console");
+            var task = topazEngine.ExecuteScriptAsync(@"
+async function httpGet(url) {
+    try {
+        var httpClient = new HttpClient()
+        var response = await httpClient.GetAsync(url)
+        return await response.Content.ReadAsStringAsync()
+    }
+    catch (err) {
+        Console.WriteLine('Caught Error:\n' + err)
+    }
+    finally {
+        httpClient.Dispose();
+    }
+}
+const html = await httpGet('http://example.com')
+Console.WriteLine(html);
+");
+            task.Wait();
+        }
+
     }
 }

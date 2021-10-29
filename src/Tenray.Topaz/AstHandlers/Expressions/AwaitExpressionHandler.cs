@@ -5,7 +5,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class AwaitExpressionHandler
+    internal static partial class AwaitExpressionHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {
@@ -22,7 +22,7 @@ namespace Tenray.Topaz.Expressions
             return result;
         }
 
-        private static object GetTaskResult(Task task)
+        internal static object GetTaskResult(Task task)
         {
             task.Wait();
             var property = task.GetType().GetProperty("Result",

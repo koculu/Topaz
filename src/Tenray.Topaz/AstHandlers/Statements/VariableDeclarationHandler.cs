@@ -8,7 +8,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class VariableDeclarationHandler
+    internal static partial class VariableDeclarationHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

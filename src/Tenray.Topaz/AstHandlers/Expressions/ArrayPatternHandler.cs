@@ -7,7 +7,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal static class ArrayPatternHandler
+    internal static partial class ArrayPatternHandler
     {
         // https://hacks.mozilla.org/2015/05/es6-in-depth-destructuring/
         internal static object ProcessArrayPattern(

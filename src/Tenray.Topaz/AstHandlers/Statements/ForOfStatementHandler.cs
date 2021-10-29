@@ -6,7 +6,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class ForOfStatementHandler
+    internal static partial class ForOfStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

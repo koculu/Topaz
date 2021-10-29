@@ -4,7 +4,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class TryStatementHandler
+    internal static partial class TryStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {
@@ -21,12 +21,13 @@ namespace Tenray.Topaz.Statements
             {
                 if (handler == null)
                     throw;
-                var paramName = (handler.Param as Identifier)?.Name;
-                if (paramName != null)
-                    scriptExecutor
-                        .DefineVariable(paramName, e.InnerException, VariableKind.Var);
 
                 var bodyScope = scriptExecutor.NewBlockScope();
+                var paramName = (handler.Param as Identifier)?.Name;
+                if (paramName != null)
+                    bodyScope
+                        .DefineVariable(paramName, e, VariableKind.Var);
+
                 return bodyScope.ExecuteStatement(handler.Body);
             }
             finally

@@ -6,7 +6,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class ObjectExpressionHandler
+    internal static partial class ObjectExpressionHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {

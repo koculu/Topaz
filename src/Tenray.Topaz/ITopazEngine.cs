@@ -1,5 +1,6 @@
 ﻿using Esprima;
 using System;
+using System.Threading.Tasks;
 using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz
@@ -26,6 +27,19 @@ namespace Tenray.Topaz
         object ExecuteExpression(string code);
 
         /// <summary>
+        /// Executes the script in the global scope.
+        /// </summary>
+        /// <param name="code"></param>
+        Task ExecuteScriptAsync(string code);
+
+        /// <summary>
+        /// Executes the single line expression in the global scope.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<object> ExecuteExpressionAsync(string code);
+
+        /// <summary>
         /// Executes the function that is declared in the global scope with given name.
         /// </summary>
         /// <param name="name"></param>
@@ -36,10 +50,26 @@ namespace Tenray.Topaz
         /// <summary>
         /// Executes given function object.
         /// </summary>
-        /// <param name="functionObject">A Javascript function Action<> or Func<> object.</param>
+        /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
         /// <param name="args">The arguments passed into the function.</param>
         /// <returns></returns>
         object InvokeFunction(object functionObject, params object[] args);
+
+        /// <summary>
+        /// Executes the function that is declared in the global scope with given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        Task<object> InvokeFunctionAsync(string name, params object[] args);
+
+        /// <summary>
+        /// Executes given function object.
+        /// </summary>
+        /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
+        /// <param name="args">The arguments passed into the function.</param>
+        /// <returns></returns>
+        Task<object> InvokeFunctionAsync(object functionObject, params object[] args);
 
         void AddType<T>(
             string name = null,

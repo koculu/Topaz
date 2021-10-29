@@ -54,6 +54,34 @@ engine.SetValue("name", "Topaz");
 engine.ExecuteScript(@"Console.WriteLine('Hello World, from ' + name)");
 ```
 
+### Async Http Get:
+An example of fetching HTTP content without blocking executing thread.
+```
+var engine = new TopazEngine();
+engine.AddType<HttpClient>("HttpClient");
+engine.AddType(typeof(Console), "Console");
+engine.SetValue("model", model);
+engine.AddType<Uri>("Uri");
+var task = engine.ExecuteScriptAsync(@"
+async function httpGet(url) {
+    try {
+        var httpClient = new HttpClient()
+        var response = await httpClient.GetAsync(url)
+        return await response.Content.ReadAsStringAsync()
+    }
+    catch (err) {
+        Console.WriteLine('Caught Error:\n' + err)
+    }
+    finally {
+        httpClient.Dispose();
+    }
+}
+const html = model.html = await httpGet('http://example.com')
+Console.WriteLine(html);
+");
+task.Wait();
+
+```
 ### Feature List:
 * for loops
 * for .. in iterators

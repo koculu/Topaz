@@ -3,7 +3,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class IfStatementHandler
+    internal static partial class IfStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

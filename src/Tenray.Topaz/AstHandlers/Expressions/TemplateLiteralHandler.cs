@@ -4,7 +4,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class TemplateLiteralHandler
+    internal static partial class TemplateLiteralHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {

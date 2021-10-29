@@ -66,5 +66,35 @@ namespace Tenray.Topaz.Core
             AddOrUpdateVariableValueAndKindInTheScope
                    (name, value, variableKind);
         }
+
+        async Task ITopazEngineScope.ExecuteScriptAsync(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return;
+            var script = new JavaScriptParser(code, Options.ParserOptions)
+                .ParseScript();
+            await ExecuteScriptAsync(script);
+        }
+
+        async Task<object> ITopazEngineScope.ExecuteExpressionAsync(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return null;
+            var script = new JavaScriptParser(code, Options.ParserOptions)
+                .ParseExpression();
+            return await ExecuteExpressionAndGetValueAsync(script);
+        }
+
+        async Task<object> ITopazEngineScope.InvokeFunctionAsync(string name, params object[] args)
+        {
+            return await CallFunctionAsync(
+                new TopazIdentifier(this, name),
+                args.ToArray(), false);
+        }
+
+        async Task<object> ITopazEngineScope.InvokeFunctionAsync(object functionObject, params object[] args)
+        {
+            return await CallFunctionAsync(functionObject, args, false);
+        }
     }
 }

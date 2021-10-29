@@ -5,7 +5,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class ForInStatementHandler
+    internal static partial class ForInStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

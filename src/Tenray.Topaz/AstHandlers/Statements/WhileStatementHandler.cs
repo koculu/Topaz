@@ -4,7 +4,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
 {
-    internal class WhileStatementHandler
+    internal static partial class WhileStatementHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {

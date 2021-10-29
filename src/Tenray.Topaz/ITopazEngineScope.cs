@@ -1,4 +1,6 @@
-﻿namespace Tenray.Topaz
+﻿using System.Threading.Tasks;
+
+namespace Tenray.Topaz
 {
     public interface ITopazEngineScope
     {
@@ -48,6 +50,19 @@
         object ExecuteExpression(string code);
 
         /// <summary>
+        /// Executes the script in the scope.
+        /// </summary>
+        /// <param name="code"></param>
+        Task ExecuteScriptAsync(string code);
+
+        /// <summary>
+        /// Executes the single line expression in the scope.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        Task<object> ExecuteExpressionAsync(string code);
+
+        /// <summary>
         /// Executes the function that is declared in the scope with given name.
         /// </summary>
         /// <param name="name"></param>
@@ -58,10 +73,26 @@
         /// <summary>
         /// Executes given function object.
         /// </summary>
-        /// <param name="functionObject">A Javascript function Action<> or Func<> object.</param>
+        /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
         /// <param name="args">The arguments passed into the function.</param>
         /// <returns></returns>
         object InvokeFunction(object functionObject, params object[] args);
+
+        /// <summary>
+        /// Executes the function that is declared in the scope with given name.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        Task<object> InvokeFunctionAsync(string name, params object[] args);
+
+        /// <summary>
+        /// Executes given function object.
+        /// </summary>
+        /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
+        /// <param name="args">The arguments passed into the function.</param>
+        /// <returns></returns>
+        Task<object> InvokeFunctionAsync(object functionObject, params object[] args);
 
         /// <summary>
         /// Gets the value of the variable that is defined in the scope
@@ -83,7 +114,7 @@
         /// <summary>
         /// Defines a new variable with given name, value and kind
         /// or updates existing variable with given name, value and kind
-        /// in the global scope.
+        /// in the scope.
         /// </summary>
         /// <param name="name">The name of the variable</param>
         /// <param name="value">The value</param>

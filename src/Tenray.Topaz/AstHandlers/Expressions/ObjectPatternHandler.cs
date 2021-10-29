@@ -6,7 +6,7 @@ using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal static class ObjectPatternHandler
+    internal static partial class ObjectPatternHandler
     {
         // https://hacks.mozilla.org/2015/05/es6-in-depth-destructuring/
         internal static object ProcessObjectPattern(

@@ -5,7 +5,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
 {
-    internal class TaggedTemplateExpressionHandler
+    internal static partial class TaggedTemplateExpressionHandler
     {
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {
