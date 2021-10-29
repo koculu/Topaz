@@ -60,7 +60,6 @@ An example of fetching HTTP content without blocking executing thread.
 var engine = new TopazEngine();
 engine.AddType<HttpClient>("HttpClient");
 engine.AddType(typeof(Console), "Console");
-engine.AddType<Uri>("Uri");
 var task = engine.ExecuteScriptAsync(@"
 async function httpGet(url) {
     try {
