@@ -40,6 +40,11 @@ namespace Tenray.Topaz.Core
                 args.ToArray(), false);
         }
 
+        object ITopazEngineScope.InvokeFunction(object functionObject, params object[] args)
+        {
+            return CallFunction(functionObject, args, false);
+        }
+
         ITopazEngineScope ITopazEngineScope.NewChildScope(bool? isThreadSafe)
         {
             return NewCustomScope(isThreadSafe);

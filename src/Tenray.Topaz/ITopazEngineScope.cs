@@ -56,6 +56,14 @@
         object InvokeFunction(string name, params object[] args);
 
         /// <summary>
+        /// Executes given function object.
+        /// </summary>
+        /// <param name="functionObject">A Javascript function Action<> or Func<> object.</param>
+        /// <param name="args">The arguments passed into the function.</param>
+        /// <returns></returns>
+        object InvokeFunction(object functionObject, params object[] args);
+
+        /// <summary>
         /// Gets the value of the variable that is defined in the scope
         /// or its parent scopes.
         /// </summary>

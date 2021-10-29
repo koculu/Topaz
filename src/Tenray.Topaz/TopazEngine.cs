@@ -43,6 +43,11 @@ namespace Tenray.Topaz
             return GlobalScope.InvokeFunction(name, args);
         }
 
+        public object InvokeFunction(object functionObject, params object[] args)
+        {
+            return GlobalScope.InvokeFunction(functionObject, args);
+        }
+
         public void AddType<T>(
             string name = null,
             Action<CallType, object[]> argsConverter = null,
