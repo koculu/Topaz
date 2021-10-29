@@ -47,7 +47,7 @@ Stay in touch.
 Here is the [Nuget Link](https://www.nuget.org/packages/Topaz/).
 
 ### Hello world application:
-```
+```c#
 var engine = new TopazEngine();
 engine.AddType(typeof(Console), "Console");
 engine.SetValue("name", "Topaz");
@@ -56,7 +56,7 @@ engine.ExecuteScript(@"Console.WriteLine('Hello World, from ' + name)");
 
 ### Async Http Get:
 An example of fetching HTTP content without blocking executing thread.
-```
+```c#
 var engine = new TopazEngine();
 engine.AddType<HttpClient>("HttpClient");
 engine.AddType(typeof(Console), "Console");
