@@ -95,7 +95,7 @@ task.Wait();
 * conditional statements
 * rest and spread elements (...)
 * template literals
-* tagged Template literals
+* tagged template literals
 * try catch finally statement
 * throw statement
 * new expression (constructor)
