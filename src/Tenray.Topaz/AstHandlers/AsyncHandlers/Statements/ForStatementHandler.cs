@@ -9,20 +9,19 @@ namespace Tenray.Topaz.Statements
         internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
         {
             var expr = (ForStatement)statement;
+            var body = expr.Body;
             var init = expr.Init;
             var test = expr.Test;
             var update = expr.Update;
-            var blockBody = expr.Body as BlockStatement;
             scriptExecutor = scriptExecutor.NewBlockScope();
-            scriptExecutor.ExecuteStatement(init);
-            while (JavascriptTypeUtility
-                .IsObjectTrue(await
-                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
+            await scriptExecutor.ExecuteStatementAsync(init);
+            if (body is not BlockStatement blockBody)
             {
-                var bodyScope = scriptExecutor.NewBlockScope();
-                if (blockBody == null)
+                while (JavascriptTypeUtility
+                  .IsObjectTrue(await 
+                  scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
                 {
-                    var result = await bodyScope.ExecuteStatementAsync(expr.Body);
+                    var result = await scriptExecutor.ExecuteStatementAsync(body);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -30,9 +29,16 @@ namespace Tenray.Topaz.Statements
                     await scriptExecutor.ExecuteStatementAsync(update);
                     continue;
                 }
-                var list = blockBody.Body;
-                var len = list.Count;
+                return scriptExecutor.GetNullOrUndefined();
+            }
 
+            var list = blockBody.Body;
+            var len = list.Count;
+            while (JavascriptTypeUtility
+                .IsObjectTrue(await 
+                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
+            {
+                var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 var continued = false;
                 for (var i = 0; i < len; ++i)

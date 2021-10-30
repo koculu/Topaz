@@ -8,24 +8,28 @@ namespace Tenray.Topaz.Statements
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {
             var expr = (DoWhileStatement)statement;
+            var body = expr.Body;
             var test = expr.Test;
-            var blockBody = expr.Body as BlockStatement;
-            do
+            if (body is not BlockStatement blockBody)
             {
-                var bodyScope = scriptExecutor.NewBlockScope();
-                if (blockBody == null)
+                do
                 {
-                    var result = bodyScope.ExecuteStatement(expr.Body);
+                    var result = scriptExecutor.ExecuteStatement(body);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
                     continue;
                 }
-
-                var list = blockBody.Body;
-                var len = list.Count;
-
+                while (JavascriptTypeUtility
+                    .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)));
+                return scriptExecutor.GetNullOrUndefined();
+            }
+            var list = blockBody.Body;
+            var len = list.Count;
+            do
+            {
+                var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 var continued = false;
                 for (var i = 0; i < len; ++i)

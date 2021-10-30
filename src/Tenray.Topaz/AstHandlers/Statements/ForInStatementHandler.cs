@@ -10,9 +10,9 @@ namespace Tenray.Topaz.Statements
         internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
         {
             var expr = (ForInStatement)statement;
+            var body = expr.Body;
             var left = expr.Left;
             var right = expr.Right;
-            var blockBody = expr.Body as BlockStatement;
             scriptExecutor = scriptExecutor.NewBlockScope();
             scriptExecutor.ExecuteStatement(left);
 
@@ -20,23 +20,28 @@ namespace Tenray.Topaz.Statements
 
             var rightValue = scriptExecutor.ExecuteExpressionAndGetValue(right);
             var objectKeys = DynamicHelper.GetObjectKeys(rightValue);
-            foreach (var key in objectKeys)
+
+            if (body is not BlockStatement blockBody)
             {
-                BindingHelper.BindVariables(scriptExecutor, key, variableDeclaration);
-                var bodyScope = scriptExecutor.NewBlockScope();
-                if (blockBody == null)
+                foreach (var key in objectKeys)
                 {
-                    var result = bodyScope.ExecuteStatement(expr.Body);
+                    BindingHelper.BindVariables(scriptExecutor, key, variableDeclaration);
+                    var result = scriptExecutor.ExecuteStatement(body);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
                     continue;
                 }
+                return scriptExecutor.GetNullOrUndefined();
+            }
 
-                var list = blockBody.Body;
-                var len = list.Count;
-
+            var list = blockBody.Body;
+            var len = list.Count;
+            foreach (var key in objectKeys)
+            {
+                BindingHelper.BindVariables(scriptExecutor, key, variableDeclaration);
+                var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 var continued = false;
                 for (var i = 0; i < len; ++i)

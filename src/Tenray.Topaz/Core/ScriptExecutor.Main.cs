@@ -153,7 +153,7 @@ namespace Tenray.Topaz.Core
         internal ScriptExecutor NewCustomScope(bool? isThreadSafe)
         {
             if (!isThreadSafe.HasValue)
-                isThreadSafe = this.IsThreadSafeScope;
+                isThreadSafe = IsThreadSafeScope;
             return new ScriptExecutor(TopazEngine, this, isThreadSafe.Value);
         }
 

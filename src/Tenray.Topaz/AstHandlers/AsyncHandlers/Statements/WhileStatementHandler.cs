@@ -10,25 +10,31 @@ namespace Tenray.Topaz.Statements
         internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
         {
             var expr = (WhileStatement)statement;
+            var body = expr.Body;
             var test = expr.Test;
-            var blockBody = expr.Body as BlockStatement;
-            while (JavascriptTypeUtility
-                .IsObjectTrue(await scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
+            if (body is not BlockStatement blockBody)
             {
-                var bodyScope = scriptExecutor.NewBlockScope();
-                if (blockBody == null)
+                while (JavascriptTypeUtility
+                   .IsObjectTrue(await
+                        scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
                 {
-                    var result = await bodyScope.ExecuteStatementAsync(expr.Body);
+                    var result = await scriptExecutor.ExecuteStatementAsync(body);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
                     continue;
                 }
+                return scriptExecutor.GetNullOrUndefined();
+            }
 
-                var list = blockBody.Body;
-                var len = list.Count;
-
+            var list = blockBody.Body;
+            var len = list.Count;
+            while (JavascriptTypeUtility
+                .IsObjectTrue(await 
+                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
+            {
+                var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 var continued = false;
                 for (var i = 0; i < len; ++i)
