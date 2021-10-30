@@ -29,8 +29,8 @@ namespace Tenray.Topaz.ErrorHandling
 
         internal static void ThrowCanNotCallConstructorWithGivenArguments(string name, IReadOnlyList<object> args)
         {
-            var argString = string.Join(",", args);
-            throw new TopazException($"{GetArgumentString(name)} constructor cannot be called with given arguments: new {name}({argString})");
+            var argString = string.Join(", ", args);
+            throw new TopazException($"{GetArgumentString(name)} constructor cannot be called with given arguments:\nnew {name}({argString})");
         }
 
         internal static void ThrowCanNotCallStaticMethod(object callee)
@@ -145,8 +145,8 @@ namespace Tenray.Topaz.ErrorHandling
 
         internal static void ThrowCannotFindFunctionMatchingGivenArguments(string name, IReadOnlyList<object> args)
         {
-            var argString = string.Join(",", args);
-            throw new TopazException($"Interop error: Cannot find function matching giving arguments: {name}({argString})");
+            var argString = string.Join(", ", args);
+            throw new TopazException($"Interop error: Cannot find function matching giving arguments:\n{name}({argString})");
         }
     }
 }

@@ -34,6 +34,12 @@ namespace Tenray.Topaz
         IObjectProxy DefaultObjectProxy { get; }
 
         /// <summary>
+        /// Delegate invoker.
+        /// Invokes Action<>, Func<,..> or any delegate.
+        /// </summary>
+        IDelegateInvoker DelegateInvoker { get; }
+
+        /// <summary>
         /// Executes the script in the global scope.
         /// </summary>
         /// <param name="code"></param>

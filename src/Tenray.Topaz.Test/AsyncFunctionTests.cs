@@ -27,7 +27,7 @@ async function httpGet(url) {
         Console.WriteLine('Caught Error:\n' + err)
     }
     finally {
-        httpClient.Dispose();
+        httpClient.Dispose()
     }
 }
 const html = model.html = await httpGet('http://example.com')

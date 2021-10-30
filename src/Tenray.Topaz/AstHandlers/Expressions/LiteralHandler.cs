@@ -22,7 +22,14 @@ namespace Tenray.Topaz.Expressions
 
             if (literal.TokenType == TokenType.NumericLiteral)
             {
-                return literal.Value;
+                var value = literal.Value;
+                if (value is long d)
+                {
+                    if (d < int.MinValue || d > int.MaxValue)
+                        return d;
+                    return (int)d;
+                }
+                return value;
             }
 
             if (literal.TokenType == TokenType.StringLiteral)

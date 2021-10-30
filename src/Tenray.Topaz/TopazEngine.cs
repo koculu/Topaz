@@ -26,16 +26,20 @@ namespace Tenray.Topaz
 
         public IObjectProxy DefaultObjectProxy { get; }
 
+        public IDelegateInvoker DelegateInvoker { get; }
+
         public TopazEngine(bool isThreadSafeEngine = true,
             TopazEngineOptions options = null,
             IObjectProxyRegistry objectProxyRegistry = null,
-            IObjectProxy defaultObjectProxy = null)
+            IObjectProxy defaultObjectProxy = null,
+            IDelegateInvoker delegateInvoker = null)
         {
             Id = Interlocked.Increment(ref lastTopazEngineId);
             globalScope = new ScriptExecutor(this, isThreadSafeEngine);
             Options = options ?? PresetOptions.FriendlyStyle;
             ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
             DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null);
+            DelegateInvoker = delegateInvoker ?? new DelegateInvoker();
         }
 
         public void ExecuteScript(string code)
@@ -57,7 +61,6 @@ namespace Tenray.Topaz
         {
             return GlobalScope.InvokeFunction(functionObject, args);
         }
-
 
         public void AddType<T>(string name = null, ITypeProxy typeProxy = null)
         {

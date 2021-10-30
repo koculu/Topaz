@@ -11,5 +11,4 @@ namespace Tenray.Topaz.Expressions
             return new TopazIdentifier(scriptExecutor, expr.Name);
         }
     }
-    
 }

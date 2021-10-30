@@ -70,7 +70,7 @@ namespace Tenray.Topaz.Core
                 return invokable.Invoke(args.ToArray());
             }
 
-            return DelegateInvoker.InvokeFunction(value, args);
+            return TopazEngine.DelegateInvoker.Invoke(value, args);
         }
 
         internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional)
@@ -94,7 +94,7 @@ namespace Tenray.Topaz.Core
                 return invokable.Invoke(args.ToArray());
             }
 
-            return DelegateInvoker.InvokeFunction(value, args);
+            return TopazEngine.DelegateInvoker.Invoke(value, args);
         }
     }
 }

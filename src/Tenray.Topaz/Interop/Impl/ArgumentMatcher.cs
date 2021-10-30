@@ -25,14 +25,18 @@ namespace Tenray.Topaz.Interop
                 {
                     var arg = args[j];
                     var p = parameters[j];
+                    var ptype = p.ParameterType;
                     if (arg == null)
                     {
-                        if (p.ParameterType.IsClass)
+                        if (ptype.IsClass)
                             continue;
                         failed = true;
                         break;
                     }
-                    if (arg.GetType() == p.ParameterType)
+                    var argType = arg.GetType();
+                    if (ptype == typeof(object) ||
+                        ptype == argType ||
+                        ptype.IsAssignableFrom(argType))
                         continue;
                     failed = true;
                     break;
@@ -72,6 +76,7 @@ namespace Tenray.Topaz.Interop
                 {
                     var arg = argsCopy[j];
                     var p = parameters[j];
+                    var ptype = p.ParameterType;
                     if (arg is Undefined)
                     {
                         argsCopy[i] = null;
@@ -79,24 +84,27 @@ namespace Tenray.Topaz.Interop
                     }
                     if (arg == null)
                     {
-                        if (p.ParameterType.IsClass)
+                        if (ptype.IsClass)
                             continue;
                         failed = true;
                         break;
                     }
-                    if (arg.GetType() == p.ParameterType)
+                    var argType = arg.GetType();
+                    if (ptype == typeof(object) ||
+                        ptype == argType ||
+                        ptype.IsAssignableFrom(argType))
                         continue;
                     try
                     {
                         if (convertStringsToEnum &&
-                            p.ParameterType.IsEnum &&
+                            ptype.IsEnum &&
                             arg is string s &&
-                            Enum.TryParse(p.ParameterType, s, true, out var enumValue))
+                            Enum.TryParse(ptype, s, true, out var enumValue))
                         {
                             argsCopy[j] = enumValue;
                             continue;
                         }
-                        argsCopy[j] = Convert.ChangeType(arg, p.ParameterType);
+                        argsCopy[j] = Convert.ChangeType(arg, ptype);
                     }
                     catch (Exception)
                     {
