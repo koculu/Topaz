@@ -80,6 +80,104 @@ Console.WriteLine(html);
 task.Wait();
 
 ```
+
+### Parallel For loop:
+An example of parallel for loop. Notice read/write global shared variable simultaneously with no crash!
+```c#
+var engine = new TopazEngine();
+engine.AddType(typeof(Console), "Console");
+topazEngine.AddType(typeof(Parallel), "Parallel");
+engine.ExecuteScript(@"
+var sharedVariable = 0
+function f1(i) {
+    sharedVariable = i
+}
+Parallel.For(0, 100000 , f1)
+Console.WriteLine(`Final value: {sharedVariable}`);
+");
+
+```
+
+### Generic Constructors:
+An example of generic type construction. Generic Type Arguments are passed through constructor function arguments.
+```c#
+var engine = new TopazEngine();
+var model = new CaseSensitiveDynamicObject();
+engine.SetValue("model", model);
+model["int"] = typeof(int);
+model["string"] = typeof(string);
+engine.AddType(typeof(Console), "Console");
+engine.ExecuteScript(@"
+var dic = new GenericDictionary(model.string, model.int)
+dic.Add('hello', 1)
+dic.Add('dummy', 0)
+dic.Add('world', 2)
+dic.Remove('dummy')
+Console.WriteLine(`Final value: {dic['hello']} {dic['world']}`);
+");
+
+```
+
+### Fully Customizable Type Conversions:
+Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
+Every type conversion operation is customizable.
+```c#
+public interface ITypeProxy
+    {
+        /// <summary>
+        /// Proxied type.
+        /// </summary>
+        Type ProxiedType { get; }
+
+        /// <summary>
+        ///  Calls generic or non-generic constructor.
+        /// </summary>
+        /// <param name="args">Generic and constructor arguments.</param>
+        /// <returns></returns>
+        object CallConstructor(IReadOnlyList<object> args);
+
+        /// <summary>
+        /// Returns true if a member is found, false otherwise.
+        /// Output value is member of the static type.
+        /// If static type member is a function then output value is IInvokable.
+        /// </summary>
+        /// <param name="member">Member name or indexed member value.</param>
+        /// <param name="value">Returned value.</param>
+        /// <param name="isIndexedProperty">Indicates if the member
+        /// retrieval should be through an indexed property.</param>
+        /// <returns></returns>
+        bool TryGetStaticMember(
+            object member,
+            out object value,
+            bool isIndexedProperty = false);
+
+        /// <summary>
+        /// Returns true if a member is found and updated with new value,
+        /// false otherwise.
+        /// If statyic type member is a function, returns false.
+        /// </summary>
+        /// <param name="member">Member name or indexed member value.</param>
+        /// <param name="value">New value.</param>
+        /// <param name="isIndexedProperty">Indicates if the member
+        /// retrieval should be through an indexed property.</param>
+        /// <returns></returns>
+        bool TrySetStaticMember(
+            object member,
+            object value,
+            bool isIndexedProperty = false);
+    }
+
+    public interface IObjectProxy
+    ...
+    public interface IInvokable
+    ...
+    public interface IDelegateInvoker
+    ...
+    public interface IObjectProxyRegistry
+    ...
+
+```
+
 ### Feature List:
 * for loops
 * for .. in iterators
