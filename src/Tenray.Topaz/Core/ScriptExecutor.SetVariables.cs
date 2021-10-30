@@ -160,8 +160,8 @@ namespace Tenray.Topaz.Core
                     {
                         case
                             AssignmentWithoutDefinitionBehavior
-                            .ThrowException:
-                            Exceptions.ThrowVariableIsNotDefined(name);
+                            .DefineAsVarInExecutionScope:
+                            AddOrUpdateVariableValueAndKindInTheScope(name, value, VariableKind.Var);
                             break;
                         case
                             AssignmentWithoutDefinitionBehavior
@@ -170,13 +170,13 @@ namespace Tenray.Topaz.Core
                             break;
                         case
                             AssignmentWithoutDefinitionBehavior
-                            .DefineAsVarInFirstChildOfGlobalScope:
-                            (previousScope ?? scope).AddOrUpdateVariableValueAndKindInTheScope(name, value, VariableKind.Var);
+                            .ThrowException:
+                            Exceptions.ThrowVariableIsNotDefined(name);
                             break;
                         case
                             AssignmentWithoutDefinitionBehavior
-                            .DefineAsVarInExecutionScope:
-                            AddOrUpdateVariableValueAndKindInTheScope(name, value, VariableKind.Var);
+                            .DefineAsVarInFirstChildOfGlobalScope:
+                            (previousScope ?? scope).AddOrUpdateVariableValueAndKindInTheScope(name, value, VariableKind.Var);
                             break;
                         case
                             AssignmentWithoutDefinitionBehavior
