@@ -202,7 +202,7 @@ namespace Tenray.Topaz.Core
                 Nodes.NewExpression => NewExpressionHandler.Execute(this, statement),
                 
                 Nodes.ReturnStatement => new ReturnWrapper(
-                    ExecuteStatement(((ReturnStatement)statement).Argument)),
+                    ExecuteExpressionAndGetValue(((ReturnStatement)statement).Argument)),
                 Nodes.BreakStatement => BreakWrapper.Instance,
                 Nodes.ContinueStatement => ContinueWrapper.Instance,
 
@@ -286,7 +286,7 @@ namespace Tenray.Topaz.Core
                 Nodes.NewExpression => await NewExpressionHandler.ExecuteAsync(this, statement),
 
                 Nodes.ReturnStatement => new ReturnWrapper(
-                    await ExecuteStatementAsync(((ReturnStatement)statement).Argument)),
+                    await ExecuteExpressionAndGetValueAsync(((ReturnStatement)statement).Argument)),
                 Nodes.BreakStatement => BreakWrapper.Instance,
                 Nodes.ContinueStatement => ContinueWrapper.Instance,
 

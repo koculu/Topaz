@@ -1,13 +1,19 @@
 ﻿using Esprima.Ast;
+using Microsoft.CSharp.RuntimeBinder;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Expressions;
+using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz
 {
-    internal class TopazFunction
+    internal class TopazFunction : IConvertible
     {
         internal ScriptExecutor ScriptExecutor { get; }
 
@@ -40,7 +46,7 @@ namespace Tenray.Topaz
             this.expr3 = expr;
         }
 
-        internal object Execute(IReadOnlyList<object> args)
+        public object Execute(IReadOnlyList<object> args)
         {
             var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
             var parameters = 
@@ -120,7 +126,7 @@ namespace Tenray.Topaz
             return result;
         }
 
-        internal async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args)
+        public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args)
         {
             var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
             var parameters =
@@ -199,6 +205,104 @@ namespace Tenray.Topaz
             if (result is Expression expr)
                 return await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr);
             return result;
+        }
+
+        public TypeCode GetTypeCode()
+        {
+            throw new NotSupportedException();
+        }
+
+        public bool ToBoolean(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public byte ToByte(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public char ToChar(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public DateTime ToDateTime(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public decimal ToDecimal(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public double ToDouble(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public short ToInt16(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public int ToInt32(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public long ToInt64(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public sbyte ToSByte(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public float ToSingle(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public string ToString(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public ushort ToUInt16(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public uint ToUInt32(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public ulong ToUInt64(IFormatProvider provider)
+        {
+            throw new NotSupportedException();
+        }
+
+        public object ToType(Type conversionType, IFormatProvider provider)
+        {
+            if (!conversionType.IsSubclassOf(typeof(MulticastDelegate)))
+                throw new NotSupportedException();
+            
+            var topazParameters =
+               expr1?.Params ??
+               expr2?.Params ??
+               expr3.Params;
+
+            var argTypes = conversionType.GetTypeInfo().GenericTypeArguments;            
+            if (argTypes.Length != topazParameters.Count)
+                throw new NotSupportedException();
+            var returnType = conversionType.GetMethod("Invoke").ReturnType;
+            return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
+                (args) => this.Execute(args));
         }
     }
 }

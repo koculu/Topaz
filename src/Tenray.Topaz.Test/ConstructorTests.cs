@@ -39,7 +39,7 @@ model.c = (typeof DateTime.Now).ToString()
             engine.SetValue("model", model);
             engine.AddType(typeof(Dictionary<,>), "GenericDictionary");
 
-             engine.ExecuteScript(@"
+            engine.ExecuteScript(@"
 var dic = model.dic = new GenericDictionary(model.string, model.int)
 dic.Add('hello', 1)
 dic.Add('dummy', 0)

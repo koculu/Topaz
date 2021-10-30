@@ -1,5 +1,6 @@
 ﻿using Jint;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -31,10 +32,12 @@ for (var i = 0 ; i < 100000; ++i) {
             }
         }
 
-        public void RunTopaz()
+        public bool RunTopaz()
         {
             var topazEngine = new TopazEngine();
+            topazEngine.AddType(typeof(Console), "Console");
             topazEngine.ExecuteScript(Code);
+            return true;
         }
 
         public void RunJint()
@@ -46,27 +49,52 @@ for (var i = 0 ; i < 100000; ++i) {
         public void Playground()
         {
             var topazEngine = new TopazEngine();
-            topazEngine.AddType<Uri>("Uri");
+            topazEngine.SetValue("int", typeof(int));
+            topazEngine.SetValue("string", typeof(string));
+            topazEngine.SetValue("forEach", 
+                new Action<int, int, Action<int>>(
+                    (start, end, y) =>
+                    {
+                        for (var i = start; i < end; ++i)
+                        {
+                            y(i);
+                        }
+                    }));
             topazEngine.AddType<HttpClient>("HttpClient");
             topazEngine.AddType(typeof(Console), "Console");
-            var task = topazEngine.ExecuteScriptAsync(@"
-async function httpGet(url) {
-    try {
-        var httpClient = new HttpClient()
-        var response = await httpClient.GetAsync(url)
-        return await response.Content.ReadAsStringAsync()
-    }
-    catch (err) {
-        Console.WriteLine('Caught Error:\n' + err)
-    }
-    finally {
-        httpClient.Dispose();
-    }
+            topazEngine.AddType(typeof(Enumerable), "Enumerable");
+            topazEngine.AddType(typeof(Parallel), "Parallel");
+            topazEngine.AddType(typeof(Action), "Action");
+            topazEngine.AddType(typeof(Action<,>), "Action2d");
+            topazEngine.AddType(typeof(Func<,>), "Func2d");
+
+            topazEngine.ExecuteScript(@"
+
+function f3(i) {
+g = x * x
+return g
 }
-const html = await httpGet('http://example.com')
-Console.WriteLine(html);
+
+var func = new Func2d(int,int,f3)
+Console.WriteLine('func:' + func(9))
+
+function f2(s,i) {
+Console.WriteLine('f2:' + s + i);
+return s + i
+}
+
+forEach(0,100000, f3);
+
+var g = 8
+function f1(x, y) {
+g = x * x
+//Console.WriteLine('f1:' + x + y.IsExceptional)
+}
+var a = new Action2d(string, int, f2)
+a(3,9)
+
+Parallel.For(0, 100000 , f1)
 ");
-            task.Wait();
         }
 
     }

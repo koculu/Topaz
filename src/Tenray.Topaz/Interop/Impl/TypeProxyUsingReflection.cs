@@ -64,7 +64,10 @@ namespace Tenray.Topaz.Interop
             var options = ProxyOptions;
             if (!options.HasFlag(ProxyOptions.AllowConstructor))
                 Exceptions.ThrowCanNotCallConstructor(type);
-            
+
+            if (type.IsSubclassOf(typeof(MulticastDelegate)))
+                return CreateDelegate(type, args);
+
             if (args.Count == 0)
                 return Activator.CreateInstance(type);            
             
@@ -96,6 +99,20 @@ namespace Tenray.Topaz.Interop
                 .ThrowCanNotCallConstructorWithGivenArguments(
                 Name, args);
             return null;
+        }
+
+        private object CreateDelegate(Type type, IReadOnlyList<object> args)
+        {
+            var returnType = type.GetMethod("Invoke").ReturnType;
+            var argTypes = type.GetTypeInfo().GenericTypeArguments;
+            if (args == null || args.Count == 0)
+                throw new TopazException("Cannot create delegate with no arguments.");
+            var arg = args[0];
+            if (arg is not TopazFunction topazFunction)
+                throw new TopazException("Delegate constructor requires Javascript function.");
+
+            return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
+                (x) => topazFunction.Execute(x));
         }
 
         private object CallGenericConstructor(Type type, IReadOnlyList<object> args)
