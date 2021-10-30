@@ -16,6 +16,7 @@ namespace Tenray.Topaz.Expressions
             object value,
             Func<object, object, ValueTask> callback)
         {
+            var topazEngine = scriptExecutor.TopazEngine;
             var scope = scriptExecutor;
             var props = objectPattern.Properties;
             var len = props.Count;
@@ -28,11 +29,9 @@ namespace Tenray.Topaz.Expressions
                         .ExecuteStatementAsync(restElement.Argument);
                     if (arg is TopazIdentifier topazIdentifier)
                     {
-                        if (DynamicHelper
-                            .TryGetDynamicMemberValue(
-                                value,
-                                topazIdentifier.Name,
-                                out var item))
+                        if (topazEngine
+                            .TryGetObjectMember(value, topazIdentifier.Name,
+                            out var item, false))
                             await callback(arg, item);
                     }
                     continue;
@@ -53,8 +52,8 @@ namespace Tenray.Topaz.Expressions
                     {
                         if (prop.Value is ArrayPattern nestedArrayPattern)
                         {
-                            if (!DynamicHelper
-                                .TryGetDynamicMemberValue(
+                            if (!topazEngine
+                                .TryGetObjectMember(
                                 value, keyString, out var nestedValue))
                                 continue;
 
@@ -67,8 +66,8 @@ namespace Tenray.Topaz.Expressions
                         }
                         else if (prop.Value is ObjectPattern nestedObjectPattern)
                         {
-                            if (!DynamicHelper
-                                .TryGetDynamicMemberValue(
+                            if (!topazEngine
+                                .TryGetObjectMember(
                                 value, keyString, out var nestedValue))
                                 continue;
                             await ProcessObjectPatternAsync(
@@ -84,8 +83,8 @@ namespace Tenray.Topaz.Expressions
                                 .ExecuteExpressionAndGetValueAsync(assignmentPattern.Right);
                         }
                     }
-                    if (DynamicHelper
-                        .TryGetDynamicMemberValue(value, keyString, out var item))
+                    if (topazEngine
+                        .TryGetObjectMember(value, keyString, out var item))
                         await callback(left, item);
                     else
                         await callback(left, defaultValue);

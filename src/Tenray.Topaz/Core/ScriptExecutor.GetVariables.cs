@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Tenray.Topaz.ErrorHandling;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Core
@@ -77,12 +78,15 @@ namespace Tenray.Topaz.Core
             var obj = GetValue(instance);
             var member = GetVariableNameOrValue(property, !computed);
 
-            if (obj is TypeWrapper typeWrapper)
+            if (obj is ITypeProxy typeProxy)
             {
-                if (typeWrapper
-                    .TryGetStaticMember(member?.ToString(), out var staticMemberValue))
+                if (typeProxy
+                    .TryGetStaticMember(
+                    member?.ToString(),
+                    out var staticMemberValue,
+                    computed))
                     return staticMemberValue;
-                return new StaticMethodCallWrapper(typeWrapper, member?.ToString());
+                return GetNullOrUndefined();
             }
 
             if (obj == null)
@@ -90,30 +94,21 @@ namespace Tenray.Topaz.Core
                 if (optional)
                     return null;
                 if (Options.AllowNullReferenceMemberAccess)
-                    return Options.NoUndefined ? null : Undefined.Value;
+                    return GetNullOrUndefined();
                 Exceptions.ThrowCannotReadPropertiesOfNull(member);
             }
             
             if (obj is Undefined)
             {
                 if (Options.AllowUndefinedReferenceMemberAccess)
-                    return Options.NoUndefined ? null : Undefined.Value;
+                    return GetNullOrUndefined();
                 Exceptions.ThrowReferenceIsUndefined(instance);
             }
 
-            if (computed)
-            {
-                if (DynamicHelper
-                    .TryGetDynamicIndexedMemberValue(obj, member, out var computedValue))
-                    return computedValue;
-                return Options.NoUndefined ? null : Undefined.Value;
-            }
-
-            var memberName = member?.ToString();
-            if (DynamicHelper
-                .TryGetDynamicMemberValue(obj, memberName, out var value))
+            if (TopazEngine.TryGetObjectMember(obj, member, out var value, computed))
                 return value;
-            return Options.NoUndefined ? null : Undefined.Value;
+
+            return GetNullOrUndefined();
         }
     }
 }

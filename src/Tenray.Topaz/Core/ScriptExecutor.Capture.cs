@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tenray.Topaz.ErrorHandling;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Core
@@ -64,12 +65,12 @@ namespace Tenray.Topaz.Core
                 return topazFunction.ScriptExecutor.GetValue(topazFunction.Execute(args));
             }
 
-            if (value is StaticMethodCallWrapper staticMethodCall)
+            if (value is IInvokable invokable)
             {
-                return staticMethodCall.CallStaticMethod(args.ToArray());
+                return invokable.Invoke(args.ToArray());
             }
 
-            return DynamicHelper.InvokeFunction(value, args);
+            return DelegateInvoker.InvokeFunction(value, args);
         }
 
         internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional)
@@ -88,12 +89,12 @@ namespace Tenray.Topaz.Core
                     await topazFunction.ExecuteAsync(args));
             }
 
-            if (value is StaticMethodCallWrapper staticMethodCall)
+            if (value is IInvokable invokable)
             {
-                return staticMethodCall.CallStaticMethod(args.ToArray());
+                return invokable.Invoke(args.ToArray());
             }
 
-            return DynamicHelper.InvokeFunction(value, args);
+            return DelegateInvoker.InvokeFunction(value, args);
         }
     }
 }

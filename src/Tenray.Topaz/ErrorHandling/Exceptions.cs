@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System;
+using System.Collections.Generic;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.ErrorHandling
@@ -24,6 +25,12 @@ namespace Tenray.Topaz.ErrorHandling
         internal static void ThrowCanNotCallConstructor(object callee)
         {
             throw new TopazException($"Constructor call on {GetArgumentString(callee)} is not defined.");
+        }
+
+        internal static void ThrowCanNotCallConstructorWithGivenArguments(string name, IReadOnlyList<object> args)
+        {
+            var argString = string.Join(",", args);
+            throw new TopazException($"{GetArgumentString(name)} constructor cannot be called with given arguments: new {name}({argString})");
         }
 
         internal static void ThrowCanNotCallStaticMethod(object callee)
@@ -69,6 +76,11 @@ namespace Tenray.Topaz.ErrorHandling
         internal static void ThrowFunctionIsNull(object callee, ScriptExecutor scope)
         {
             throw new NullReferenceException($"Function {GetArgumentString(callee)} is null.");
+        }
+
+        internal static void ThrowCannotRetrieveMemberOfType(string name, object member)
+        {
+            throw new TopazException($"Can not retrieve member '{GetArgumentString(member)}' of type {name}.");
         }
 
         internal static void ThrowVariableIsNotDefined(string name)
@@ -129,6 +141,12 @@ namespace Tenray.Topaz.ErrorHandling
         internal static void ThrowCannotDefineVariableWithGivenObject(object value)
         {
             throw new TopazException($"Internal error: Cannot define variable with given object: {GetArgumentString(value)}");
+        }
+
+        internal static void ThrowCannotFindFunctionMatchingGivenArguments(string name, IReadOnlyList<object> args)
+        {
+            var argString = string.Join(",", args);
+            throw new TopazException($"Interop error: Cannot find function matching giving arguments: {name}({argString})");
         }
     }
 }

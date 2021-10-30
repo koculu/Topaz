@@ -236,14 +236,8 @@ namespace Tenray.Topaz.Core
                     return;
                 Exceptions.ThrowReferenceIsUndefined(instance);
             }
-            
-            if (computed)
-            {
-                DynamicHelper.SetDynamicIndexedMemberValue(obj, member, value);
-                return;
-            }
-            var memberName = member.ToString();
-            DynamicHelper.SetDynamicMemberValue(obj, memberName, value);
+
+            TopazEngine.TrySetObjectMember(obj, member, value, computed);
         }
     }
 }

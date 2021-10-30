@@ -1,6 +1,7 @@
 ﻿using Esprima.Ast;
 using System.Collections;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
@@ -19,7 +20,7 @@ namespace Tenray.Topaz.Statements
             var variableDeclaration = (VariableDeclaration)left;
 
             var rightValue = scriptExecutor.ExecuteExpressionAndGetValue(right);
-            var objectKeys = DynamicHelper.GetObjectKeys(rightValue);
+            var objectKeys = DynamicObjectKeysGetter.GetObjectKeys(rightValue);
 
             if (body is not BlockStatement blockBody)
             {

@@ -1,17 +1,37 @@
 ﻿using Esprima;
 using System;
 using System.Threading.Tasks;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz
 {
     public interface ITopazEngine
     {
+        /// <summary>
+        /// Engine unique id.
+        /// </summary>
         int Id { get; }
 
+        /// <summary>
+        /// Engine Options.
+        /// </summary>
         TopazEngineOptions Options { get; set; }
         
+        /// <summary>
+        /// Global Scope.
+        /// </summary>
         ITopazEngineScope GlobalScope { get; }
+
+        /// <summary>
+        /// Object Proxy Registry.
+        /// </summary>
+        IObjectProxyRegistry ObjectProxyRegistry { get; }
+
+        /// <summary>
+        /// Default Object Proxy.
+        /// </summary>
+        IObjectProxy DefaultObjectProxy { get; }
 
         /// <summary>
         /// Executes the script in the global scope.
@@ -71,18 +91,21 @@ namespace Tenray.Topaz
         /// <returns></returns>
         Task<object> InvokeFunctionAsync(object functionObject, params object[] args);
 
-        void AddType<T>(
-            string name = null,
-            Action<CallType, object[]> argsConverter = null,
-            VariableKind variableKind = VariableKind.Const,
-            TypeOptions typeOptions = TypeOptions.Default);
+        /// <summary>
+        /// Adds a type to be used in Javascript.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <param name="typeProxy"></param>
+        void AddType<T>(string name = null, ITypeProxy typeProxy = null);
         
-        void AddType(
-            Type type,
-            string name = null,
-            Action<CallType, object[]> argsConverter = null,
-            VariableKind variableKind = VariableKind.Const,
-            TypeOptions typeOptions = TypeOptions.Default);
+        /// <summary>
+        /// Adds a type to be used in Javascript.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <param name="typeProxy"></param>
+        void AddType(Type type,string name = null, ITypeProxy typeProxy = null);
 
         /// <summary>
         /// Gets the value of the variable that is defined in the global scope.

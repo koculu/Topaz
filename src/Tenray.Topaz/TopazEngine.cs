@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz
@@ -21,12 +22,20 @@ namespace Tenray.Topaz
 
         public ITopazEngineScope GlobalScope => globalScope;
 
-        public TopazEngine(bool isThreadSafeEngine = true, 
-            TopazEngineOptions options = null)
+        public IObjectProxyRegistry ObjectProxyRegistry { get; }
+
+        public IObjectProxy DefaultObjectProxy { get; }
+
+        public TopazEngine(bool isThreadSafeEngine = true,
+            TopazEngineOptions options = null,
+            IObjectProxyRegistry objectProxyRegistry = null,
+            IObjectProxy defaultObjectProxy = null)
         {
             Id = Interlocked.Increment(ref lastTopazEngineId);
             globalScope = new ScriptExecutor(this, isThreadSafeEngine);
             Options = options ?? PresetOptions.FriendlyStyle;
+            ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
+            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null);
         }
 
         public void ExecuteScript(string code)
@@ -49,32 +58,25 @@ namespace Tenray.Topaz
             return GlobalScope.InvokeFunction(functionObject, args);
         }
 
-        public void AddType<T>(
-            string name = null,
-            Action<CallType, object[]> argsConverter = null,
-            VariableKind variableKind = VariableKind.Const,
-            TypeOptions typeOptions = TypeOptions.Default)
+
+        public void AddType<T>(string name = null, ITypeProxy typeProxy = null)
         {
-            AddType(typeof(T), name, argsConverter, variableKind, typeOptions);
+            AddType(typeof(T), name, typeProxy);
         }
 
-        public void AddType(
-            Type type,
-            string name = null,
-            Action<CallType, object[]> argsConverter = null,
-            VariableKind variableKind = VariableKind.Const,
-            TypeOptions typeOptions = TypeOptions.Default)
+        public void AddType(Type type, string name = null, ITypeProxy typeProxy = null)
         {
-            GlobalScope.SetValueAndKind(name ?? type.FullName,
-                new TypeWrapper(type, name, typeOptions, argsConverter),
-                variableKind);
+            GlobalScope.SetValueAndKind(
+                name ?? type.FullName,
+                typeProxy ?? new TypeProxyUsingReflection(type, name),
+                VariableKind.Const);
         }
 
         public object GetValue(string name)
         {
             return GlobalScope.GetValue(name);
         }
-        
+
         public void SetValue(string name, object value)
         {
             GlobalScope.SetValue(name, value);
@@ -103,6 +105,48 @@ namespace Tenray.Topaz
         public async Task<object> InvokeFunctionAsync(object functionObject, params object[] args)
         {
             return await GlobalScope.InvokeFunctionAsync(functionObject, args);
+        }
+
+        internal bool TryGetObjectMember(
+            object instance,
+            object member,
+            out object value,
+            bool isIndexedProperty = false)
+        {
+            if (instance == null)
+            {
+                value = Options.NoUndefined ? null : Undefined.Value;
+                return false;
+            }
+            if (ObjectProxyRegistry
+                    .TryGetObjectProxy(instance.GetType(), out var proxy) &&
+                proxy
+                    .TryGetObjectMember(instance, member,
+                        out value, isIndexedProperty))
+                return true;
+
+            return DefaultObjectProxy
+                .TryGetObjectMember(instance, member, out value, isIndexedProperty);
+        }
+
+        internal bool TrySetObjectMember(
+            object instance,
+            object member,
+            object value,
+            bool isIndexedProperty = false)
+        {
+            if (instance == null)
+                return false;
+
+            if (ObjectProxyRegistry
+                    .TryGetObjectProxy(instance.GetType(), out var proxy) &&
+                proxy
+                    .TrySetObjectMember(instance, member,
+                        value, isIndexedProperty))
+                return true;
+
+            return DefaultObjectProxy
+                .TrySetObjectMember(instance, member, value, isIndexedProperty);
         }
     }
 }

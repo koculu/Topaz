@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
@@ -20,7 +21,7 @@ namespace Tenray.Topaz.Statements
             var variableDeclaration = (VariableDeclaration)left;
 
             var rightValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(right);
-            var objectKeys = DynamicHelper.GetObjectKeys(rightValue);
+            var objectKeys = DynamicObjectKeysGetter.GetObjectKeys(rightValue);
 
             if (body is not BlockStatement blockBody)
             {

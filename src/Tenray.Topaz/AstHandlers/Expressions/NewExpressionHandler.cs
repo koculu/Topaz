@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
+using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Expressions
 {
@@ -13,7 +14,7 @@ namespace Tenray.Topaz.Expressions
         {
             var expr = (NewExpression)expression;
             var callee = scriptExecutor.ExecuteExpressionAndGetValue(expr.Callee);
-            if (callee is not TypeWrapper typeWrapper)
+            if (callee is not ITypeProxy typeProxy)
             {
                 Exceptions.ThrowCanNotCallConstructor(callee);
                 return null;
@@ -38,7 +39,7 @@ namespace Tenray.Topaz.Expressions
                 }
                 args.Add(scriptExecutor.ExecuteExpressionAndGetValue(arg));
             }
-            return typeWrapper.ExecuteConstructor(args.ToArray());
+            return typeProxy.CallConstructor(args.ToArray());
         }
     }
 }

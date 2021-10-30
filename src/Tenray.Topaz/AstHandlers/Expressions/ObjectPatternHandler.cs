@@ -15,6 +15,7 @@ namespace Tenray.Topaz.Expressions
             object value,
             Action<object, object> callback)
         {
+            var topazEngine = scriptExecutor.TopazEngine;
             var scope = scriptExecutor;
             var props = objectPattern.Properties;
             var len = props.Count;
@@ -26,8 +27,8 @@ namespace Tenray.Topaz.Expressions
                     var arg = scriptExecutor.ExecuteStatement(restElement.Argument);
                     if (arg is TopazIdentifier topazIdentifier)
                     {
-                        if (DynamicHelper
-                            .TryGetDynamicMemberValue(
+                        if (topazEngine
+                            .TryGetObjectMember(
                                 value,
                                 topazIdentifier.Name,
                                 out var item))
@@ -51,8 +52,8 @@ namespace Tenray.Topaz.Expressions
                     {
                         if (prop.Value is ArrayPattern nestedArrayPattern)
                         {
-                            if (!DynamicHelper
-                                .TryGetDynamicMemberValue(
+                            if (!topazEngine
+                                .TryGetObjectMember(
                                 value, keyString, out var nestedValue))
                                 continue;
 
@@ -65,8 +66,8 @@ namespace Tenray.Topaz.Expressions
                         }
                         else if (prop.Value is ObjectPattern nestedObjectPattern)
                         {
-                            if (!DynamicHelper
-                                .TryGetDynamicMemberValue(
+                            if (!topazEngine
+                                .TryGetObjectMember(
                                 value, keyString, out var nestedValue))
                                 continue;
                             ProcessObjectPattern(
@@ -82,8 +83,8 @@ namespace Tenray.Topaz.Expressions
                                 .ExecuteExpressionAndGetValue(assignmentPattern.Right);
                         }
                     }
-                    if (DynamicHelper
-                        .TryGetDynamicMemberValue(value, keyString, out var item))
+                    if (topazEngine
+                        .TryGetObjectMember(value, keyString, out var item))
                         callback(left, item);
                     else
                         callback(left, defaultValue);

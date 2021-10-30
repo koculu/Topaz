@@ -3,14 +3,18 @@
 namespace Tenray.Topaz
 {
     [Flags]
-    public enum TypeOptions
+    public enum ProxyOptions
     {
         AllowConstructor,
-        AllowStaticMethod,
+        AllowMethod,
+        AllowField,
+        AllowProperty,
         AutomaticTypeConversion,
         ConvertStringArgumentsToEnum,
         Default = 
-            AllowStaticMethod | 
+            AllowMethod |
+            AllowField |
+            AllowProperty |
             AllowConstructor |
             AutomaticTypeConversion |
             ConvertStringArgumentsToEnum
