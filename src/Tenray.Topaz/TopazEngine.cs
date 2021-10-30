@@ -142,7 +142,7 @@ namespace Tenray.Topaz
                 return false;
 
             if (ObjectProxyRegistry
-                    .TryGetObjectProxy(instance.GetType(), out var proxy) &&
+                    .TryGetObjectProxy(instance, out var proxy) &&
                 proxy
                     .TrySetObjectMember(instance, member,
                         value, isIndexedProperty))

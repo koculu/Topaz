@@ -26,10 +26,5 @@ namespace Tenray.Topaz.Interop
             }
             return proxyRegistryMap.TryGetValue(instance.GetType(), out proxy);
         }
-
-        public bool TryGetObjectProxy(Type type, out IObjectProxy proxy)
-        {
-            return proxyRegistryMap.TryGetValue(type, out proxy);
-        }
     }
 }

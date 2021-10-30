@@ -9,7 +9,5 @@ namespace Tenray.Topaz.Interop
         void RemoveObjectProxy(Type type);
 
         bool TryGetObjectProxy(object instance, out IObjectProxy proxy);
-
-        bool TryGetObjectProxy(Type type, out IObjectProxy proxy);
     }
 }
