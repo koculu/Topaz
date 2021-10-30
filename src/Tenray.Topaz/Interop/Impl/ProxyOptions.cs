@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Tenray.Topaz
+namespace Tenray.Topaz.Interop
 {
     [Flags]
     public enum ProxyOptions

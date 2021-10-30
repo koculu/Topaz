@@ -67,7 +67,7 @@ namespace Tenray.Topaz.Core
 
             if (value is IInvokable invokable)
             {
-                return invokable.Invoke(args.ToArray());
+                return invokable.Invoke(args);
             }
 
             return TopazEngine.DelegateInvoker.Invoke(value, args);
@@ -91,7 +91,7 @@ namespace Tenray.Topaz.Core
 
             if (value is IInvokable invokable)
             {
-                return invokable.Invoke(args.ToArray());
+                return invokable.Invoke(args);
             }
 
             return TopazEngine.DelegateInvoker.Invoke(value, args);

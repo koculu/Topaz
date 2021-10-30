@@ -54,7 +54,6 @@ namespace Tenray.Topaz.Interop
                     value = dic[memberName];
                     return true;
                 }
-                return false;
             }
 
             if (instance is IList list)
@@ -187,8 +186,8 @@ namespace Tenray.Topaz.Interop
                 else
                 {
                     dic.Add(memberName, value);
+                    return true;
                 }
-                return false;
             }
 
             if (instance is IList list)

@@ -14,13 +14,13 @@ namespace Tenray.Topaz.Interop
         
         public ProxyOptions ProxyOptions { get; }
 
-        readonly ConstructorInfo[] constructors;
+        readonly ConstructorInfo[] _constructors;
 
-        readonly ParameterInfo[][] constructorParameters;
+        readonly ParameterInfo[][] _constructorParameters;
         
-        readonly PropertyInfo[] indexedProperties;
+        readonly PropertyInfo[] _indexedProperties;
 
-        readonly ParameterInfo[][] indexedPropertyParameters;
+        readonly ParameterInfo[][] _indexedPropertyParameters;
 
         public TypeProxyUsingReflection(
             Type proxiedType,
@@ -33,9 +33,9 @@ namespace Tenray.Topaz.Interop
             if (proxyOptions.HasFlag(ProxyOptions.AllowConstructor) &&
                 proxyOptions.HasFlag(ProxyOptions.AutomaticTypeConversion))
             {
-                constructors = proxiedType.GetConstructors(
+                _constructors = proxiedType.GetConstructors(
                     BindingFlags.Public | BindingFlags.Instance);
-                constructorParameters = constructors
+                _constructorParameters = _constructors
                     .Select(x => x.GetParameters())
                     .ToArray();
             }
@@ -43,7 +43,7 @@ namespace Tenray.Topaz.Interop
             if (proxyOptions.HasFlag(ProxyOptions.AllowProperty))
             {
                 {
-                    (indexedProperties, indexedPropertyParameters) =
+                    (_indexedProperties, _indexedPropertyParameters) =
                         IndexedPropertyMetaGetter
                         .GetIndexedPropertiesAndParameters(
                             proxiedType,
@@ -51,10 +51,16 @@ namespace Tenray.Topaz.Interop
                 }
             }
         }
-
         public object CallConstructor(IReadOnlyList<object> args)
         {
             var type = ProxiedType;
+            if (type.IsGenericType)
+                return CallGenericConstructor(type, args);
+            return CallNonGenericConstructor(type, args);
+        }
+
+        private object CallNonGenericConstructor(Type type, IReadOnlyList<object> args)
+        {
             var options = ProxyOptions;
             if (!options.HasFlag(ProxyOptions.AllowConstructor))
                 Exceptions.ThrowCanNotCallConstructor(type);
@@ -64,7 +70,16 @@ namespace Tenray.Topaz.Interop
             
             if (!options.HasFlag(ProxyOptions.AutomaticTypeConversion))
                 return Activator.CreateInstance(type, args);
-
+            var constructors = _constructors;
+            var constructorParameters = _constructorParameters;
+            if (type != ProxiedType)
+            {
+                constructors = type.GetConstructors(
+                    BindingFlags.Public | BindingFlags.Instance);
+                constructorParameters = constructors
+                    .Select(x => x.GetParameters())
+                    .ToArray();
+            }
             var convertStringsToEnum =
                 options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
             if (ArgumentMatcher.TryFindBestMatchWithTypeConversion(
@@ -81,6 +96,14 @@ namespace Tenray.Topaz.Interop
                 .ThrowCanNotCallConstructorWithGivenArguments(
                 Name, args);
             return null;
+        }
+
+        private object CallGenericConstructor(Type type, IReadOnlyList<object> args)
+        {
+            var len = type.GetTypeInfo().GenericTypeParameters.Length;
+            var genericType = type.MakeGenericType(args.Take(len).Cast<Type>().ToArray());
+            args = args.Skip(len).ToArray();
+            return CallNonGenericConstructor(genericType, args);
         }
 
         public bool TryGetStaticMember(
@@ -101,16 +124,16 @@ namespace Tenray.Topaz.Interop
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
                     new[] { member },
-                    indexedPropertyParameters,
+                    _indexedPropertyParameters,
                     convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
-                    var indexedProperty = indexedProperties[index];
+                    var indexedProperty = _indexedProperties[index];
                     if (indexedProperty.GetMethod == null ||
                         indexedProperty.GetMethod.IsPrivate)
                         return false;
-                    value = indexedProperties[index].GetValue(null, convertedArgs);
+                    value = _indexedProperties[index].GetValue(null, convertedArgs);
                     return true;
                 }
                 return false;
@@ -184,16 +207,16 @@ namespace Tenray.Topaz.Interop
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
                     new[] { member },
-                    indexedPropertyParameters,
+                    _indexedPropertyParameters,
                     convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
-                    var indexedProperty = indexedProperties[index];
+                    var indexedProperty = _indexedProperties[index];
                     if (indexedProperty.SetMethod == null || 
                         indexedProperty.SetMethod.IsPrivate)
                         return false;
-                    indexedProperties[index].SetValue(null, value, convertedArgs);
+                    _indexedProperties[index].SetValue(null, value, convertedArgs);
                     return true;
                 }
                 return false;

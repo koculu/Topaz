@@ -40,7 +40,7 @@ namespace Tenray.Topaz.Expressions
                 }
                 args.Add(await scriptExecutor.ExecuteExpressionAndGetValueAsync(arg));
             }
-            return typeProxy.CallConstructor(args.ToArray());
+            return typeProxy.CallConstructor(args);
         }
     }
 }

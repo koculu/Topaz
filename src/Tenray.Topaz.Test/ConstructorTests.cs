@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
@@ -26,6 +27,28 @@ model.c = (typeof DateTime.Now).ToString()
                 "11/11/2021 00:00:00", model.b);
             Assert.AreEqual(
                 "System.DateTime", model.c);
+        }
+
+        [Test]
+        public void GenericTypeConstruction()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new CaseSensitiveDynamicObject();
+            model["int"] = typeof(int);
+            model["string"] = typeof(string);
+            engine.SetValue("model", model);
+            engine.AddType(typeof(Dictionary<,>), "GenericDictionary");
+
+             engine.ExecuteScript(@"
+var dic = model.dic = new GenericDictionary(model.string, model.int)
+dic.Add('hello', 1)
+dic.Add('dummy', 0)
+dic.Add('world', 2)
+dic.Remove('dummy')
+");
+            Assert.AreEqual(1, model.dic["hello"]);
+            Assert.AreEqual(2, model.dic["world"]);
+            Assert.IsFalse(model.dic.ContainsKey("dummy"));
         }
     }
 }

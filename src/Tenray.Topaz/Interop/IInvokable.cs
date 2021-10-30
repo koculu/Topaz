@@ -9,5 +9,4 @@ namespace Tenray.Topaz.Interop
     {
         object Invoke(IReadOnlyList<object> args);
     }
-    
 }
