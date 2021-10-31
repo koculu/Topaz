@@ -106,6 +106,7 @@ var model = new CaseSensitiveDynamicObject();
 engine.SetValue("model", model);
 model["int"] = typeof(int);
 model["string"] = typeof(string);
+engine.AddType(typeof(Dictionary<,>), "GenericDictionary");
 engine.AddType(typeof(Console), "Console");
 engine.ExecuteScript(@"
 var dic = new GenericDictionary(model.string, model.int)

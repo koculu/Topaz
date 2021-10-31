@@ -5,8 +5,8 @@
     <Authors>Ahmed Yasin Koculu</Authors>
     <PackageId>Topaz</PackageId>
     <Title>Topaz</Title>
-    <ProductVersion>1.0.2.0</ProductVersion>
-    <Version>1.0.2.0</Version>
+    <ProductVersion>1.0.3.0</ProductVersion>
+    <Version>1.0.3.0</Version>
     <Authors>Ahmed Yasin Koculu</Authors>
     <AssemblyTitle>Topaz</AssemblyTitle>
     <Description>Multithreaded Javascript Engine for .NET</Description>
