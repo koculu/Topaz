@@ -34,15 +34,13 @@ namespace Tenray.Topaz.Interop
                 options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
             if (!options.HasFlag(ProxyOptions.AutomaticTypeConversion))
             {
-                if (ArgumentMatcher.TryFindBestMatchWithTypeConversion(
+                if (ArgumentMatcher.TryFindBestMatch(
                    args,
                    allParameters,
-                   convertStringsToEnum,
-                   out var index,
-                   out var convertedArgs))
+                   out var index))
                 {
                     var bestMethod = methodInfos[index];
-                    return bestMethod.Invoke(instance, convertedArgs);
+                    return bestMethod.Invoke(instance, args as object[] ?? args.ToArray());
                 }
                 Exceptions
                     .ThrowCannotFindFunctionMatchingGivenArguments(
