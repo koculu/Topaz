@@ -57,7 +57,7 @@ namespace Tenray.Topaz.Statements
                 }
                 var identifier = (TopazIdentifier)await scriptExecutor.ExecuteStatementAsync(id);
                 var init = declaration.Init;
-                object value = null;
+                object value = scriptExecutor.GetNullOrUndefined();
                 if (init != null)
                 {
                     value = await scriptExecutor.ExecuteExpressionAndGetValueAsync(init);

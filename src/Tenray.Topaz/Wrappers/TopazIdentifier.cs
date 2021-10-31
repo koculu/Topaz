@@ -11,11 +11,12 @@ namespace Tenray.Topaz
         /// <summary>
         /// Local variable cache. Reuse if available.
         /// </summary>
-        (Variable variable, int scope)? Cache;
+        (Variable, int) Cache;
 
         internal TopazIdentifier(string name)
         {
             Name = name;
+            Cache = (null, -1);
         }
 
         public override string ToString()
@@ -26,11 +27,11 @@ namespace Tenray.Topaz
         internal object GetVariableValue(ScriptExecutor scriptExecutor)
         {
             var scopeId = scriptExecutor.Id;
-            var cache = Cache;
+            var (cache, scope) = Cache;
             object value = null;
-            if (cache.HasValue && cache.Value.scope == scopeId)
+            if (scope == scopeId)
             {
-                value = cache.Value.variable?.Value;
+                value = cache?.Value;
             }
             else
             {

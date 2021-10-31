@@ -10,12 +10,12 @@ namespace Esprima.Ast
     public sealed class Identifier : Expression
     {
         public readonly string? Name;
-        public object Cache;
+        internal TopazIdentifier TopazIdentifier;
 
         public Identifier(string? name) : base(Nodes.Identifier)
         {
             Name = name;
-            Cache = new TopazIdentifier(Name);
+            TopazIdentifier = new TopazIdentifier(Name);
         }
 
         public override NodeCollection ChildNodes => NodeCollection.Empty;        

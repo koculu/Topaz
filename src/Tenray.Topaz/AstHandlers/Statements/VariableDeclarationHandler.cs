@@ -55,7 +55,7 @@ namespace Tenray.Topaz.Statements
                 }
                 var identifier = (TopazIdentifier)scriptExecutor.ExecuteStatement(id);
                 var init = declaration.Init;
-                object value = null;
+                object value = scriptExecutor.GetNullOrUndefined();
                 if (init != null)
                 {
                     value = scriptExecutor.ExecuteExpressionAndGetValue(init);

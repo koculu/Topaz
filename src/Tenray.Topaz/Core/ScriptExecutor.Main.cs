@@ -188,7 +188,7 @@ namespace Tenray.Topaz.Core
             return statement.Type switch
             {
                 Nodes.Literal => LiteralHandler.Execute(this, statement),
-                Nodes.Identifier => IdentifierHandler.Execute(this, statement),
+                Nodes.Identifier => ((Identifier)statement).TopazIdentifier,
                 Nodes.AssignmentExpression => AssignmentExpressionHandler.Execute(this, statement),
                 Nodes.ArrayExpression => ArrayExpressionHandler.Execute(this, statement),
                 Nodes.BinaryExpression => BinaryExpressionHandler.Execute(this, statement),
@@ -272,7 +272,7 @@ namespace Tenray.Topaz.Core
             return statement.Type switch
             {
                 Nodes.Literal => LiteralHandler.Execute(this, statement),
-                Nodes.Identifier => IdentifierHandler.Execute(this, statement),
+                Nodes.Identifier => ((Identifier)statement).TopazIdentifier,
                 Nodes.AssignmentExpression => await AssignmentExpressionHandler.ExecuteAsync(this, statement),
                 Nodes.ArrayExpression => await ArrayExpressionHandler.ExecuteAsync(this, statement),
                 Nodes.BinaryExpression => await BinaryExpressionHandler.ExecuteAsync(this, statement),
