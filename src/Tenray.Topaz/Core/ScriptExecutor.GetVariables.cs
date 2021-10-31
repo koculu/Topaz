@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Interop;
+using Tenray.Topaz.Options;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Core
@@ -78,6 +79,20 @@ namespace Tenray.Topaz.Core
             var obj = GetValue(instance);
             var member = GetVariableNameOrValue(property, !computed);
 
+
+            if (obj == null)
+            {
+                if (optional)
+                    return null;
+                if (Options.AllowNullReferenceMemberAccess)
+                    return GetNullOrUndefined();
+                Exceptions.ThrowCannotReadPropertiesOfNull(member);
+            }
+
+            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
+                obj.GetType().Namespace.StartsWith("System.Reflection"))
+                Exceptions.ThrowReflectionSecurityException(instance, property);
+
             if (obj is ITypeProxy typeProxy)
             {
                 if (typeProxy
@@ -89,15 +104,6 @@ namespace Tenray.Topaz.Core
                 return GetNullOrUndefined();
             }
 
-            if (obj == null)
-            {
-                if (optional)
-                    return null;
-                if (Options.AllowNullReferenceMemberAccess)
-                    return GetNullOrUndefined();
-                Exceptions.ThrowCannotReadPropertiesOfNull(member);
-            }
-            
             if (obj is Undefined)
             {
                 if (Options.AllowUndefinedReferenceMemberAccess)

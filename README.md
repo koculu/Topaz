@@ -123,7 +123,7 @@ Console.WriteLine(`Final value: {dic['hello']} {dic['world']}`);
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.
 ```c#
-public interface ITypeProxy
+  public interface ITypeProxy
     {
         /// <summary>
         /// Proxied type.
@@ -179,6 +179,30 @@ public interface ITypeProxy
 
 ```
 
+### Security:
+
+Default Security level does not allow Reflection API called by script.
+Enabling it will let Script author to access everything through Reflection. eg: someValue.GetType().Assembly.GetType('System.IO.File')
+
+Enabling Reflection is not recommended.
+
+```c#
+public enum SecurityPolicy
+{
+    /// <summary>
+    /// Default and secure. Script cannot process
+    /// types in the System.Reflection namespace.
+    /// </summary>
+    DisableReflection,
+    /// <summary>
+    /// Reflection API is allowed.
+    /// Script can access everything.
+    /// Use it with caution.
+    /// </summary>
+    EnableReflection
+}
+```
+
 ### Feature List:
 * for loops
 * for .. in iterators
@@ -217,6 +241,7 @@ I appreciate any feedback and contributions to the project.
 ## Topaz Engine Options:
 
 ```c#
+  SecurityPolicy: DisableReflection | EnableReflection
   VarScopeBehavior: FunctionScope | DeclarationScope
 
   AssignmentWithoutDefinitionBehavior:

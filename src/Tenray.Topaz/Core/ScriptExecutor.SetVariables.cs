@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Tenray.Topaz.ErrorHandling;
+using Tenray.Topaz.Interop;
 using Tenray.Topaz.Options;
 using Tenray.Topaz.Utility;
 
@@ -228,6 +229,20 @@ namespace Tenray.Topaz.Core
                 if (Options.AllowNullReferenceMemberAccess)
                     return;
                 Exceptions.ThrowCannotReadPropertiesOfNull(member);
+            }
+
+            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
+               obj.GetType().Namespace.StartsWith("System.Reflection"))
+                Exceptions.ThrowReflectionSecurityException(instance, property);
+
+            if (obj is ITypeProxy typeProxy)
+            {
+                if (typeProxy
+                    .TrySetStaticMember(
+                    member?.ToString(),
+                    member,
+                    computed))
+                    return;
             }
 
             if (obj is Undefined)

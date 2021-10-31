@@ -4,6 +4,8 @@ namespace Tenray.Topaz.Options
 {
     public class TopazEngineOptions
     {
+        public SecurityPolicy SecurityPolicy { get; set; } = SecurityPolicy.DisableReflection;
+
         public ParserOptions ParserOptions { get; set; } = new()
         {
             AdaptRegexp = false,

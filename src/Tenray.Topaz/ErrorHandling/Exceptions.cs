@@ -73,6 +73,12 @@ namespace Tenray.Topaz.ErrorHandling
             throw new TopazException($"Function {GetArgumentString(callee)} is not defined.");
         }
 
+        internal static void ThrowReflectionSecurityException(object instance, object property)
+        {
+            throw new TopazException(
+                    $"Security Exception: System.Reflection type members are not accessible:\n{GetArgumentString(instance)}.{GetArgumentString(property)}");
+        }
+
         internal static void ThrowFunctionIsNull(object callee, ScriptExecutor scope)
         {
             throw new NullReferenceException($"Function {GetArgumentString(callee)} is null.");
