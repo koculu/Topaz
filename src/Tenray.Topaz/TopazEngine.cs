@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Interop;
 using Tenray.Topaz.Options;
 
@@ -121,6 +122,11 @@ namespace Tenray.Topaz
                 value = Options.NoUndefined ? null : Undefined.Value;
                 return false;
             }
+
+            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
+                instance.GetType().Namespace.StartsWith("System.Reflection"))
+                Exceptions.ThrowReflectionSecurityException(instance, member);
+
             if (ObjectProxyRegistry
                     .TryGetObjectProxy(instance.GetType(), out var proxy) &&
                 proxy
@@ -140,6 +146,10 @@ namespace Tenray.Topaz
         {
             if (instance == null)
                 return false;
+
+            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
+                instance.GetType().Namespace.StartsWith("System.Reflection"))
+                Exceptions.ThrowReflectionSecurityException(instance, member);
 
             if (ObjectProxyRegistry
                     .TryGetObjectProxy(instance, out var proxy) &&
