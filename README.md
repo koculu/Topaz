@@ -193,7 +193,7 @@ public enum SecurityPolicy
     /// Default and secure. Script cannot process
     /// types in the System.Reflection namespace.
     /// </summary>
-    DisableReflection,
+    Default,
     /// <summary>
     /// Reflection API is allowed.
     /// Script can access everything.
@@ -241,7 +241,7 @@ I appreciate any feedback and contributions to the project.
 ## Topaz Engine Options:
 
 ```c#
-  SecurityPolicy: DisableReflection | EnableReflection
+  SecurityPolicy: Default | EnableReflection
 
   VarScopeBehavior: FunctionScope | DeclarationScope
 

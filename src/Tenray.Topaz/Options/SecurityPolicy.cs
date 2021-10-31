@@ -12,7 +12,7 @@ namespace Tenray.Topaz.Options
         /// Default and secure. Script cannot process
         /// types in the System.Reflection namespace.
         /// </summary>
-        DisableReflection,
+        Default,
 
         /// <summary>
         /// Reflection API is allowed.

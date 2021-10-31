@@ -4,7 +4,7 @@ namespace Tenray.Topaz.Options
 {
     public class TopazEngineOptions
     {
-        public SecurityPolicy SecurityPolicy { get; set; } = SecurityPolicy.DisableReflection;
+        public SecurityPolicy SecurityPolicy { get; set; } = SecurityPolicy.Default;
 
         public ParserOptions ParserOptions { get; set; } = new()
         {

@@ -5,6 +5,7 @@ namespace Tenray.Topaz.Interop
     [Flags]
     public enum ProxyOptions
     {
+        None,
         AllowConstructor,
         AllowMethod,
         AllowField,
