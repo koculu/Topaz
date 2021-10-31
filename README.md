@@ -242,6 +242,7 @@ I appreciate any feedback and contributions to the project.
 
 ```c#
   SecurityPolicy: DisableReflection | EnableReflection
+
   VarScopeBehavior: FunctionScope | DeclarationScope
 
   AssignmentWithoutDefinitionBehavior:
