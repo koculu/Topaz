@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Esprima.Ast;
+using Microsoft.Collections.Extensions;
 
 namespace Esprima
 {
@@ -58,6 +59,14 @@ namespace Esprima
             public bool Strict;
 
             public HashSet<string?> LabelSet;
+            public DictionarySlim<string, Identifier> IdentifierPool = new();
+            public Identifier GetOrAddIdentifier(string name)
+            {
+                ref var identifier = ref IdentifierPool.GetOrAddValueRef(name);
+                if (identifier == null)
+                    identifier = new Identifier(name);
+                return identifier;
+            }
         }
 
         private Token _lookahead = null!;
@@ -563,7 +572,7 @@ namespace Esprima
                         TolerateUnexpectedToken(_lookahead);
                     }
 
-                    expr = MatchAsyncFunction() ? ParseFunctionExpression() : Finalize(node, new Identifier((string?) NextToken().Value));
+                    expr = MatchAsyncFunction() ? ParseFunctionExpression() : Finalize(node, _context.GetOrAddIdentifier((string?) NextToken().Value));
                     break;
 
                 case TokenType.StringLiteral:
@@ -652,7 +661,7 @@ namespace Esprima
                     }
                     else if (!_context.Strict && MatchKeyword("let"))
                     {
-                        expr = Finalize(node, new Identifier((string?) NextToken().Value));
+                        expr = Finalize(node, _context.GetOrAddIdentifier((string?) NextToken().Value));
                     }
                     else
                     {
@@ -871,7 +880,7 @@ namespace Esprima
                 case TokenType.BooleanLiteral:
                 case TokenType.NullLiteral:
                 case TokenType.Keyword:
-                    key = Finalize(node, new Identifier((string?) token.Value));
+                    key = Finalize(node, _context.GetOrAddIdentifier((string?) token.Value));
                     break;
 
                 case TokenType.Punctuator:
@@ -936,7 +945,7 @@ namespace Esprima
                     NextToken();
                 }
 
-                key = isAsync ? ParseObjectPropertyKey() : Finalize(node, new Identifier(id));
+                key = isAsync ? ParseObjectPropertyKey() : Finalize(node, _context.GetOrAddIdentifier(id));
             }
             else if (Match("*"))
             {
@@ -1422,7 +1431,7 @@ namespace Esprima
                 return ThrowUnexpectedToken<Identifier>(token);
             }
 
-            return Finalize(node, new Identifier((string?) token.Value));
+            return Finalize(node, _context.GetOrAddIdentifier((string?) token.Value));
         }
 
         private Expression ParseNewExpression()
@@ -2638,7 +2647,7 @@ namespace Esprima
             {
                 var keyToken = _lookahead;
                 key = ParseVariableIdentifier();
-                var init = Finalize(node, new Identifier((string?) keyToken.Value));
+                var init = Finalize(node, _context.GetOrAddIdentifier((string?) keyToken.Value));
                 if (Match("="))
                 {
                     parameters.Push(keyToken);
@@ -2791,7 +2800,7 @@ namespace Esprima
                 TolerateUnexpectedToken(token);
             }
 
-            return Finalize(node, new Identifier((string?) token.Value));
+            return Finalize(node, _context.GetOrAddIdentifier((string?) token.Value));
         }
 
         private VariableDeclarator ParseVariableDeclaration(ref bool inFor)
@@ -3075,7 +3084,7 @@ namespace Esprima
                             TolerateUnexpectedToken(_lookahead);
                         }
 
-                        left = Finalize(initNode, new Identifier(kindString));
+                        left = Finalize(initNode, _context.GetOrAddIdentifier(kindString));
                         NextToken();
                         right = ParseExpression();
                         init = null;

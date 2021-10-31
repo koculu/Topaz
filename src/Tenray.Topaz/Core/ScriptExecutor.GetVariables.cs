@@ -28,6 +28,27 @@ namespace Tenray.Topaz.Core
             return false;
         }
 
+        internal Variable GetVariable(string name)
+        {
+            var scope = this;
+            while (scope != null)
+            {
+                if (scope.IsThreadSafeScope)
+                {
+                    if (scope.SafeVariables.TryGetValue(name, out var variable))
+                        return variable;
+                }
+                else
+                {
+                    if (scope.UnsafeVariables.TryGetValue(name, out var variable))
+                        return variable;
+                }
+                scope = scope.ParentScope;
+            }
+
+            return null;
+        }
+
         internal object GetVariableValue(string name)
         {
             var scope = this;
@@ -59,7 +80,7 @@ namespace Tenray.Topaz.Core
             else if (value is TopazObjectWrapper objectWrapper)
                 value = objectWrapper.UnwrapObject();
             else if (value is TopazIdentifier identifier)
-                return identifier.ScriptExecutor.GetVariableValue(identifier.Name);
+                return identifier.GetVariableValue(this);
             else if (value is TopazMemberAccessor memberAccessor)
                 return memberAccessor.Execute(this);
             return value;

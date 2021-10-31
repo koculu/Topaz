@@ -2,6 +2,7 @@
 using Microsoft.Collections.Extensions;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
@@ -12,6 +13,10 @@ namespace Tenray.Topaz.Core
 {
     internal partial class ScriptExecutor
     {
+        private static int lastScriptExecutorId = 0;
+
+        public int Id { get; }
+
         /// <summary>
         /// A readonly scope prevents:
         /// - defining new variables
@@ -53,6 +58,7 @@ namespace Tenray.Topaz.Core
 
         internal ScriptExecutor(TopazEngine topazEngine, bool isThreadSafe = true)
         {
+            Id = Interlocked.Increment(ref lastScriptExecutorId);
             TopazEngine = topazEngine;
             ScopeType = ScopeType.Global;
             GlobalScope = this;
@@ -65,6 +71,7 @@ namespace Tenray.Topaz.Core
 
         internal ScriptExecutor(TopazEngine topazEngine, ScriptExecutor parentScope, bool isThreadSafe)
         {
+            Id = Interlocked.Increment(ref lastScriptExecutorId);
             TopazEngine = topazEngine;
             ScopeType = ScopeType.Custom;
             GlobalScope = this;
@@ -77,6 +84,7 @@ namespace Tenray.Topaz.Core
 
         internal ScriptExecutor(TopazEngine topazEngine, ScriptExecutor parentScope, ScopeType scope)
         {
+            Id = Interlocked.Increment(ref lastScriptExecutorId);
             TopazEngine = topazEngine;
             var globalScope = parentScope.GlobalScope;
             GlobalScope = globalScope;

@@ -8,7 +8,7 @@ namespace Tenray.Topaz.Expressions
         internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
         {
             var expr = (Identifier)expression;
-            return new TopazIdentifier(scriptExecutor, expr.Name);
+            return expr.Cache;
         }
     }
 }

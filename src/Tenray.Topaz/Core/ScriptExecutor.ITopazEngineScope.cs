@@ -36,7 +36,7 @@ namespace Tenray.Topaz.Core
         object ITopazEngineScope.InvokeFunction(string name, params object[] args)
         {
             return CallFunction(
-                new TopazIdentifier(this, name),
+                new TopazIdentifier(name),
                 args.ToArray(), false);
         }
 
@@ -88,7 +88,7 @@ namespace Tenray.Topaz.Core
         async Task<object> ITopazEngineScope.InvokeFunctionAsync(string name, params object[] args)
         {
             return await CallFunctionAsync(
-                new TopazIdentifier(this, name),
+                new TopazIdentifier(name),
                 args.ToArray(), false);
         }
 
