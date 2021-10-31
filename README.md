@@ -231,6 +231,7 @@ public enum SecurityPolicy
 * typeof operator
 * instanceof operator
 * in operator
+* top level await statement
 
 more is coming...
 
