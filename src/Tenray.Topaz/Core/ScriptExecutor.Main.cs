@@ -77,6 +77,7 @@ namespace Tenray.Topaz.Core
             TopazEngine = topazEngine;
             ScopeType = ScopeType.Custom;
             GlobalScope = this;
+            ParentScope = parentScope;
             IsThreadSafeScope = isThreadSafe;
             if (IsThreadSafeScope)
                 SafeVariables = new();
