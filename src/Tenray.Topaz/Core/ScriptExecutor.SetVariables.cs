@@ -201,7 +201,7 @@ namespace Tenray.Topaz.Core
         {
             if (reference is TopazIdentifier identifier)
             {
-                SetVariableValue(identifier.Name, value);
+                identifier.SetVariableValue(this, value);
                 return;
             }
 

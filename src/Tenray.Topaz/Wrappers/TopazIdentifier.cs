@@ -31,7 +31,7 @@ namespace Tenray.Topaz
             object value = null;
             if (scope == scopeId)
             {
-                value = cache?.Value;
+                value = cache.Value;
             }
             else
             {
@@ -51,6 +51,20 @@ namespace Tenray.Topaz
                 return null;
             }
             return value;
+        }
+
+        internal void SetVariableValue(
+            ScriptExecutor scriptExecutor,
+            object value)
+        {
+            var scopeId = scriptExecutor.Id;
+            var (cache, scope) = Cache;
+            if (scope == scopeId && !cache.IsCaptured)
+            {
+                cache.Value = value;
+                return;
+            }
+            scriptExecutor.SetVariableValue(Name, value);
         }
     }
 }
