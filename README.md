@@ -123,69 +123,78 @@ Console.WriteLine(`Final value: {dic['hello']} {dic['world']}`);
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.
 ```c#
-  public interface ITypeProxy
-    {
-        /// <summary>
-        /// Proxied type.
-        /// </summary>
-        Type ProxiedType { get; }
-
-        /// <summary>
-        ///  Calls generic or non-generic constructor.
-        /// </summary>
-        /// <param name="args">Generic and constructor arguments.</param>
-        /// <returns></returns>
-        object CallConstructor(IReadOnlyList<object> args);
-
-        /// <summary>
-        /// Returns true if a member is found, false otherwise.
-        /// Output value is member of the static type.
-        /// If static type member is a function then output value is IInvokable.
-        /// </summary>
-        /// <param name="member">Member name or indexed member value.</param>
-        /// <param name="value">Returned value.</param>
-        /// <param name="isIndexedProperty">Indicates if the member
-        /// retrieval should be through an indexed property.</param>
-        /// <returns></returns>
-        bool TryGetStaticMember(
-            object member,
-            out object value,
-            bool isIndexedProperty = false);
-
-        /// <summary>
-        /// Returns true if a member is found and updated with new value,
-        /// false otherwise.
-        /// If statyic type member is a function, returns false.
-        /// </summary>
-        /// <param name="member">Member name or indexed member value.</param>
-        /// <param name="value">New value.</param>
-        /// <param name="isIndexedProperty">Indicates if the member
-        /// retrieval should be through an indexed property.</param>
-        /// <returns></returns>
-        bool TrySetStaticMember(
-            object member,
-            object value,
-            bool isIndexedProperty = false);
-    }
-
-    public interface IObjectProxy
-    ...
-    public interface IInvokable
-    ...
-    public interface IDelegateInvoker
-    ...
-    public interface IObjectProxyRegistry
-    ...
+public interface ITypeProxy
+{
+    /// <summary>
+    /// Proxied type.
+    /// </summary>
+    Type ProxiedType { get; }
+    /// <summary>
+    ///  Calls generic or non-generic constructor.
+    /// </summary>
+    /// <param name="args">Generic and constructor arguments.</aram>
+    /// <returns></returns>
+    object CallConstructor(IReadOnlyList<object> args);
+    /// <summary>
+    /// Returns true if a member is found, false otherwise.
+    /// Output value is member of the static type.
+    /// If static type member is a function then output value is Invokable.
+    /// </summary>
+    /// <param name="member">Member name or indexed member value.</aram>
+    /// <param name="value">Returned value.</param>
+    /// <param name="isIndexedProperty">Indicates if the member
+    /// retrieval should be through an indexed property.</param>
+    /// <returns></returns>
+    bool TryGetStaticMember(
+        object member,
+        out object value,
+        bool isIndexedProperty = false);
+    /// <summary>
+    /// Returns true if a member is found and updated with new alue,
+    /// false otherwise.
+    /// If statyic type member is a function, returns false.
+    /// </summary>
+    /// <param name="member">Member name or indexed member value.</aram>
+    /// <param name="value">New value.</param>
+    /// <param name="isIndexedProperty">Indicates if the member
+    /// retrieval should be through an indexed property.</param>
+    /// <returns></returns>
+    bool TrySetStaticMember(
+        object member,
+        object value,
+        bool isIndexedProperty = false);
+}
+public interface IObjectProxy
+...
+public interface IInvokable
+...
+public interface IDelegateInvoker
+...
+public interface IObjectProxyRegistry
+...
 
 ```
 
 ### Security:
 
-Default Security level does not allow Reflection API called by script.
-Enabling it will let Script author to access everything through Reflection. eg: someValue.GetType().Assembly.GetType('System.IO.File')
-
+`SecurityPolicy` property of `ITopazEngine.Options` provides high level security aspect of the script runtime.
+Default security policy does not allow Reflection API calls in script runtime.
+Enable Reflection Policy will let script author to access everything through Reflection.
+eg:
+```javascript
+someValue
+    .GetType()
+    .Assembly
+    .GetType('System.IO.File')
+// or
+someValue
+    .GetType()
+    .GetProperty('Some Private Property Name')
+    .GetValue(someValue)
+```
 Enabling Reflection is not recommended.
 
+##### Available security policy flags:
 ```c#
 public enum SecurityPolicy
 {
@@ -202,6 +211,21 @@ public enum SecurityPolicy
     EnableReflection
 }
 ```
+##### Object member access policy:
+Object member access security policy enables individual control on object member access.
+The default implementation is a whitelist for members of `Type` class
+and allows everything for any other type.
+`Type` whitelist is important to prevent unexpected private member access.
+
+##### Custom object member access behavior:
+You can pass a custom MemberAccessPolicy implementaion to Topaz Engine
+via constructor.
+
+`ITopazEngine.MemberAccessPolicy` interface defines a method to control custom member access behavior in runtime.
+
+It is recommended to call DefaultMemberAccessPolicy in your custom `IMemberAccessPolicy` definition.
+
+Otherwise you may not get benefit of covered security leaks by Topaz.
 
 ### Feature List:
 * for loops

@@ -29,11 +29,14 @@ namespace Tenray.Topaz
 
         public IDelegateInvoker DelegateInvoker { get; }
 
+        public IMemberAccessPolicy MemberAccessPolicy { get; }
+
         public TopazEngine(bool isThreadSafeEngine = true,
             TopazEngineOptions options = null,
             IObjectProxyRegistry objectProxyRegistry = null,
             IObjectProxy defaultObjectProxy = null,
-            IDelegateInvoker delegateInvoker = null)
+            IDelegateInvoker delegateInvoker = null,
+            IMemberAccessPolicy memberAccessPolicy = null)
         {
             Id = Interlocked.Increment(ref lastTopazEngineId);
             globalScope = new ScriptExecutor(this, isThreadSafeEngine);
@@ -41,6 +44,7 @@ namespace Tenray.Topaz
             ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
             DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null);
             DelegateInvoker = delegateInvoker ?? new DelegateInvoker();
+            MemberAccessPolicy = memberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
         }
 
         public void ExecuteScript(string code)
@@ -123,9 +127,7 @@ namespace Tenray.Topaz
                 return false;
             }
 
-            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
-                instance.GetType().Namespace.StartsWith("System.Reflection"))
-                Exceptions.ThrowReflectionSecurityException(instance, member);
+            ProcessObjectMemberSecurityPolicy(instance, member);
 
             if (ObjectProxyRegistry
                     .TryGetObjectProxy(instance.GetType(), out var proxy) &&
@@ -147,9 +149,7 @@ namespace Tenray.Topaz
             if (instance == null)
                 return false;
 
-            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
-                instance.GetType().Namespace.StartsWith("System.Reflection"))
-                Exceptions.ThrowReflectionSecurityException(instance, member);
+            ProcessObjectMemberSecurityPolicy(instance, member);
 
             if (ObjectProxyRegistry
                     .TryGetObjectProxy(instance, out var proxy) &&
@@ -160,6 +160,25 @@ namespace Tenray.Topaz
 
             return DefaultObjectProxy
                 .TrySetObjectMember(instance, member, value, isIndexedProperty);
+        }
+
+        internal void ProcessObjectMemberSecurityPolicy(object obj, object member)
+        {
+            if (obj == null || member == null)
+                return;
+            var disableReflection =
+                !Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection);
+            if (disableReflection &&
+                obj.GetType().Namespace.StartsWith("System.Reflection"))
+            {
+                Exceptions.ThrowReflectionSecurityException(obj, member);
+            }
+
+            if (MemberAccessPolicy
+                .IsObjectMemberAccessAllowed(obj, member.ToString()))
+                return;
+
+            Exceptions.ThrowMemberAccessSecurityException(obj, member);
         }
     }
 }

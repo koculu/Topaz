@@ -30,7 +30,7 @@ catch(err) {
 }
 ");
             Assert.IsNull(model.a);
-            Assert.IsInstanceOf<Assembly>(model.m);
+            Assert.IsNull(model.m);
             Assert.IsInstanceOf<TopazException>(model.b);
             Assert.IsNull(model.newDateTime);
         }

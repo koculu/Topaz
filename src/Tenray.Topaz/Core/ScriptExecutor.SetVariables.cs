@@ -235,10 +235,6 @@ namespace Tenray.Topaz.Core
                 Exceptions.ThrowCannotReadPropertiesOfNull(member);
             }
 
-            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
-               obj.GetType().Namespace.StartsWith("System.Reflection"))
-                Exceptions.ThrowReflectionSecurityException(instance, property);
-
             if (obj is ITypeProxy typeProxy)
             {
                 if (typeProxy

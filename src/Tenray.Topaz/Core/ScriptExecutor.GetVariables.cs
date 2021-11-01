@@ -110,7 +110,6 @@ namespace Tenray.Topaz.Core
             var obj = GetValue(instance);
             var member = GetVariableNameOrValue(property, !computed);
 
-
             if (obj == null)
             {
                 if (optional)
@@ -119,10 +118,6 @@ namespace Tenray.Topaz.Core
                     return GetNullOrUndefined();
                 Exceptions.ThrowCannotReadPropertiesOfNull(member);
             }
-
-            if (!Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection) &&
-                obj.GetType().Namespace.StartsWith("System.Reflection"))
-                Exceptions.ThrowReflectionSecurityException(instance, property);
 
             if (obj is ITypeProxy typeProxy)
             {

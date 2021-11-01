@@ -40,6 +40,14 @@ namespace Tenray.Topaz
         IDelegateInvoker DelegateInvoker { get; }
 
         /// <summary>
+        /// Object member access policy handler.
+        /// If you override this, make sure to call 
+        /// DefaultMemberAccessPolicy methods in your
+        /// custom class.
+        /// </summary>
+        IMemberAccessPolicy MemberAccessPolicy { get; }
+
+        /// <summary>
         /// Executes the script in the global scope.
         /// </summary>
         /// <param name="code"></param>

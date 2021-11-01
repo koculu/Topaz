@@ -79,6 +79,12 @@ namespace Tenray.Topaz.ErrorHandling
                     $"Security Exception: System.Reflection type members are not accessible:\n{GetArgumentString(instance)}.{GetArgumentString(property)}");
         }
 
+        internal static void ThrowMemberAccessSecurityException(object instance, object property)
+        {
+            throw new TopazException(
+                    $"Security Exception: Member '{GetArgumentString(property)}' of {GetArgumentString(instance)} is not accessible.");
+        }
+
         internal static void ThrowFunctionIsNull(object callee, ScriptExecutor scope)
         {
             throw new NullReferenceException($"Function {GetArgumentString(callee)} is null.");
