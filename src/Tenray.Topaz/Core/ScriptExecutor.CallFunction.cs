@@ -24,7 +24,7 @@ namespace Tenray.Topaz.Core
 
             if (value is TopazFunction topazFunction)
             {
-                return topazFunction.ScriptExecutor.GetValue(topazFunction.Execute(args));
+                return topazFunction.Execute(args);
             }
 
             if (value is IInvokable invokable)
@@ -47,8 +47,7 @@ namespace Tenray.Topaz.Core
 
             if (value is TopazFunction topazFunction)
             {
-                return topazFunction.ScriptExecutor.GetValue(
-                    await topazFunction.ExecuteAsync(args));
+                return await topazFunction.ExecuteAsync(args);
             }
 
             if (value is IInvokable invokable)

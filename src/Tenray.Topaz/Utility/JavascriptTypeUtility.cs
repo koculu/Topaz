@@ -19,7 +19,7 @@ namespace Tenray.Topaz
                 return d != 0 && !double.IsNaN(d);
             if (value is string s)
                 return s == string.Empty;
-            return Convert.ToBoolean(value);
+            return true;
         }
 
         internal static bool IsObjectFalse(object value)

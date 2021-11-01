@@ -6,17 +6,32 @@ namespace Tenray.Topaz
 {
     internal class TopazIdentifier
     {
+        private class CacheEntry
+        {
+            public static CacheEntry EmptyEntry = new CacheEntry(null, -1);
+            
+            public Variable Variable;
+
+            public int ScopeId;
+
+            public CacheEntry(Variable variable, int scopeId)
+            {
+                Variable = variable;
+                ScopeId = scopeId;
+            }
+        }
+
         internal string Name { get; }
 
         /// <summary>
         /// Local variable cache. Reuse if available.
         /// </summary>
-        (Variable, int) Cache;
+        CacheEntry Cache;
 
         internal TopazIdentifier(string name)
         {
             Name = name;
-            Cache = (null, -1);
+            Cache = CacheEntry.EmptyEntry;
         }
 
         public override string ToString()
@@ -27,18 +42,18 @@ namespace Tenray.Topaz
         internal object GetVariableValue(ScriptExecutor scriptExecutor)
         {
             var scopeId = scriptExecutor.Id;
-            var (cache, scope) = Cache;
+            var cache = Cache;
             object value = null;
-            if (scope == scopeId)
+            if (cache.ScopeId == scopeId)
             {
-                value = cache.Value;
+                value = cache.Variable.Value;
             }
             else
             {
                 var variable = scriptExecutor.GetVariable(Name);
                 if (variable != null)
                 {
-                    Cache = (variable, scopeId);
+                    Cache = new CacheEntry(variable, scopeId);
                     value = variable.Value;
                 }
             }
@@ -58,10 +73,10 @@ namespace Tenray.Topaz
             object value)
         {
             var scopeId = scriptExecutor.Id;
-            var (cache, scope) = Cache;
-            if (scope == scopeId && !cache.IsCaptured)
+            var cache = Cache;
+            if (cache.ScopeId == scopeId && !cache.Variable.IsCaptured)
             {
-                cache.Value = value;
+                cache.Variable.Value = value;
                 return;
             }
             scriptExecutor.SetVariableValue(Name, value);
