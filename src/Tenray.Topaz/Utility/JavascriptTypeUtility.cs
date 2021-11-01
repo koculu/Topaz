@@ -19,6 +19,24 @@ namespace Tenray.Topaz
                 return d != 0 && !double.IsNaN(d);
             if (value is string s)
                 return s == string.Empty;
+            if (value is char c)
+                return c != 0;
+            if (value is short sh)
+                return sh != 0;
+            if (value is float f)
+                return f != 0;
+            if (value is decimal de)
+                return de != 0;
+            if (value is uint ui)
+                return ui != 0;
+            if (value is ulong ul)
+                return ul != 0;
+            if (value is ushort ush)
+                return ush != 0;
+            if (value is byte ub)
+                return ub != 0;
+            if (value is sbyte sb)
+                return sb != 0;
             return true;
         }
 

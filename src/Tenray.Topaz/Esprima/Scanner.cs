@@ -1190,7 +1190,7 @@ namespace Esprima
 
             if (long.TryParse(
                 number,
-                NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign,
+                NumberStyles.AllowExponent | NumberStyles.AllowLeadingSign,
                 CultureInfo.InvariantCulture,
                 out var l))
             {
