@@ -75,7 +75,7 @@ namespace Tenray.Topaz.Expressions
                 BinaryOperator.BitwiseXOr => (long)d1 ^ (long)d2,
                 BinaryOperator.LeftShift => (long)d1 << (int)d2,
                 BinaryOperator.RightShift => (long)d1 >> (int)d2,
-                BinaryOperator.UnsignedRightShift => (long)((ulong)d1 >> (int)d2),
+                BinaryOperator.UnsignedRightShift => (long)(((ulong)d1) >> (int)d2),
                 BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                 BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                 BinaryOperator.LogicalAnd =>
@@ -118,7 +118,7 @@ namespace Tenray.Topaz.Expressions
                         BinaryOperator.BitwiseXOr => d1 ^ d2,
                         BinaryOperator.LeftShift => d1 << (int)d2,
                         BinaryOperator.RightShift => d1 >> (int)d2,
-                        BinaryOperator.UnsignedRightShift => (long)((ulong)d1 >> (int)d2),
+                        BinaryOperator.UnsignedRightShift => (long)(((ulong)d1) >> (int)d2),
                         BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                         BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                         BinaryOperator.LogicalAnd =>
@@ -165,9 +165,9 @@ namespace Tenray.Topaz.Expressions
                         BinaryOperator.BitwiseAnd => d1 & d2,
                         BinaryOperator.BitwiseOr => d1 | d2,
                         BinaryOperator.BitwiseXOr => d1 ^ d2,
-                        BinaryOperator.LeftShift => d1 << (int)d2,
-                        BinaryOperator.RightShift => d1 >> (int)d2,
-                        BinaryOperator.UnsignedRightShift => (long)((ulong)d1 >> (int)d2),
+                        BinaryOperator.LeftShift => d1 << d2,
+                        BinaryOperator.RightShift => d1 >> d2,
+                        BinaryOperator.UnsignedRightShift => (int)(((uint)d1) >> d2),
                         BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                         BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                         BinaryOperator.LogicalAnd =>
