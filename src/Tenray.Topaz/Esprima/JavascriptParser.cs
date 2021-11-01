@@ -60,9 +60,11 @@ namespace Esprima
 
             public HashSet<string?> LabelSet;
             public DictionarySlim<string, Identifier> IdentifierPool = new();
+            public int currentScope = 0;
             public Identifier GetOrAddIdentifier(string name)
             {
-                ref var identifier = ref IdentifierPool.GetOrAddValueRef(name);
+                ref var identifier = ref IdentifierPool
+                    .GetOrAddValueRef((name ?? string.Empty) + currentScope);
                 if (identifier == null)
                     identifier = new Identifier(name);
                 return identifier;
@@ -2472,11 +2474,13 @@ namespace Esprima
             var node = CreateNode();
 
             Expect("{");
+            ++_context.currentScope;
             var block = new ArrayList<Statement>();
             while (true)
             {
                 if (Match("}"))
                 {
+                    --_context.currentScope;
                     break;
                 }
 
@@ -3693,6 +3697,7 @@ namespace Esprima
             var node = CreateNode();
 
             Expect("{");
+            ++_context.currentScope;
             var body = ParseDirectivePrologues();
 
             var previousLabelSetEmpty = _context.LabelSet.Count == 0;
@@ -3715,7 +3720,8 @@ namespace Esprima
 
                 body.Push(ParseStatementListItem());
             }
-
+            
+            --_context.currentScope;
             Expect("}");
 
             _context.LabelSet = previousLabelSet;
