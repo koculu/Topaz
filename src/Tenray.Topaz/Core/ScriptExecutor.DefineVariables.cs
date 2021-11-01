@@ -42,7 +42,7 @@ namespace Tenray.Topaz.Core
             if (string.IsNullOrWhiteSpace(name))
                 Exceptions.ThrowVariableNameCannotBeNullOrWhitespace();
 
-            if (TryGetVariableInTheScope(name, out var variable) &&
+            if (!isEmptyScope && TryGetVariableInTheScope(name, out var variable) &&
                 kind != VariableKind.Var &&
                 variable.State != VariableState.Captured)
                 Exceptions.ThrowVariableIsAlreadyDefined(name, this);

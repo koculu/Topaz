@@ -33,6 +33,11 @@ namespace Tenray.Topaz.Core
             var scope = this;
             while (scope != null)
             {
+                if (scope.isEmptyScope)
+                {
+                    scope = scope.ParentScope;
+                    continue;
+                }
                 if (scope.IsThreadSafeScope)
                 {
                     if (scope.SafeVariables.TryGetValue(name, out var variable))
@@ -54,6 +59,11 @@ namespace Tenray.Topaz.Core
             var scope = this;
             while (scope != null)
             {
+                if (scope.isEmptyScope)
+                {
+                    scope = scope.ParentScope;
+                    continue;
+                }
                 if (scope.IsThreadSafeScope)
                 {
                     if (scope.SafeVariables.TryGetValue(name, out var variable))
@@ -75,14 +85,14 @@ namespace Tenray.Topaz.Core
 
         internal object GetValue(object value)
         {
-            if (value is TopazArrayWrapper arrayWrapper)
-                value = arrayWrapper.UnwrapArray();
-            else if (value is TopazObjectWrapper objectWrapper)
-                value = objectWrapper.UnwrapObject();
-            else if (value is TopazIdentifier identifier)
+            if (value is TopazIdentifier identifier)
                 return identifier.GetVariableValue(this);
             else if (value is TopazMemberAccessor memberAccessor)
                 return memberAccessor.Execute(this);
+            else if(value is TopazArrayWrapper arrayWrapper)
+                value = arrayWrapper.UnwrapArray();
+            else if (value is TopazObjectWrapper objectWrapper)
+                value = objectWrapper.UnwrapObject();
             return value;
         }
 

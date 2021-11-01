@@ -28,7 +28,7 @@ namespace Tenray.Topaz.Expressions
         private static object ExecuteUnaryOperator(
             ScriptExecutor scriptExecutor,
             UnaryOperator unaryOperator,
-            dynamic value)
+            object value)
         {
             if (unaryOperator == UnaryOperator.TypeOf)
             {
@@ -74,21 +74,22 @@ namespace Tenray.Topaz.Expressions
             }
 
             var isNumeric = JavascriptTypeUtility.IsNumeric(value);
-            if (value is bool)
+            if (value is bool b)
             {
-                value = value ? 1 : 0;
+                value = b ? 1 : 0;
                 isNumeric = true;
             }
             if (!isNumeric)
                 return double.NaN;
 
+            dynamic dynValue = value;
             return unaryOperator switch
             {
-                UnaryOperator.Plus => value,
-                UnaryOperator.Minus => -value,
-                UnaryOperator.BitwiseNot => ~(long)value,
-                UnaryOperator.Increment => ++value,
-                UnaryOperator.Decrement => --value,
+                UnaryOperator.Plus => dynValue,
+                UnaryOperator.Minus => -dynValue,
+                UnaryOperator.BitwiseNot => ~(long)dynValue,
+                UnaryOperator.Increment => ++dynValue,
+                UnaryOperator.Decrement => --dynValue,
                 _ => null,
             };
         }

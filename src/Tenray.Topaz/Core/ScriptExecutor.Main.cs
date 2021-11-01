@@ -17,6 +17,8 @@ namespace Tenray.Topaz.Core
 
         public int Id { get; }
 
+        private bool isEmptyScope = true;
+
         /// <summary>
         /// A readonly scope prevents:
         /// - defining new variables

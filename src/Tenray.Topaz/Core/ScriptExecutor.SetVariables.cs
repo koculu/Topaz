@@ -28,20 +28,21 @@ namespace Tenray.Topaz.Core
             }
             if (scope.IsReadOnly)
                 Exceptions.ThrowScopeIsReadOnly(scope, name);
-            
+
             if (scope.IsThreadSafeScope)
             {
                 if (scope.IsFrozen &&
                     !scope.SafeVariables.ContainsKey(name))
                     Exceptions.ThrowScopeIsFrozen(scope, name);
 
+                scope.isEmptyScope = false;
                 scope.SafeVariables.AddOrUpdate(name,
                     new Variable(value, kind),
                     (key, old) =>
                     {
                         old.SetValueAndKind(value, kind, state);
                         return old;
-                    });
+                    });                
             }
             else
             {
@@ -49,10 +50,11 @@ namespace Tenray.Topaz.Core
                     !scope.UnsafeVariables.ContainsKey(name))
                     Exceptions.ThrowScopeIsFrozen(scope, name);
 
+                scope.isEmptyScope = false;
                 ref var refVar = ref scope.UnsafeVariables.GetOrAddValueRef(name);
                 if (refVar == null)
                     refVar = new Variable(value, kind, state);
-                else 
+                else
                     refVar.SetValueAndKind(value, kind, state);
             }
         }
@@ -81,6 +83,7 @@ namespace Tenray.Topaz.Core
                 if (scope.IsFrozen &&
                     !scope.SafeVariables.ContainsKey(name))
                     Exceptions.ThrowScopeIsFrozen(scope, name);
+                scope.isEmptyScope = false;
                 scope.SafeVariables.AddOrUpdate(name,
                     new Variable(value, defaultKind)
                     {
@@ -101,6 +104,7 @@ namespace Tenray.Topaz.Core
                     !scope.UnsafeVariables.ContainsKey(name))
                     Exceptions.ThrowScopeIsFrozen(scope, name);
 
+                scope.isEmptyScope = false;
                 ref var refVar = ref scope.UnsafeVariables.GetOrAddValueRef(name);
                 if (refVar == null)
                     refVar = new Variable(value, defaultKind);

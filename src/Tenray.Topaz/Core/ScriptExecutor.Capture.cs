@@ -18,6 +18,10 @@ namespace Tenray.Topaz.Core
             var capturedKeys = new HashSet<string>();
             while (scope != null)
             {
+                if (scope.isEmptyScope)
+                {
+                    scope = scope.ParentScope;
+                }
                 KeyValuePair<string, Variable>[] list;
                 if (scope.IsThreadSafeScope)
                     list = scope.SafeVariables.ToArray();

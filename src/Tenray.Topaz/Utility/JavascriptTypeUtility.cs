@@ -5,30 +5,26 @@ namespace Tenray.Topaz
 {
     internal class JavascriptTypeUtility
     {
-        internal static bool IsObjectTrue(dynamic value)
+        internal static bool IsObjectTrue(object value)
         {
             if (value == null)
                 return false;
-            if (value is bool b && !b)
-                return false;
-            if (IsNumeric(value) && (value == 0 || double.IsNaN(Convert.ToDouble(value))))
-                return false;
-            if (value is string s && s == string.Empty)
-                return false;
-            return true;
+            if (value is bool b)
+                return b;
+            if (value is int i)
+                return i != 0;
+            if (value is long l)
+                return l != 0;
+            if (value is double d)
+                return d != 0 && !double.IsNaN(d);
+            if (value is string s)
+                return s == string.Empty;
+            return Convert.ToBoolean(value);
         }
 
-        internal static bool IsObjectFalse(dynamic value)
+        internal static bool IsObjectFalse(object value)
         {
-            if (value == null)
-                return true;
-            if (value is bool b && b)
-                return true;
-            if (IsNumeric(value) && (value == 0 || double.IsNaN(Convert.ToDouble(value))))
-                return true;
-            if (value is string s && s == string.Empty)
-                return true;
-            return false;
+            return !IsObjectTrue(value);
         }
 
         internal static bool HasObjectMethod(object value, string method)
