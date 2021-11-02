@@ -14,6 +14,11 @@ namespace Tenray.Topaz
         int Id { get; }
 
         /// <summary>
+        /// True if engine is thread-safe, false otherwise.
+        /// </summary>
+        bool IsThreadSafe { get; }
+
+        /// <summary>
         /// Engine Options.
         /// </summary>
         TopazEngineOptions Options { get; set; }

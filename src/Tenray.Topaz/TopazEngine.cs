@@ -19,6 +19,8 @@ namespace Tenray.Topaz
 
         public int Id { get; }
 
+        public bool IsThreadSafe => GlobalScope.IsThreadSafe;
+
         public TopazEngineOptions Options { get; set; }
 
         public ITopazEngineScope GlobalScope => globalScope;

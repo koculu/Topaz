@@ -9,6 +9,8 @@ namespace Tenray.Topaz.Core
 {
     internal partial class ScriptExecutor : ITopazEngineScope
     {
+        bool ITopazEngineScope.IsThreadSafe => IsThreadSafeScope;
+
         bool ITopazEngineScope.IsReadOnly { get => IsReadOnly; set => IsReadOnly = value; }
 
         bool ITopazEngineScope.IsFrozen { get => IsFrozen; set => IsFrozen = value; }

@@ -60,9 +60,18 @@ namespace Tenray.Topaz.Interop
             {
                 if (isIndexedProperty)
                 {
-                    if (member is long d)
+                    if (member is double d)
                     {
-                        value = list[(int)d];
+                        var converted = Convert.ToInt32(d);
+                        if (converted == d)
+                        {
+                            value = list[converted];
+                            return true;
+                        }
+                    }
+                    else if (member is long l)
+                    {
+                        value = list[(int)l];
                         return true;
                     }
                     else if (member is int i)
@@ -70,12 +79,6 @@ namespace Tenray.Topaz.Interop
                         value = list[i];
                         return true;
                     }
-                }
-
-                if (memberName == "length")
-                {
-                    value = list.Count;
-                    return true;
                 }
             }
 
@@ -163,7 +166,7 @@ namespace Tenray.Topaz.Interop
             if (methods.Length == 0)
                 return false;
             value = new InvokerUsingReflection(
-                instance.ToString(), methods, instance, options);
+                memberName, methods, instance, options);
             return true;
         }
 
@@ -194,9 +197,18 @@ namespace Tenray.Topaz.Interop
             {
                 if (isIndexedProperty)
                 {
-                    if (member is long d)
+                    if (member is double d)
                     {
-                        list[(int)d] = value;
+                        var converted = Convert.ToInt32(d);
+                        if (converted == d)
+                        {
+                            list[converted] = value;
+                            return true;
+                        }
+                    }
+                    else if (member is long l)
+                    {
+                        list[(int)l] = value;
                         return true;
                     }
                     else if (member is int i)

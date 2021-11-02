@@ -5,6 +5,11 @@ namespace Tenray.Topaz
     public interface ITopazEngineScope
     {
         /// <summary>
+        /// True if scope is thread-safe, false otherwise.
+        /// </summary>
+        bool IsThreadSafe { get; }
+
+        /// <summary>
         /// A readonly scope prevents:
         /// - defining new variables
         /// - deleting variables

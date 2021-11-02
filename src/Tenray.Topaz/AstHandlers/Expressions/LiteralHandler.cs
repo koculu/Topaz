@@ -22,6 +22,8 @@ namespace Tenray.Topaz.Expressions
 
             if (literal.TokenType == TokenType.NumericLiteral)
             {
+                if (scriptExecutor.Options.LiteralNumbersAreConvertedToDouble)
+                    return literal.NumericValue;
                 var value = literal.Value;
                 if (value is long d)
                 {
