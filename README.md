@@ -284,4 +284,30 @@ I appreciate any feedback and contributions to the project.
   AllowUndefinedReferenceMemberAccess: true | false
 
   AllowUndefinedReferenceAccess: true | false
+
+  LiteralNumbersAreConvertedToDouble: true | false
 ```
+
+## Notes on arithmetic operations and literal types:
+
+C# is a type-safe language but Javascript is not.
+Topaz encapsulates the differences by using auto type conversions.
+If you want explicit behavior for literal number evaluation, you can use `LiteralNumbersAreConvertedToDouble` option.
+
+If option is true, literal numbers that are written in script are converted to double,
+if option is false the type is deducted by string itself.
+
+Deducted type can be int, long or double.
+For other types use type conversion functions in your script.
+For example: 3 => int, 2147483648 => long, 3.2 => double
+
+Default option value is true.
+
+Topaz binary/unary operations do automatic type conversion in case of overflow using checked statements which is slow when it overflows.
+
+Hence, it is a good decision to define everything as double to avoid unexpected slow overflow exceptions in binary/unary operations unless you need exact integer arithmetics for non-floating values.
+
+On the other hand, operations on int, long are faster than double.
+If you want to explicitly handle numeric literal type in the script runtime you may choose false.
+
+Both options have pros and cons, choose wisely.

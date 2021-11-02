@@ -33,7 +33,7 @@ namespace Tenray.Topaz.Options
         public bool AllowUndefinedReferenceAccess { get; set; } = true;
 
         /// <summary>
-        /// C# is a type safe language but Javascript is not.
+        /// C# is a type-safe language but Javascript is not.
         /// Topaz encapsulates the differences by using auto type conversions.
         /// If you want explicit behavior for literal number evaluation,
         /// you can use this option.
@@ -55,7 +55,7 @@ namespace Tenray.Topaz.Options
         /// in binary/unary operations unless you need exact integer arithmetics
         /// for non-floating values.
         /// 
-        /// On the other hand, operations on int, long is faster than double.
+        /// On the other hand, operations on int, long are faster than double.
         /// If you want to explicitly handle numeric literal type in the script runtime
         /// you may choose false.
         /// 
