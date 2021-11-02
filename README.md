@@ -286,28 +286,48 @@ I appreciate any feedback and contributions to the project.
   AllowUndefinedReferenceAccess: true | false
 
   LiteralNumbersAreConvertedToDouble: true | false
+
+  NumbersAreConvertedToDoubleInArithmeticOperations:  true | false
 ```
 
 ## Notes on arithmetic operations and literal types:
 
 C# is a type-safe language but Javascript is not.
 Topaz encapsulates the differences by using auto type conversions.
+
+##### Literal Numbers:
 If you want explicit behavior for literal number evaluation, you can use `LiteralNumbersAreConvertedToDouble` option.
 
-If option is true, literal numbers that are written in script are converted to double,
-if option is false the type is deducted by string itself.
+If `LiteralNumbersAreConvertedToDouble` option is true, literal numbers that are written in script are converted to double,
+if `LiteralNumbersAreConvertedToDouble` option is false the type is deducted by string itself.
 
 Deducted type can be int, long or double.
 For other types use type conversion functions in your script.
 For example: 3 => int, 2147483648 => long, 3.2 => double
 
-Default option value is true.
+Default `LiteralNumbersAreConvertedToDouble` option value is false.
 
-Topaz binary/unary operations do automatic type conversion in case of overflow using checked statements which is slow when it overflows.
+##### Arithmetic Operations:
+If `NumbersAreConvertedToDoubleInArithmeticOperations` option is true, arithmetic operations will change numeric value types to double to avoid overflows.
 
-Hence, it is a good decision to define everything as double to avoid unexpected slow overflow exceptions in binary/unary operations unless you need exact integer arithmetics for non-floating values.
+If `NumbersAreConvertedToDoubleInArithmeticOperations` option is false, the types stay same only if no overflow happens.
+
+If overflow happens, types are converted in the following order:
+int -> long -> double
+
+That operation is slow because of thrown overflow exception.
+Especially, if so many overflow exceptions occurs in a loop, execution duration increases dramatically.
+
+Default `NumbersAreConvertedToDoubleInArithmeticOperations` option value is true.
+
+If `NumbersAreConvertedToDoubleInArithmeticOperations` option is set to false, binary/unary operations do automatic type conversion in case of overflow using checked statements which is slow when it overflows.
+
+Hence, it is a good decision to convert everything to double to avoid unexpected slow overflow exceptions in binary/unary operations unless you need exact integer arithmetics for non-floating values.
+
+If you don't want to automatically change value types in arithmetic operations, disable this option and keep in mind that your script should care about slowness if there are too many overflows.
 
 On the other hand, operations on int, long are faster than double.
-If you want to explicitly handle numeric literal type in the script runtime you may choose false.
+If you want to explicitly handle number types in the script runtime
+you may choose false.
 
 Both options have pros and cons, choose wisely.

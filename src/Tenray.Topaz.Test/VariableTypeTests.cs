@@ -10,6 +10,7 @@ namespace Tenray.Topaz.Test
         {
             var engine = new TopazEngine();
             engine.Options.LiteralNumbersAreConvertedToDouble = false;
+            engine.Options.NumbersAreConvertedToDoubleInArithmeticOperations = false;
             dynamic model = new CaseSensitiveDynamicObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"

@@ -42,7 +42,7 @@ namespace Tenray.Topaz.Expressions
             {
                 return !JavascriptTypeUtility.IsObjectTrue(value);
             }
-            
+
             // Try to avoid dynamic calls for known types
             if (value is double d1)
             {
@@ -50,27 +50,20 @@ namespace Tenray.Topaz.Expressions
             }
             else if (value is long d2)
             {
-                return unaryOperator switch
-                {
-                    UnaryOperator.Plus => d2,
-                    UnaryOperator.Minus => -d2,
-                    UnaryOperator.BitwiseNot => ~(long)d2,
-                    UnaryOperator.Increment => ++d2,
-                    UnaryOperator.Decrement => --d2,
-                    _ => null,
-                };
+                var convert =
+                    scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
+                return convert ?
+                    ProcessUnaryOpDouble(unaryOperator, d2) :
+                    ProcessUnaryOpLong(unaryOperator, d2);
             }
             else if (value is int d3)
             {
-                return unaryOperator switch
-                {
-                    UnaryOperator.Plus => d3,
-                    UnaryOperator.Minus => -d3,
-                    UnaryOperator.BitwiseNot => ~d3,
-                    UnaryOperator.Increment => ++d3,
-                    UnaryOperator.Decrement => --d3,
-                    _ => null,
-                };
+
+                var convert =
+                    scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
+                return convert ?
+                    ProcessUnaryOpDouble(unaryOperator, d3) :
+                    ProcessUnaryOpInt(unaryOperator, d3);
             }
 
             var isNumeric = JavascriptTypeUtility.IsNumeric(value);
@@ -117,7 +110,7 @@ namespace Tenray.Topaz.Expressions
                     {
                         UnaryOperator.Plus => d1,
                         UnaryOperator.Minus => -d1,
-                        UnaryOperator.BitwiseNot => ~(long)d1,
+                        UnaryOperator.BitwiseNot => ~d1,
                         UnaryOperator.Increment => ++d1,
                         UnaryOperator.Decrement => --d1,
                         _ => null,
@@ -140,7 +133,7 @@ namespace Tenray.Topaz.Expressions
                     {
                         UnaryOperator.Plus => d1,
                         UnaryOperator.Minus => -d1,
-                        UnaryOperator.BitwiseNot => ~(long)d1,
+                        UnaryOperator.BitwiseNot => ~d1,
                         UnaryOperator.Increment => ++d1,
                         UnaryOperator.Decrement => --d1,
                         _ => null,
