@@ -42,7 +42,10 @@ namespace Tenray.Topaz
         {
             Id = Interlocked.Increment(ref lastTopazEngineId);
             globalScope = new ScriptExecutor(this, isThreadSafeEngine);
+            var optionsHasGiven = options != null;
             Options = options ?? PresetOptions.FriendlyStyle;
+            if (!optionsHasGiven)
+                Options.UseThreadSafeJsObjects = isThreadSafeEngine;
             ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
             DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null);
             DelegateInvoker = delegateInvoker ?? new DelegateInvoker();

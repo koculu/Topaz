@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System.Collections;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Utility;
@@ -13,7 +14,10 @@ namespace Tenray.Topaz.Expressions
             var expr = (ObjectExpression)expression;
             var props = expr.Properties;
             var len = props.Count;
-            var obj = new CaseSensitiveDynamicObject();
+            var engine = scriptExecutor.TopazEngine;
+            var obj = engine.IsThreadSafe ?
+                    (IJsObject)new ConcurrentJsObject(engine) :
+                    new JsObject(engine);
             for (var i = 0; i < len; ++i)
             {
                 var item = props[i];
@@ -28,7 +32,7 @@ namespace Tenray.Topaz.Expressions
                     {
                         var value =
                             scriptExecutor.ExecuteStatement(prop.Value);
-                        obj[key.ToString()] = value;
+                        obj.SetValue(key, value);
                     }
                 }
                 else if (item is SpreadElement spreadElement)
@@ -42,7 +46,7 @@ namespace Tenray.Topaz.Expressions
                     var j = 0;
                     foreach (var el in enumerable)
                     {
-                        obj[j.ToString()] = el;
+                        obj.SetValue(j, el);
                         ++j;
                     }
                     continue;

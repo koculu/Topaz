@@ -100,7 +100,8 @@ namespace Tenray.Topaz.Expressions
             if (value is string)
                 return "string";
             if (value is TopazFunction ||
-                value is IInvokable)
+                value is IInvokable || 
+                value is Delegate)
                 return "function";
             return "object";
         }

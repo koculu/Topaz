@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Interop
 {
@@ -11,6 +12,11 @@ namespace Tenray.Topaz.Interop
         {
             if (obj == null)
                 return Array.Empty<object>();
+
+            if (obj is IJsObject jsObject)
+            {
+                return jsObject.GetObjectKeys();
+            }
 
             if (obj is IList list)
                 return Enumerable.Range(0, list.Count);

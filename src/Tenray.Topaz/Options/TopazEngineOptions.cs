@@ -80,5 +80,13 @@ namespace Tenray.Topaz.Options
         /// Both options have pros and cons, choose wisely.
         /// </summary>
         public bool NumbersAreConvertedToDoubleInArithmeticOperations { get; set; } = true;
+
+        /// <summary>
+        /// If true and TopazEngine is thread safe,
+        /// If false, javascript objects are not thread safe.
+        /// 
+        /// Default value is based on Engine's thread safety.
+        /// </summary>
+        public bool UseThreadSafeJsObjects { get; set; }
     }
 }

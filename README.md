@@ -288,6 +288,8 @@ I appreciate any feedback and contributions to the project.
   LiteralNumbersAreConvertedToDouble: true | false
 
   NumbersAreConvertedToDoubleInArithmeticOperations:  true | false
+
+  UseThreadSafeJsObjects: true | false
 ```
 
 ## Notes on arithmetic operations and literal types:

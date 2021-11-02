@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Tenray.Topaz.API;
 using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Interop
@@ -46,12 +47,17 @@ namespace Tenray.Topaz.Interop
             value = null;
             if (instance == null)
                 return false;
-            var memberName = member as string;
-            if (instance is IDictionary dic && memberName != null)
+
+            if (instance is IJsObject jsObject)
             {
-                if (dic.Contains(memberName))
+                return jsObject.TryGetValue(member, out value);
+            }
+
+            if (instance is IDictionary dic)
+            {
+                if (dic.Contains(member))
                 {
-                    value = dic[memberName];
+                    value = dic[member];
                     return true;
                 }
             }
@@ -123,6 +129,7 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
+            var memberName = member as string;
             if (memberName == null)
             {
                 // member should be a string if we have reached this far.
@@ -178,17 +185,23 @@ namespace Tenray.Topaz.Interop
         {
             if (instance == null)
                 return false;
-            var memberName = member as string;
-            if (instance is IDictionary dic && memberName != null)
+
+            if (instance is IJsObject jsObject)
             {
-                if (dic.Contains(memberName))
+                jsObject.SetValue(member, value);
+                return true;
+            }
+
+            if (instance is IDictionary dic)
+            {
+                if (dic.Contains(member))
                 {
-                    dic[memberName] = value;
+                    dic[member] = value;
                     return true;
                 }
                 else
                 {
-                    dic.Add(memberName, value);
+                    dic.Add(member, value);
                     return true;
                 }
             }
@@ -260,6 +273,7 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
+            var memberName = member as string;
             if (memberName == null)
             {
                 // member should be a string if we have reached this far.

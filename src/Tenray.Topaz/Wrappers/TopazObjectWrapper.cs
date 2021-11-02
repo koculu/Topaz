@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz
@@ -8,32 +9,26 @@ namespace Tenray.Topaz
     {
         internal ScriptExecutor ScriptExecutor { get; }
 
-        internal IDictionary<string, object> WrappedObject { get; }
+        internal IJsObject WrappedObject { get; }
 
         bool isUnwrapped = false;
 
         internal TopazObjectWrapper(
             ScriptExecutor scriptExecutor,
-            IDictionary<string, object> value)
+            IJsObject value)
         {
             ScriptExecutor = scriptExecutor;
             WrappedObject = value;
         }
 
-        internal IDictionary<string, object> UnwrapObject()
+        internal IJsObject UnwrapObject()
         {
             var value = WrappedObject;
             if (value == null)
                 return null;
             if (isUnwrapped)
                 return value;
-            var keys = value.Keys.ToArray();
-            var len = keys.Length;
-            for (var i = 0; i < len; ++i)
-            {
-                var key = keys[i];
-                value[key] = ScriptExecutor.GetValue(value[key]);
-            }
+            value.UnwrapObject(ScriptExecutor);
             isUnwrapped = true;
             return value;
         }
