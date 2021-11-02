@@ -44,9 +44,9 @@ namespace Tenray.Topaz.API
 
         public bool IsReadOnly => false;
 
-        public ICollection Keys => ((IDictionary)dictionary).Keys;
+        public ICollection Keys => throw new NotSupportedException();
 
-        public ICollection Values => ((IDictionary)dictionary).Keys;
+        public ICollection Values => throw new NotSupportedException();
 
         public int Count => dictionary.Count;
 
@@ -69,29 +69,31 @@ namespace Tenray.Topaz.API
 
         public bool Contains(object key)
         {
+            if (key == null)
+                key = NullString;
             return dictionary.ContainsKey(key.ToString());
         }
 
         public void CopyTo(Array array, int index)
         {
-            ((IDictionary)dictionary).CopyTo(array, index);
+            throw new NotSupportedException();
         }
 
         public IDictionaryEnumerator GetEnumerator()
         {
-            return ((IDictionary)dictionary).GetEnumerator();
+            throw new NotSupportedException();
         }
 
         public void Remove(object key)
         {
             if (key == null)
                 key = NullString;
-            ((IDictionary)dictionary).Remove(key.ToString());
+            dictionary.Remove(key.ToString());
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IDictionary)dictionary).GetEnumerator();
+            return dictionary.GetEnumerator();
         }
 
         public bool TryGetValue(object key, out object value)
@@ -106,12 +108,18 @@ namespace Tenray.Topaz.API
 
         public IEnumerable GetObjectKeys()
         {
-            return Keys;
+            var keys = new string[dictionary.Count];
+            var i = 0;
+            foreach (var key in dictionary)
+            {
+                keys[i++] = key.Key;
+            }
+            return keys.AsEnumerable();
         }
 
         void IJsObject.UnwrapObject(ScriptExecutor scriptExecutor)
         {
-            foreach (var key in Keys)
+            foreach (var key in GetObjectKeys())
             {
                 var skey = (string)key;
                 ref var entry = ref dictionary.GetOrAddValueRef(skey);

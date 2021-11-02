@@ -71,6 +71,8 @@ namespace Tenray.Topaz.API
 
         public bool Contains(object key)
         {
+            if (key == null)
+                key = NullString;
             return dictionary.ContainsKey(key.ToString());
         }
 

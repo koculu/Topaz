@@ -26,7 +26,7 @@ namespace Tenray.Topaz.API
 
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return ((IDictionary)dictionary).Keys.Cast<string>();
+            return GetObjectKeys().Cast<string>();
         }
 
         private static object ConvertJsonElementToNetObject(object value)
