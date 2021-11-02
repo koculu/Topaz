@@ -218,7 +218,7 @@ and allows everything for any other type.
 `Type` whitelist is important to prevent unexpected private member access.
 
 ##### Custom object member access behavior:
-You can pass a custom MemberAccessPolicy implementaion to Topaz Engine
+You can pass a custom MemberAccessPolicy implementation to Topaz Engine
 via constructor.
 
 `ITopazEngine.MemberAccessPolicy` interface defines a method to control custom member access behavior in runtime.
@@ -299,6 +299,7 @@ Topaz encapsulates the differences by using auto type conversions.
 If you want explicit behavior for literal number evaluation, you can use `LiteralNumbersAreConvertedToDouble` option.
 
 If `LiteralNumbersAreConvertedToDouble` option is true, literal numbers that are written in script are converted to double,
+
 if `LiteralNumbersAreConvertedToDouble` option is false the type is deducted by string itself.
 
 Deducted type can be int, long or double.
