@@ -1,6 +1,7 @@
 ﻿using Esprima.Ast;
 using System;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Expressions
 {
@@ -32,9 +33,7 @@ namespace Tenray.Topaz.Expressions
         {
             if (unaryOperator == UnaryOperator.TypeOf)
             {
-                if (value is Undefined)
-                    return value.ToString();
-                return value?.GetType();
+                return ProcessTypeof(value);
             }
             if (unaryOperator == UnaryOperator.Void)
                 return scriptExecutor.GetNullOrUndefined();
@@ -85,6 +84,25 @@ namespace Tenray.Topaz.Expressions
                 UnaryOperator.Decrement => --dynValue,
                 _ => null,
             };
+        }
+
+        private static object ProcessTypeof(object value)
+        {
+            // https://262.ecma-international.org/5.1/#sec-10.6
+            if (value == null)
+                return "object";
+            if (value is Undefined)
+                return value.ToString();
+            if (value is bool)
+                return "boolean";
+            if (JavascriptTypeUtility.IsNumeric(value))
+                return "number";
+            if (value is string)
+                return "string";
+            if (value is TopazFunction ||
+                value is IInvokable)
+                return "function";
+            return "object";
         }
 
         private static object ProcessUnaryOpDouble(UnaryOperator unaryOperator, double d1)
