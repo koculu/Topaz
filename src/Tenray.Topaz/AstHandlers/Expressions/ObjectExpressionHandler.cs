@@ -15,9 +15,9 @@ namespace Tenray.Topaz.Expressions
             var props = expr.Properties;
             var len = props.Count;
             var engine = scriptExecutor.TopazEngine;
-            var obj = engine.IsThreadSafe ?
-                    (IJsObject)new ConcurrentJsObject(engine) :
-                    new JsObject(engine);
+            var obj = engine.Options.UseThreadSafeJsObjects ?
+                    (IJsObject)new ConcurrentJsObject() :
+                    new JsObject();
             for (var i = 0; i < len; ++i)
             {
                 var item = props[i];

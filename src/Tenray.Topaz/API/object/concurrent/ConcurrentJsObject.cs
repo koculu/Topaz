@@ -15,13 +15,6 @@ namespace Tenray.Topaz.API
 
         readonly ConcurrentDictionary<string, object> dictionary = new();
 
-        readonly bool noUndefined;
-
-        public ConcurrentJsObject(TopazEngine engine)
-        {
-            noUndefined = engine.Options.NoUndefined;
-        }
-
         public object this[object key] { 
             get
             {
@@ -29,15 +22,13 @@ namespace Tenray.Topaz.API
                     key = NullString;
                 if (dictionary.TryGetValue(key.ToString(), out var value))
                     return value;
-                return NullOrUndefined;
+                return Undefined.Value;
             }
             set 
             {
-                Add(key, ConvertJsonElementToNetObject(value));
+                Add(key, ConvertJsonElementToConcurrentJsObject(value));
             }
         }
-
-        private Undefined NullOrUndefined => noUndefined ? null : Undefined.Value;
 
         public bool IsFixedSize => false;
 
@@ -45,7 +36,7 @@ namespace Tenray.Topaz.API
 
         public ICollection Keys => ((IDictionary)dictionary).Keys;
 
-        public ICollection Values => ((IDictionary)dictionary).Keys;
+        public ICollection Values => ((IDictionary)dictionary).Values;
 
         public int Count => dictionary.Count;
 
@@ -104,7 +95,7 @@ namespace Tenray.Topaz.API
                 key = NullString;
             if (dictionary.TryGetValue(key.ToString(), out value))
                 return true;
-            value = NullOrUndefined;
+            value = Undefined.Value;
             return false;
         }
 

@@ -1,11 +1,7 @@
 ﻿using Microsoft.Collections.Extensions;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
@@ -16,37 +12,49 @@ namespace Tenray.Topaz.API
 
         readonly DictionarySlim<string, object> dictionary = new();
 
-        readonly bool noUndefined;
-
-        public JsObject(TopazEngine engine)
-        {
-            noUndefined = engine.Options.NoUndefined;
-        }
-
-        public object this[object key] { 
+        public object this[object key] {
             get
             {
                 if (key == null)
                     key = NullString;
                 if (dictionary.TryGetValue(key.ToString(), out var value))
                     return value;
-                return NullOrUndefined;
+                return Undefined.Value;
             }
-            set 
+            set
             {
-                Add(key, ConvertJsonElementToNetObject(value));
+                Add(key, ConvertJsonElementToJsObject(value));
             }
         }
-
-        private Undefined NullOrUndefined => noUndefined ? null : Undefined.Value;
 
         public bool IsFixedSize => false;
 
         public bool IsReadOnly => false;
 
-        public ICollection Keys => throw new NotSupportedException();
+        public ICollection Keys
+        {
+            get
+            {
+                var list = new List<object>(dictionary.Count);
+                var keys = GetObjectKeys();
+                foreach (var key in keys)
+                {
+                    list.Add(key);
+                }
+                return list;
+            }
+        }
 
-        public ICollection Values => throw new NotSupportedException();
+        public ICollection Values {
+            get {
+                var list = new List<object>(dictionary.Count);
+                foreach (var entry in dictionary)
+                {
+                    list.Add(entry.Value);
+                }
+                return list;
+            }
+        }
 
         public int Count => dictionary.Count;
 
@@ -102,24 +110,22 @@ namespace Tenray.Topaz.API
                 key = NullString;
             if (dictionary.TryGetValue(key.ToString(), out value))
                 return true;
-            value = NullOrUndefined;
+            value = Undefined.Value;
             return false;
         }
 
         public IEnumerable GetObjectKeys()
         {
-            var keys = new string[dictionary.Count];
-            var i = 0;
             foreach (var key in dictionary)
             {
-                keys[i++] = key.Key;
+                yield return key.Key;
             }
-            return keys.AsEnumerable();
         }
 
         void IJsObject.UnwrapObject(ScriptExecutor scriptExecutor)
         {
-            foreach (var key in GetObjectKeys())
+            var keys = GetObjectKeys();
+            foreach (var key in keys)
             {
                 var skey = (string)key;
                 ref var entry = ref dictionary.GetOrAddValueRef(skey);

@@ -2,11 +2,11 @@
 using System.Text.Json;
 using Tenray.Topaz.Utility;
 
-namespace Tenray.Topaz
+namespace Tenray.Topaz.API
 {
-    internal static class JsonElementObjectConverter
+    internal static class JsonElementJsObjectConverter
     {
-        internal static object ConvertToNetObject(this JsonElement jsonElement)
+        internal static object ConvertToJsObject(this JsonElement jsonElement)
         {
             var kind = jsonElement.ValueKind;
 
@@ -31,17 +31,17 @@ namespace Tenray.Topaz
             var i = 0;
             foreach (var el in jsonElement.EnumerateArray())
             {
-                result[i++] = el.ConvertToNetObject();
+                result[i++] = el.ConvertToJsObject();
             }
             return result;
         }
 
-        private static CaseSensitiveDynamicObject ConvertToDynamicObject(JsonElement jsonElement)
+        private static JsObject ConvertToDynamicObject(JsonElement jsonElement)
         {
-            var obj = new CaseSensitiveDynamicObject();
+            var obj = new JsObject();
             foreach (var el in jsonElement.EnumerateObject())
             {
-                obj[el.Name] = ConvertToNetObject(el.Value);
+                obj[el.Name] = ConvertToJsObject(el.Value);
             }
             return obj;
         }

@@ -29,12 +29,12 @@ namespace Tenray.Topaz.API
             return dictionary.Keys.ToArray();
         }
 
-        private static object ConvertJsonElementToNetObject(object value)
+        private static object ConvertJsonElementToConcurrentJsObject(object value)
         {
             if (value == null)
                 return null;
             if (value is JsonElement jsonElement)
-                return jsonElement.ConvertToNetObject();
+                return jsonElement.ConvertToConcurrentJsObject();
             return value;
         }
     }
