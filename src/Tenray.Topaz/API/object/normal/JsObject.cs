@@ -84,12 +84,12 @@ namespace Tenray.Topaz.API
 
         public void CopyTo(Array array, int index)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Tenray.Topaz.API.JsObject: CopyTo(Array,index) method is not supported.");
         }
 
         public IDictionaryEnumerator GetEnumerator()
         {
-            throw new NotSupportedException();
+            return dictionary.GetEnumerator();
         }
 
         public void Remove(object key)
@@ -137,7 +137,7 @@ namespace Tenray.Topaz.API
         {
             if (key == null)
                 key = NullString;
-            var skey = (string)key;
+            var skey = key.ToString();
             ref var entry = ref dictionary.GetOrAddValueRef(skey);
             entry = value;
         }

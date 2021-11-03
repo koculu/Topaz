@@ -106,9 +106,11 @@ namespace Tenray.Topaz.API
 
         void IJsObject.UnwrapObject(ScriptExecutor scriptExecutor)
         {
-            foreach (var key in dictionary.Keys.ToArray())
+            var keys = dictionary.Keys.ToArray();
+            foreach (var key in keys)
             {
-                dictionary[key] = scriptExecutor.GetValue(dictionary[key]);
+                var value = scriptExecutor.GetValue(dictionary[key]);
+                Add(key, value);
             }
         }
 

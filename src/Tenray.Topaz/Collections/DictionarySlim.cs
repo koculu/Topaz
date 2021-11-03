@@ -309,7 +309,7 @@ namespace Microsoft.Collections.Extensions
         /// <summary>
         /// Enumerator
         /// </summary>
-        public struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
+        public struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>, IDictionaryEnumerator
         {
             private readonly DictionarySlim<TKey, TValue> _dictionary;
             private int _index;
@@ -352,6 +352,12 @@ namespace Microsoft.Collections.Extensions
             public KeyValuePair<TKey, TValue> Current => _current;
 
             object IEnumerator.Current => _current;
+
+            public DictionaryEntry Entry => new DictionaryEntry(Key, Value);
+
+            public object Key => Current.Key;
+
+            public object Value => Current.Value;
 
             void IEnumerator.Reset()
             {
