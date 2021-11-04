@@ -248,8 +248,47 @@ namespace Tenray.Topaz.API
                 SetMaximumArraySize(arraylist, value);
             }
         }
+        public IJsArray map(Func<object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            result.length = len;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i]);
+                result[i] = item;
+            }
+            return result;
+        }
 
-        public void map() { }
+        public IJsArray map(Func<object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            result.length = len;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i], i);
+                result[i] = item;
+            }
+            return result;
+        }
+
+        public IJsArray map(Func<object, object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            result.length = len;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i], i, this);
+                result[i] = item;
+            }
+            return result;
+        }
 
         public object pop() {
             var last = arraylist.Count - 1;

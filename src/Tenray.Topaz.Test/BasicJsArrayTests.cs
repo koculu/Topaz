@@ -428,5 +428,27 @@ model.sum = sum
 ");
             Assert.AreEqual(15, model.sum);
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayMap(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+model.a = [1, 2, 3, 4, 5].map((x) => x * 2)
+model.b = [1, 2, 3, 4, 5].map((x,i) => x * i)
+model.c = [1, 2, 3, 4, 5].map((x,i,arr) => arr[i] * x * i)
+");
+            Assert.AreEqual("[2,4,6,8,10]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[0,2,6,12,20]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+            Assert.AreEqual("[0,4,18,48,100]",
+                JsonSerializer.Serialize<JsArray>(model.c));
+        }
     }
 }
