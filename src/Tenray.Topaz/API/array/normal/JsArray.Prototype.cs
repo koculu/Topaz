@@ -280,13 +280,40 @@ namespace Tenray.Topaz.API
             return -1;
         }
 
-        public void flat() { }
+        public IJsArray flat() {
+            return flat(1);
+        }
+
+        private void processFlat(JsArray dest, JsArray array, int depth)
+        {
+            var list = array.arraylist;
+            var len = list.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (depth > 0 && item is JsArray inner)
+                {
+                    processFlat(dest, inner, depth - 1);
+                }
+                else
+                {
+                    dest.AddArrayValue(item);
+                }
+            }
+        }
+
+        public IJsArray flat(int depth) {
+            var result = new JsArray();
+            processFlat(result, this, depth);
+            return result;
+        }
+
         public void flatMap() { }
 
         public void forEach(Action<object> callbackFn)
         {
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for(var i = 0; i < len; ++i)
             {
                 callbackFn(list[i]);
@@ -296,7 +323,7 @@ namespace Tenray.Topaz.API
         public void forEach(Action<object, object> callbackFn)
         {
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for (var i = 0; i < len; ++i)
             {
                 callbackFn(list[i], i);
@@ -306,7 +333,7 @@ namespace Tenray.Topaz.API
         public void forEach(Action<object, object, object> callbackFn)
         {
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for (var i = 0; i < len; ++i)
             {
                 callbackFn(list[i], i, this);
