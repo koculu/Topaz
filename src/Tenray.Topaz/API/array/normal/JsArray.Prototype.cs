@@ -197,6 +197,46 @@ namespace Tenray.Topaz.API
         }
 
         public void find() { }
+
+        public object find(Func<object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item)))
+                    return item;
+            }
+            return Undefined.Value;
+        }
+
+        public object find(Func<object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
+                    return item;
+            }
+            return Undefined.Value;
+        }
+
+        public object find(Func<object, object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
+                    return item;
+            }
+            return Undefined.Value;
+        }
+
         public void findIndex() { }
         public void flat() { }
         public void flatMap() { }

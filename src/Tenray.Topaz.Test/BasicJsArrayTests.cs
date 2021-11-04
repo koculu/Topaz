@@ -540,5 +540,43 @@ model.a = array.filter(isPrime)
             Assert.AreEqual("[2,3,5,7,11,13]",
                 JsonSerializer.Serialize<JsArray>(model.a));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayFind(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const inventory = [
+  {name: 'apples', quantity: 2},
+  {name: 'bananas', quantity: 0},
+  {name: 'cherries', quantity: 5}
+];
+
+function isCherries(fruit) {
+  return fruit.name === 'cherries';
+}
+function isCherries2(fruit, index) {
+  return inventory[index].name === 'cherries';
+}
+function isCherries3(fruit, index, arr) {
+  return arr[index].name === 'cherries';
+}
+
+model.a = inventory.find(isCherries)
+model.b = inventory.find(isCherries2)
+model.c = inventory.find(isCherries3)
+");
+            Assert.AreEqual("cherries", model.a.name);
+            Assert.AreEqual(5, model.a.quantity);
+            Assert.AreEqual("cherries", model.b.name);
+            Assert.AreEqual(5, model.b.quantity);
+            Assert.AreEqual("cherries", model.c.name);
+            Assert.AreEqual(5, model.c.quantity);
+        }
     }
 }
