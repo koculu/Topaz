@@ -160,5 +160,10 @@ namespace Tenray.Topaz.ErrorHandling
             var argString = string.Join(", ", args);
             throw new TopazException($"Interop error: Cannot find function matching giving arguments:\n{name}({argString})");
         }
+
+        internal static void ThrowReduceOfEmptyArrayWithNoInitialValue()
+        {
+            throw new TopazException("TypeError: Reduce of empty array with no initial value");
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.API
 {
@@ -248,6 +249,7 @@ namespace Tenray.Topaz.API
                 SetMaximumArraySize(arraylist, value);
             }
         }
+
         public IJsArray map(Func<object, object> callbackFn)
         {
             var list = arraylist;
@@ -305,7 +307,88 @@ namespace Tenray.Topaz.API
             return arraylist.Count;
         }
 
-        public void reduce() { }
+        public object reduce(Func<object, object, object> callbackFn)
+        {
+            return reduce(callbackFn, Undefined.Value);
+        }
+
+        public object reduce(Func<object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = 0;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                start = 1;
+                previousValue = list[0];
+            }
+            for (var i = start; i < len; ++i)
+            {
+                previousValue = callbackFn(previousValue, list[i]);
+            }
+            return previousValue;
+        }
+
+        public object reduce(Func<object, object, object, object> callbackFn)
+        {
+            return reduce(callbackFn, Undefined.Value);
+        }
+
+        public object reduce(Func<object, object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = 0;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                start = 1;
+                previousValue = list[0];
+            }
+            for (var i = start; i < len; ++i)
+            {
+                previousValue = callbackFn(
+                    previousValue,
+                    list[i],
+                    i);
+            }
+            return previousValue;
+        }
+
+        public object reduce(Func<object, object, object, object, object> callbackFn)
+        {
+            return reduce(callbackFn, Undefined.Value);
+        }
+
+        public object reduce(Func<object, object, object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = 0;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                start = 1;
+                previousValue = list[0];
+            }
+            for (var i = start; i < len; ++i)
+            {
+                previousValue = callbackFn(
+                    previousValue,
+                    list[i],
+                    i,
+                    this);
+            }
+            return previousValue;
+        }
+
         public void reduceRight() { }
         
         public IJsArray reverse() {

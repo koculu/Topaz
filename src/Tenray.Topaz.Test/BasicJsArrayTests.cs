@@ -450,5 +450,37 @@ model.c = [1, 2, 3, 4, 5].map((x,i,arr) => arr[i] * x * i)
             Assert.AreEqual("[0,4,18,48,100]",
                 JsonSerializer.Serialize<JsArray>(model.c));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayReduce(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const getMax = (a, b) => a > b ? a : b;
+model.a = [1, 100].reduce(getMax, 50);
+model.b = [50].reduce(getMax, 10);
+// callback is invoked once for element at index 1
+model.c = [1, 100].reduce(getMax);
+model.d = [50].reduce(getMax);
+model.e = [].reduce(getMax, 1);
+try {
+    [].reduce(getMax);
+}
+catch(err) {
+    model.f = err;
+}
+");
+            Assert.AreEqual(100, model.a);
+            Assert.AreEqual(50, model.b);
+            Assert.AreEqual(100, model.c);
+            Assert.AreEqual(50, model.d);
+            Assert.AreEqual(1, model.e);
+            Assert.AreEqual(typeof(TopazException), model.f.InnerException.GetType());
+        }
     }
 }

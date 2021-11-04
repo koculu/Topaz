@@ -123,7 +123,7 @@ namespace Tenray.Topaz
 
             if (result is Expression expr)
                 return scriptExecutor.ExecuteExpressionAndGetValue(expr);
-            return result;
+            return scriptExecutor.GetValue(result);
         }
 
         public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args)
@@ -204,7 +204,7 @@ namespace Tenray.Topaz
 
             if (result is Expression expr)
                 return await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr);
-            return result;
+            return scriptExecutor.GetValue(result);
         }
 
         public TypeCode GetTypeCode()
