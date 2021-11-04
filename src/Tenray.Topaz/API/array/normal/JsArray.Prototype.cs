@@ -389,8 +389,88 @@ namespace Tenray.Topaz.API
             return previousValue;
         }
 
-        public void reduceRight() { }
-        
+        public object reduceRight(Func<object, object, object> callbackFn)
+        {
+            return reduceRight(callbackFn, Undefined.Value);
+        }
+
+        public object reduceRight(Func<object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = len - 1;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                previousValue = list[start];
+                --start;
+            }
+            for (var i = start; i >= 0; --i)
+            {
+                previousValue = callbackFn(previousValue, list[i]);
+            }
+            return previousValue;
+        }
+
+        public object reduceRight(Func<object, object, object, object> callbackFn)
+        {
+            return reduceRight(callbackFn, Undefined.Value);
+        }
+
+        public object reduceRight(Func<object, object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = len - 1;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                previousValue = list[start];
+                --start;
+            }
+            for (var i = start; i >= 0; --i)
+            {
+                previousValue = callbackFn(
+                    previousValue,
+                    list[i],
+                    i);
+            }
+            return previousValue;
+        }
+
+        public object reduceRight(Func<object, object, object, object, object> callbackFn)
+        {
+            return reduceRight(callbackFn, Undefined.Value);
+        }
+
+        public object reduceRight(Func<object, object, object, object, object> callbackFn, object initialValue)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            object previousValue = initialValue;
+            var start = len - 1;
+            if (initialValue == Undefined.Value)
+            {
+                if (len == 0)
+                    Exceptions.ThrowReduceOfEmptyArrayWithNoInitialValue();
+                previousValue = list[start];
+                --start;
+            }
+            for (var i = start; i >= 0; --i)
+            {
+                previousValue = callbackFn(
+                    previousValue,
+                    list[i],
+                    i,
+                    this);
+            }
+            return previousValue;
+        }
+
         public IJsArray reverse() {
             var len = arraylist.Count;
             var mid = len / 2;

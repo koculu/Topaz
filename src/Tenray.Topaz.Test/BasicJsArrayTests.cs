@@ -482,5 +482,37 @@ catch(err) {
             Assert.AreEqual(1, model.e);
             Assert.AreEqual(typeof(TopazException), model.f.InnerException.GetType());
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayReduceRight(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const getMax = (a, b) => a > b ? a : b;
+model.a = [1, 100].reduceRight(getMax, 50);
+model.b = [50].reduceRight(getMax, 10);
+// callback is invoked once for element at index 0
+model.c = [1, 100].reduceRight(getMax);
+model.d = [50].reduceRight(getMax);
+model.e = [].reduceRight(getMax, 1);
+try {
+    [].reduceRight(getMax);
+}
+catch(err) {
+    model.f = err;
+}
+");
+            Assert.AreEqual(100, model.a);
+            Assert.AreEqual(50, model.b);
+            Assert.AreEqual(100, model.c);
+            Assert.AreEqual(50, model.d);
+            Assert.AreEqual(1, model.e);
+            Assert.AreEqual(typeof(TopazException), model.f.InnerException.GetType());
+        }
     }
 }
