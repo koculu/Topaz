@@ -57,8 +57,6 @@ for (var i = 0.0 ; i < 10000000; ++i) {
         {
             var jintEngine = new Engine();
             jintEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
-            jintEngine.SetValue("log", new Action<object>(Console.WriteLine));
-            jintEngine.SetValue("model", new List<int>());
             jintEngine.Execute(Code);
         }
 

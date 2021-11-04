@@ -1,21 +1,48 @@
 # Topaz
 Multithreaded Javascript Engine for .NET
 
+[![Download](https://img.shields.io/badge/download-Topaz-blue)](https://www.nuget.org/packages/Topaz/)
+
 ## Why another Javascript Engine?
 
-1. Existing Javascript Engines run scripts in single-thread. That is acceptable for desktop environments but not pleasing for server-side execution.
+1. Existing Javascript Engines run scripts in single-thread. That is acceptable for desktop environments but not pleasing for server-side execution. Topaz does not restrict multi-thread usage.
 
-2. I needed fine control in the language syntax and rules for my project.
-I could not find any engine that provides such features.
-For example, I want to turn off 'undefined' and treat all as 'null', or I want 'assignments without variable kind' scope to be in declaration scope but not in the global scope.
+2. Syntax level options which simplify script language is necessary to ease scripting support of many products.
+With Topaz, you can turn off 'undefined', control asignment scope of variables and disable null reference exceptions without breaking the flow and much more.
 
-3. Another important need is to turn off every null pointer exception including function call or member access of a 'null' object. These will ease the life of non-experienced developers to write scripts without putting everywhere question marks (condition operator, null checks) or getting annoying errors.
+3. The scripting engine should be lock free.
 
-4. I want minimum amount of overhead, no C++ marshaling and minimum memory usage.
+4. It must be blazingly fast in both execution and load.
 
-5. Lock free and high-performance implementation.
+## What kind of engine Topaz is?
+Topaz does not convert Javascript code into machine code directly. It parses abstract syntax tree and executes instructions in the .NET runtime.
+
+The Javascript engines like v8 convert Javascript into machine code.
+There are v8 wrappers like [ClearScript](https://github.com/microsoft/ClearScript) to make use of v8 functionality in the .NET runtime.
+
+However, that process requires marshaling and locking and also requires a lot of resources. In server-side applications using such an engine does not perform well.
+
+Topaz will not be a JS engine that supports entire Javascript runtime features, but it will be a lightweight script interpreter which provides the full power of .NET runtime into Javascript language.
+
+Is it faster (compilation + execution together) than Roslyn? For many use cases yes it is. Even you can write a template engine faster than Razor using Topaz with ease.
+
+Topaz Runtime is actually the .NET runtime, therefore every variable written in the script is a .NET type. if you write `const a = 3.0` the `a` variable's type will be double and so on.
+
+## What will be supported in Topaz?
+
+Topaz will support everything that will make benefits.
+
+For example, Javascript Array is very useful for data operations and it is fully implemented and available.
+
+The latest Javascript Language features are mostly implemented.
+
+For now, there is no class support, because it is not intended to write big applications using Topaz. In the future, we might add class support.
 
 ## How is the performance of Topaz?
+
+Overall Topaz's performance is better than Clearscript and Jint's. However, there might be different scenarios in which some slower engines can perform better.
+
+## Story of Topaz
 I have developed a server-side HTML page rendering application using Razor. After a while, I have realized Razor was not flexible for my microservice architecture and business needs.
 
 Then I switched to [ClearScript](https://github.com/microsoft/ClearScript). Clearscript uses Google's v8 C++ engine using locks and marshaling everywhere which slows down things. I barely served 100 requests per second on my desktop. Moreover, memory consumption was too high: 800 MB for a couple of page rendering.
