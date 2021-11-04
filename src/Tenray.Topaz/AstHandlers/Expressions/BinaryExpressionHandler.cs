@@ -62,9 +62,10 @@ namespace Tenray.Topaz.Expressions
                         ExecuteBinaryOperatorInt(@operator, d3, p3);
             }
 
-            if (left is Undefined)
+            var undefined = Undefined.Value;
+            if (left == undefined)
                 left = null;
-            if (right is Undefined)
+            if (right == undefined)
                 right = null;
             return ExecuteBinaryOperator(scriptExecutor, expr.Operator, left, right);
         }

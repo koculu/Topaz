@@ -116,6 +116,11 @@ namespace Tenray.Topaz.API
 
         public IEnumerable GetObjectKeys()
         {
+            return GetObjectKeysInternal();
+        }
+
+        protected virtual IEnumerable GetObjectKeysInternal()
+        {
             foreach (var key in dictionary)
             {
                 yield return key.Key;

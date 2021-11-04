@@ -50,6 +50,33 @@ namespace Tenray.Topaz.Interop
 
             if (instance is IJsObject jsObject)
             {
+                if (isIndexedProperty && instance is IJsArray jsArray)
+                {
+                    if (member is double d)
+                    {
+                        var converted = Convert.ToInt32(d);
+                        if (converted == d)
+                        {
+                            jsArray.TryGetArrayValue(converted, out value);
+                            return true;
+                        }
+                    }
+                    else if (member is long l)
+                    {
+                        jsArray.TryGetArrayValue((int)l, out value);
+                        return true;
+                    }
+                    else if (member is int i)
+                    {
+                        jsArray.TryGetArrayValue(i, out value);
+                        return true;
+                    }
+                    else if (member is string s && int.TryParse(s, out var parsedIndex))
+                    {
+                        jsArray.TryGetArrayValue(parsedIndex, out value);
+                        return true;
+                    }
+                }
                 return jsObject.TryGetValue(member, out value);
             }
 
@@ -188,6 +215,33 @@ namespace Tenray.Topaz.Interop
 
             if (instance is IJsObject jsObject)
             {
+                if (isIndexedProperty && instance is IJsArray jsArray)
+                {
+                    if (member is double d)
+                    {
+                        var converted = Convert.ToInt32(d);
+                        if (converted == d)
+                        {
+                            jsArray.SetArrayValue(converted, value);
+                            return true;
+                        }
+                    }
+                    else if (member is long l)
+                    {
+                        jsArray.SetArrayValue((int)l, value);
+                        return true;
+                    }
+                    else if (member is int i)
+                    {
+                        jsArray.SetArrayValue(i, value);
+                        return true;
+                    }
+                    else if (member is string s && int.TryParse(s, out var parsedIndex))
+                    {
+                        jsArray.SetArrayValue(parsedIndex, value);
+                        return true;
+                    }
+                }
                 jsObject.SetValue(member, value);
                 return true;
             }

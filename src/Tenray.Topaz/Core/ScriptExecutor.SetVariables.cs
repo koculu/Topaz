@@ -245,7 +245,7 @@ namespace Tenray.Topaz.Core
                     return;
             }
 
-            if (obj is Undefined)
+            if (obj == Undefined.Value)
             {
                 if (Options.AllowUndefinedReferenceMemberAccess)
                     return;

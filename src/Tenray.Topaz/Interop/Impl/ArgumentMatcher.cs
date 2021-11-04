@@ -77,7 +77,7 @@ namespace Tenray.Topaz.Interop
                     var arg = argsCopy[j];
                     var p = parameters[j];
                     var ptype = p.ParameterType;
-                    if (arg is Undefined)
+                    if (arg == Undefined.Value)
                     {
                         argsCopy[i] = null;
                         arg = null;

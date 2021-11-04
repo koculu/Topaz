@@ -1,7 +1,4 @@
-﻿using Esprima;
-using System;
-using System.Linq;
-using System.Reflection;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
@@ -139,10 +136,21 @@ namespace Tenray.Topaz
                 proxy
                     .TryGetObjectMember(instance, member,
                         out value, isIndexedProperty))
+            {
+                FinalizeValue(ref value);
                 return true;
+            }
 
-            return DefaultObjectProxy
+            var result = DefaultObjectProxy
                 .TryGetObjectMember(instance, member, out value, isIndexedProperty);
+            FinalizeValue(ref value);
+            return result;
+        }
+
+        private void FinalizeValue(ref object value)
+        {
+            if (Options.NoUndefined && value == Undefined.Value)
+                value = null;
         }
 
         internal bool TrySetObjectMember(

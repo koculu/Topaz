@@ -101,6 +101,11 @@ namespace Tenray.Topaz.API
 
         public IEnumerable GetObjectKeys()
         {
+            return GetObjectKeysInternal();
+        }
+
+        protected virtual IEnumerable GetObjectKeysInternal()
+        {
             return Keys;
         }
 

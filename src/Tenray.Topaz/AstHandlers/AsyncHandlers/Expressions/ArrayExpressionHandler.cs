@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 
@@ -15,9 +16,9 @@ namespace Tenray.Topaz.Expressions
             var expr = (ArrayExpression)expression;
             var elements = expr.Elements;
             var len = elements.Count;
+            var result = new JsArray();
             if (len == 0)
-                return Array.Empty<object>();
-            var result = new List<object>(len);
+                return result;
             for (var i = 0; i < len; ++i)
             {
                 var el = elements[i];
@@ -31,11 +32,11 @@ namespace Tenray.Topaz.Expressions
                     }
                     foreach (var item in enumerable)
                     {
-                        result.Add(item);
+                        result.AddArrayValue(item);
                     }
                     continue;
                 }
-                result.Add(await scriptExecutor.ExecuteStatementAsync(el));
+                result.AddArrayValue(await scriptExecutor.ExecuteStatementAsync(el));
             }
             // We cannot return salt array or
             // unwrap here as assignment pattern can define variables

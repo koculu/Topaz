@@ -93,6 +93,7 @@ namespace Tenray.Topaz.Core
                 value = arrayWrapper.UnwrapArray();
             else if (value is TopazObjectWrapper objectWrapper)
                 value = objectWrapper.UnwrapObject();
+
             return value;
         }
 
@@ -130,7 +131,7 @@ namespace Tenray.Topaz.Core
                 return GetNullOrUndefined();
             }
 
-            if (obj is Undefined)
+            if (obj == Undefined.Value)
             {
                 if (Options.AllowUndefinedReferenceMemberAccess)
                     return GetNullOrUndefined();

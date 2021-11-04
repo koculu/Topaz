@@ -37,6 +37,7 @@ model.p1 = a.p1
 ");
             var js = model.js;
             var json = JsonSerializer.Serialize((object)js);
+            Console.WriteLine(json);
             dynamic deserialized;
             if (useThreadSafeJsObjects)
             {
