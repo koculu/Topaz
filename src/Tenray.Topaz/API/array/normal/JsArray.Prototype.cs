@@ -37,11 +37,42 @@ namespace Tenray.Topaz.API
         public void flat() { }
         public void flatMap() { }
         public void forEach() { }
-        public void includes() { }
-        public void indexOf() { }
+
+        public bool includes(object item)
+        {
+            return indexOf(item) != -1;
+        }
+
+        public bool includes(object item, int fromIndex)
+        {
+            return indexOf(item, fromIndex) != -1;
+        }
+
+        public int indexOf(object item) {
+            return arraylist.IndexOf(item);
+        }
+
+        public int indexOf(object item, int fromIndex)
+        {
+            if (fromIndex < 0)
+                fromIndex = arraylist.Count + fromIndex;
+            return arraylist.IndexOf(item, fromIndex);
+        }
+
         public void join() { }
         public void keys() { }
-        public void lastIndexOf() { }
+
+        public int lastIndexOf(object item)
+        {
+            return arraylist.LastIndexOf(item);
+        }
+
+        public int lastIndexOf(object item, int fromIndex)
+        {
+            if (fromIndex < 0)
+                fromIndex = arraylist.Count + fromIndex;
+            return arraylist.LastIndexOf(item, fromIndex);
+        }
 
         public int length
         {

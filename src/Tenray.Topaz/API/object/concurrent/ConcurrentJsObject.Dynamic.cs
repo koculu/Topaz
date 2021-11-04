@@ -29,7 +29,7 @@ namespace Tenray.Topaz.API
             return dictionary.Keys.ToArray();
         }
 
-        private static object ConvertJsonElementToConcurrentJsObject(object value)
+        protected static object ConvertJsonElementToConcurrentJsObject(object value)
         {
             if (value == null)
                 return null;

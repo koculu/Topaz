@@ -58,9 +58,9 @@ model.r = model.p.shift()
             Assert.AreEqual(null, model.x);
             Assert.AreEqual(3, model.y);
             Assert.AreEqual("[\"abc\",null,null,3,4,5,6]", 
-                JsonSerializer.Serialize<JsArray>((model.z)));
+                JsonSerializer.Serialize<JsArray>(model.z));
             Assert.AreEqual("[null,null,3,4,5,6,7,8,9,10,12,13]",
-                JsonSerializer.Serialize<JsArray>((model.p)));
+                JsonSerializer.Serialize<JsArray>(model.p));
             Assert.AreEqual(11, model.q);
             Assert.AreEqual("abc", model.r);
 
@@ -72,13 +72,109 @@ model.p.shift()
 ");
             Assert.AreEqual(12, model.u);
             Assert.AreEqual("[3,4,5,6,7,8,9]",
-                JsonSerializer.Serialize<JsArray>((model.p)));
+                JsonSerializer.Serialize<JsArray>(model.p));
 
             engine.ExecuteScript(@"
 model.p.reverse()
 ");
             Assert.AreEqual("[9,8,7,6,5,4,3]",
-                JsonSerializer.Serialize<JsArray>((model.p)));
+                JsonSerializer.Serialize<JsArray>(model.p));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArray2(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [{nested: 4}, [9,8,[7,6]], 4]
+model.z = a.concat([1,2,3], [4,5,6])
+");
+            var json = JsonSerializer.Serialize<JsArray>(model.z);
+            Console.WriteLine(json);
+            var deserialized = JsonSerializer.Deserialize<JsArray>(json);
+            Assert.AreEqual(typeof(JsObject), deserialized[0].GetType());
+            Assert.AreEqual(typeof(JsArray), deserialized[1].GetType());
+            Assert.AreEqual(typeof(JsArray), deserialized[1][2].GetType());
+            Assert.AreEqual(model.z, deserialized);
+            Assert.AreEqual("[{\"nested\":4},[9,8,[7,6]],4,1,2,3,4,5,6]",
+                json);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayIndexOf(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [1,2,3,4,5,2]
+model.b = a.indexOf(3)
+model.c = a.indexOf(3,3)
+model.d = a.indexOf(2)
+model.e = a.indexOf(2, 2)
+model.f = a.indexOf(2, -2)
+");
+            Assert.AreEqual(2, model.b);
+            Assert.AreEqual(-1, model.c);
+            Assert.AreEqual(1, model.d);
+            Assert.AreEqual(5, model.e);
+            Assert.AreEqual(5, model.f);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayLastIndexOf(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [1,2,3,4,5,2]
+model.b = a.lastIndexOf(3)
+model.c = a.lastIndexOf(3,3)
+model.d = a.lastIndexOf(2)
+model.e = a.lastIndexOf(2, 2)
+model.f = a.lastIndexOf(2, -2)
+");
+            Assert.AreEqual(2, model.b);
+            Assert.AreEqual(2, model.c);
+            Assert.AreEqual(5, model.d);
+            Assert.AreEqual(1, model.e);
+            Assert.AreEqual(1, model.f);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayIncludes(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [1,2,3,4,5,2]
+model.b = a.includes(3)
+model.c = a.includes(3,3)
+model.d = a.includes(2)
+model.e = a.includes(2, 2)
+model.f = a.includes(2, -2)
+");
+            Assert.IsTrue(model.b);
+            Assert.IsFalse(model.c);
+            Assert.IsTrue(model.d);
+            Assert.IsTrue(model.e);
+            Assert.IsTrue(model.f);
         }
     }
 }

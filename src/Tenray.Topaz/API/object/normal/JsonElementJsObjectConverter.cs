@@ -26,8 +26,7 @@ namespace Tenray.Topaz.API
 
         private static object ConvertToArray(JsonElement jsonElement)
         {
-            var len = jsonElement.GetArrayLength();
-            var result = new object[len];
+            var result = new JsArray();
             var i = 0;
             foreach (var el in jsonElement.EnumerateArray())
             {

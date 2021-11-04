@@ -29,7 +29,7 @@ namespace Tenray.Topaz.API
             return GetObjectKeys().Cast<string>();
         }
 
-        private static object ConvertJsonElementToJsObject(object value)
+        protected static object ConvertJsonElementToJsObject(object value)
         {
             if (value == null)
                 return null;

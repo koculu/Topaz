@@ -103,7 +103,7 @@ namespace Tenray.Topaz.API
 
         void ICollection<object>.Add(object item)
         {
-            arraylist.Add(item);
+            arraylist.Add(ConvertJsonElementToJsObject(item));
         }
 
         void ICollection<object>.CopyTo(object[] array, int arrayIndex)
