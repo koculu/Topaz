@@ -514,5 +514,31 @@ catch(err) {
             Assert.AreEqual(1, model.e);
             Assert.AreEqual(typeof(TopazException), model.f.InnerException.GetType());
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayFilter(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const array = [-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+function isPrime(num) {
+  for (let i = 2; num > i; i++) {
+    if (num % i == 0) {
+      return false;
+    }
+  }
+  return num > 1;
+}
+
+model.a = array.filter(isPrime)
+");
+            Assert.AreEqual("[2,3,5,7,11,13]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+        }
     }
 }

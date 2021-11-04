@@ -28,8 +28,6 @@ namespace Tenray.Topaz.API
             return result;
         }
 
-        public void constructor() { }
-
         public IJsArray copyWithin(int target)
         {
             return copyWithin(target, 0, arraylist.Count);
@@ -156,7 +154,48 @@ namespace Tenray.Topaz.API
             return this;
         }
 
-        public void filter() { }
+        public IJsArray filter(Func<object, object> callbackFn)
+        {
+            var result = new JsArray();
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item)))
+                    result.AddArrayValue(item);
+            }
+            return result;
+        }
+
+        public IJsArray filter(Func<object, object, object> callbackFn)
+        {
+            var result = new JsArray();
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
+                    result.AddArrayValue(item);
+            }
+            return result;
+        }
+
+        public IJsArray filter(Func<object, object, object, object> callbackFn)
+        {
+            var result = new JsArray();
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
+                    result.AddArrayValue(item);
+            }
+            return result;
+        }
+
         public void find() { }
         public void findIndex() { }
         public void flat() { }
