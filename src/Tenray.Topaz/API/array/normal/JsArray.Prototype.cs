@@ -82,22 +82,26 @@ namespace Tenray.Topaz.API
             return this;
         }
 
-        public IEnumerable entries() {
+        public IEnumerable entries()
+        {
+            var list = arraylist;
             var len = arraylist.Count;
             for (var i = 0; i < len; ++i)
             {
                 var row = new JsArray();
                 row.AddArrayValue(i);
-                row.AddArrayValue(arraylist[i]);
+                row.AddArrayValue(list[i]);
                 yield return row;
             }
         }
 
         public bool every(Func<object, object> callbackFn)
         {
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item)))
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(list[i])))
                     return false;
             }
             return true;
@@ -105,10 +109,11 @@ namespace Tenray.Topaz.API
 
         public bool every(Func<object, object, object> callbackFn)
         {
-            var i = 0;
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item, i++)))
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(list[i], i)))
                     return false;
             }
             return true;
@@ -116,10 +121,11 @@ namespace Tenray.Topaz.API
 
         public bool every(Func<object, object, object, object> callbackFn)
         {
-            var i = 0;
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item, i++, this)))
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(list[i], i, this)))
                     return false;
             }
             return true;
@@ -176,7 +182,7 @@ namespace Tenray.Topaz.API
             for (var i = 0; i < len; ++i)
             {
                 var item = list[i];
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i)))
                     result.AddArrayValue(item);
             }
             return result;
@@ -190,13 +196,11 @@ namespace Tenray.Topaz.API
             for (var i = 0; i < len; ++i)
             {
                 var item = list[i];
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i, this)))
                     result.AddArrayValue(item);
             }
             return result;
         }
-
-        public void find() { }
 
         public object find(Func<object, object> callbackFn)
         {
@@ -218,7 +222,7 @@ namespace Tenray.Topaz.API
             for (var i = 0; i < len; ++i)
             {
                 var item = list[i];
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i)))
                     return item;
             }
             return Undefined.Value;
@@ -231,13 +235,51 @@ namespace Tenray.Topaz.API
             for (var i = 0; i < len; ++i)
             {
                 var item = list[i];
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i, this)))
                     return item;
             }
             return Undefined.Value;
         }
 
-        public void findIndex() { }
+        public int findIndex(Func<object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item)))
+                    return i;
+            }
+            return -1;
+        }
+
+        public int findIndex(Func<object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i)))
+                    return i;
+            }
+            return -1;
+        }
+
+        public int findIndex(Func<object, object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var item = list[i];
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i, this)))
+                    return i;
+            }
+            return -1;
+        }
+
         public void flat() { }
         public void flatMap() { }
 
@@ -574,9 +616,11 @@ namespace Tenray.Topaz.API
         public void slice() { }
 
         public bool some(Func<object, object> callbackFn) {
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i])))
                     return true;
             }
             return false;
@@ -584,10 +628,11 @@ namespace Tenray.Topaz.API
 
         public bool some(Func<object, object, object> callbackFn)
         { 
-            var i = 0;
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i], i)))
                     return true;
             }
             return false;
@@ -595,10 +640,11 @@ namespace Tenray.Topaz.API
 
         public bool some(Func<object, object, object, object> callbackFn)
         {
-            var i = 0;
-            foreach (var item in arraylist)
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
             {
-                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i], i, this)))
                     return true;
             }
             return false;

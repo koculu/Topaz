@@ -564,7 +564,7 @@ function isCherries2(fruit, index) {
   return inventory[index].name === 'cherries';
 }
 function isCherries3(fruit, index, arr) {
-  return arr[index].name === 'cherries';
+  return arr[index].name === 'bananas';
 }
 
 model.a = inventory.find(isCherries)
@@ -575,8 +575,43 @@ model.c = inventory.find(isCherries3)
             Assert.AreEqual(5, model.a.quantity);
             Assert.AreEqual("cherries", model.b.name);
             Assert.AreEqual(5, model.b.quantity);
-            Assert.AreEqual("cherries", model.c.name);
-            Assert.AreEqual(5, model.c.quantity);
+            Assert.AreEqual("bananas", model.c.name);
+            Assert.AreEqual(0, model.c.quantity);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayFindIndex(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const inventory = [
+  {name: 'apples', quantity: 2},
+  {name: 'bananas', quantity: 0},
+  {name: 'cherries', quantity: 5}
+];
+
+function isCherries(fruit) {
+  return fruit.name === 'cherries';
+}
+function isCherries2(fruit, index) {
+  return inventory[index].name === 'cherries2';
+}
+function isCherries3(fruit, index, arr) {
+  return arr[index].name === 'bananas';
+}
+
+model.a = inventory.findIndex(isCherries)
+model.b = inventory.findIndex(isCherries2)
+model.c = inventory.findIndex(isCherries3)
+");
+            Assert.AreEqual(2, model.a);
+            Assert.AreEqual(-1, model.b);
+            Assert.AreEqual(1, model.c);
         }
     }
 }
