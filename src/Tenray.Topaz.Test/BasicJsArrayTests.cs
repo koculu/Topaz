@@ -652,5 +652,41 @@ model.f = arr4.flat(99);
             Assert.AreEqual("[1,2,3,4,5,6,7,8,9,10]",
                 JsonSerializer.Serialize<JsArray>(model.f));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayFlatMap(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+let arr1 = [1, 2, 3, 4];
+model.a = arr1.map(x => [x * 2]);
+model.b = arr1.flatMap(x => [x * 2]);
+model.c = arr1.flatMap(x => [[x * 2]]);
+
+let a = [5, 4, -3, 20, 17, -33, -4, 18]
+//       |\  \  x   |  | \   x   x   |
+//      [4,1, 4,   20, 16, 1,       18]
+
+model.d = a.flatMap( (n) =>
+  (n < 0) ?      [] :
+  (n % 2 == 0) ? [n] :
+                 [n-1, 1]
+)
+
+");
+            Assert.AreEqual("[[2],[4],[6],[8]]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[2,4,6,8]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+            Assert.AreEqual("[[2],[4],[6],[8]]",
+                JsonSerializer.Serialize<JsArray>(model.c));
+            Assert.AreEqual("[4,1,4,20,16,1,18]",
+                JsonSerializer.Serialize<JsArray>(model.d));
+        }
     }
 }

@@ -308,7 +308,80 @@ namespace Tenray.Topaz.API
             return result;
         }
 
-        public void flatMap() { }
+        public IJsArray flatMap(Func<object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i]);
+                if (item is JsArray)
+                {
+                    // jsArray is List and Dictionary at the same time.
+                    // Hence, make sure to iterate through enumerable.
+                    foreach (var innerItem in (IEnumerable)item)
+                    {
+                        result.AddArrayValue(innerItem);
+                    }
+                }
+                else
+                {
+                    result.AddArrayValue(item);
+                }
+            }
+            return result;
+        }
+
+        public IJsArray flatMap(Func<object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i], i);
+                if (item is JsArray)
+                {
+                    // jsArray is List and Dictionary at the same time.
+                    // Hence, make sure to iterate through enumerable.
+                    foreach (var innerItem in (IEnumerable)item)
+                    {
+                        result.AddArrayValue(innerItem);
+                    }
+                }
+                else
+                {
+                    result.AddArrayValue(item);
+                }
+            }
+            return result;
+        }
+
+        public IJsArray flatMap(Func<object, object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            var result = new JsArray();
+            for (var i = 0; i < len; ++i)
+            {
+                var item = callbackFn(list[i], i, this);
+                if (item is JsArray)
+                {
+                    // jsArray is List and Dictionary at the same time.
+                    // Hence, make sure to iterate through enumerable.
+                    foreach (var innerItem in (IEnumerable)item)
+                    {
+                        result.AddArrayValue(innerItem);
+                    }
+                }
+                else
+                {
+                    result.AddArrayValue(item);
+                }
+            }
+            return result;
+        }
 
         public void forEach(Action<object> callbackFn)
         {
@@ -403,7 +476,6 @@ namespace Tenray.Topaz.API
             var list = arraylist;
             var len = arraylist.Count;
             var result = new JsArray();
-            result.length = len;
             for (var i = 0; i < len; ++i)
             {
                 var item = callbackFn(list[i]);
@@ -417,7 +489,6 @@ namespace Tenray.Topaz.API
             var list = arraylist;
             var len = arraylist.Count;
             var result = new JsArray();
-            result.length = len;
             for (var i = 0; i < len; ++i)
             {
                 var item = callbackFn(list[i], i);
@@ -431,7 +502,6 @@ namespace Tenray.Topaz.API
             var list = arraylist;
             var len = arraylist.Count;
             var result = new JsArray();
-            result.length = len;
             for (var i = 0; i < len; ++i)
             {
                 var item = callbackFn(list[i], i, this);
