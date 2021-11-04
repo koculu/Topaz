@@ -708,5 +708,36 @@ model.b = [1,2,3,4,5].slice(-3,-1)
             Assert.AreEqual("[3,4]",
                 JsonSerializer.Serialize<JsArray>(model.b));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArraySplice(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+model.a = [1,2,3,4,5]
+model.b = model.a.splice(1, 2)
+model.c = [1,2,3,4,5]
+model.d = model.c.splice(-4,-2,6,7,8)
+model.e = [1,2,3,4,5,6,7,8,9,10]
+model.f = model.e.splice(-3)
+");
+            Assert.AreEqual("[1,4,5]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[2,3]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+            Assert.AreEqual("[1,6,7,8,2,3,4,5]",
+                JsonSerializer.Serialize<JsArray>(model.c));
+            Assert.AreEqual("[]",
+                JsonSerializer.Serialize<JsArray>(model.d));
+            Assert.AreEqual("[1,2,3,4,5,6,7]",
+                JsonSerializer.Serialize<JsArray>(model.e));
+            Assert.AreEqual("[8,9,10]",
+                JsonSerializer.Serialize<JsArray>(model.f));
+        }
     }
 }

@@ -787,7 +787,36 @@ namespace Tenray.Topaz.API
             return this;
         }
 
-        public void splice() { }
+        public IJsArray splice(int start)
+        {
+            var list = arraylist;
+            var len = list.Count;
+            if (start < 0)
+                start = len + start;
+
+            if (start >= len)
+                return new JsArray();
+            var result = slice(start, len);
+            list.RemoveRange(start, len - start);
+            return result;
+        }
+
+        public IJsArray splice(int start, int deleteCount, params object[] items)
+        {
+            var list = arraylist;
+            var len = list.Count;
+            if (start < 0)
+                start = len + start;
+            if (deleteCount < 0)
+                deleteCount = 0;
+            var result = slice(start, start + deleteCount);
+            if (deleteCount > 0)
+                copyWithin(start, start + deleteCount, len);
+            while (deleteCount-- > 0 && len > start)
+                list.RemoveAt(--len);
+            list.InsertRange(start, items);
+            return result;
+        }
 
         public string toLocaleString() {
             return toString();
