@@ -20,9 +20,17 @@ namespace Tenray.Topaz.Test
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = []
+var b = [4,5,6]
 a[3] = 3
-model.js = a;
-model.x = a[55];
+model.js = a
+model.x = a[55]
+model.y = a.at(3)
+model.z = a.concat(b)
+model.p = model.z.concat()
+model.p.push(7,8,9,10)
+model.p.push(11)
+model.q = model.p.pop()
+model.p.push(12,13)
 ");
             var js = model.js;
             var json = JsonSerializer.Serialize<JsArray>(js);
@@ -46,6 +54,12 @@ model.x = a[55];
             Assert.AreEqual(3, js[3]);
             Assert.AreEqual(Undefined.Value, js[4]);
             Assert.AreEqual(null, model.x);
+            Assert.AreEqual(3, model.y);
+            Assert.AreEqual("[null,null,null,3,4,5,6]", 
+                JsonSerializer.Serialize<JsArray>((model.z)));
+            Assert.AreEqual("[null,null,null,3,4,5,6,7,8,9,10,12,13]",
+                JsonSerializer.Serialize<JsArray>((model.p)));
+            Assert.AreEqual(11, model.q);
         }
     }
 }

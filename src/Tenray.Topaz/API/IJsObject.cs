@@ -12,5 +12,7 @@ namespace Tenray.Topaz.API
         void SetValue(object key, object value);
 
         internal void UnwrapObject(ScriptExecutor scriptExecutor);
+        
+        internal bool IsPrototypeProperty(object member);
     }
 }

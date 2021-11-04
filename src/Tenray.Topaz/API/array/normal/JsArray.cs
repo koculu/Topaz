@@ -6,9 +6,15 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
 {
-    public class JsArray : JsObject, IJsArray, IList<object>
+    public partial class JsArray : JsObject, IJsArray, IList<object>
     {
         readonly List<object> arraylist = new();
+        
+        public void AddArrayValues(IEnumerable enumerable)
+        {
+            foreach (var item in enumerable)
+                AddArrayValue(item);
+        }
 
         public void SetArrayValue(int index, object value)
         {
@@ -130,6 +136,15 @@ namespace Tenray.Topaz.API
         public void RemoveAt(int index)
         {
             arraylist.RemoveAt(index);
+        }
+
+        protected override bool IsPrototypePropertyInternal(string memberName)
+        {
+            return memberName switch
+            {
+                "length" => true,
+                _ => false
+            };
         }
     }
 }

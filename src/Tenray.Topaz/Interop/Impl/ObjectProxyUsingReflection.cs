@@ -47,72 +47,76 @@ namespace Tenray.Topaz.Interop
             value = null;
             if (instance == null)
                 return false;
-
+            var isJsObject = false;
             if (instance is IJsObject jsObject)
             {
-                if (isIndexedProperty && instance is IJsArray jsArray)
+                isJsObject = true;
+                if (!jsObject.IsPrototypeProperty(member))
                 {
-                    if (member is double d)
+                    if (isIndexedProperty && instance is IJsArray jsArray)
                     {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
+                        if (member is double d)
                         {
-                            jsArray.TryGetArrayValue(converted, out value);
+                            var converted = Convert.ToInt32(d);
+                            if (converted == d)
+                            {
+                                return jsArray.TryGetArrayValue(converted, out value);
+                            }
+                        }
+                        else if (member is long l)
+                        {
+                            return jsArray.TryGetArrayValue((int)l, out value);
+                        }
+                        else if (member is int i)
+                        {
+                            return jsArray.TryGetArrayValue(i, out value);
+                        }
+                        else if (member is string s && int.TryParse(s, out var parsedIndex))
+                        {
+                            return jsArray.TryGetArrayValue(parsedIndex, out value);
+                        }
+                    }
+                    if (jsObject.TryGetValue(member, out value))
+                        return true;
+                }
+            }
+            else
+            {
+                if (instance is IDictionary dic)
+                {
+                    if (dic.Contains(member))
+                    {
+                        value = dic[member];
+                        return true;
+                    }
+                }
+
+                if (instance is IList list)
+                {
+                    if (isIndexedProperty)
+                    {
+                        if (member is double d)
+                        {
+                            var converted = Convert.ToInt32(d);
+                            if (converted == d)
+                            {
+                                value = list[converted];
+                                return true;
+                            }
+                        }
+                        else if (member is long l)
+                        {
+                            value = list[(int)l];
+                            return true;
+                        }
+                        else if (member is int i)
+                        {
+                            value = list[i];
                             return true;
                         }
                     }
-                    else if (member is long l)
-                    {
-                        jsArray.TryGetArrayValue((int)l, out value);
-                        return true;
-                    }
-                    else if (member is int i)
-                    {
-                        jsArray.TryGetArrayValue(i, out value);
-                        return true;
-                    }
-                    else if (member is string s && int.TryParse(s, out var parsedIndex))
-                    {
-                        jsArray.TryGetArrayValue(parsedIndex, out value);
-                        return true;
-                    }
                 }
-                return jsObject.TryGetValue(member, out value);
-            }
 
-            if (instance is IDictionary dic)
-            {
-                if (dic.Contains(member))
-                {
-                    value = dic[member];
-                    return true;
-                }
-            }
-
-            if (instance is IList list)
-            {
-                if (isIndexedProperty)
-                {
-                    if (member is double d)
-                    {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
-                        {
-                            value = list[converted];
-                            return true;
-                        }
-                    }
-                    else if (member is long l)
-                    {
-                        value = list[(int)l];
-                        return true;
-                    }
-                    else if (member is int i)
-                    {
-                        value = list[i];
-                        return true;
-                    }
-                }
             }
 
             var instanceType = instance.GetType();
@@ -120,7 +124,7 @@ namespace Tenray.Topaz.Interop
             var options = ProxyOptions;
             var allowProperty =
                 options.HasFlag(ProxyOptions.AllowProperty);
-            if (isIndexedProperty)
+            if (!isJsObject && isIndexedProperty)
             {
                 if (!allowProperty)
                     return false;
@@ -213,75 +217,81 @@ namespace Tenray.Topaz.Interop
             if (instance == null)
                 return false;
 
+            var isJsObject = false;
             if (instance is IJsObject jsObject)
             {
-                if (isIndexedProperty && instance is IJsArray jsArray)
+                isJsObject = true;
+                if (!jsObject.IsPrototypeProperty(member))
                 {
-                    if (member is double d)
+                    if (isIndexedProperty && instance is IJsArray jsArray)
                     {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
+                        if (member is double d)
                         {
-                            jsArray.SetArrayValue(converted, value);
+                            var converted = Convert.ToInt32(d);
+                            if (converted == d)
+                            {
+                                jsArray.SetArrayValue(converted, value);
+                                return true;
+                            }
+                        }
+                        else if (member is long l)
+                        {
+                            jsArray.SetArrayValue((int)l, value);
+                            return true;
+                        }
+                        else if (member is int i)
+                        {
+                            jsArray.SetArrayValue(i, value);
+                            return true;
+                        }
+                        else if (member is string s && int.TryParse(s, out var parsedIndex))
+                        {
+                            jsArray.SetArrayValue(parsedIndex, value);
                             return true;
                         }
                     }
-                    else if (member is long l)
-                    {
-                        jsArray.SetArrayValue((int)l, value);
-                        return true;
-                    }
-                    else if (member is int i)
-                    {
-                        jsArray.SetArrayValue(i, value);
-                        return true;
-                    }
-                    else if (member is string s && int.TryParse(s, out var parsedIndex))
-                    {
-                        jsArray.SetArrayValue(parsedIndex, value);
-                        return true;
-                    }
-                }
-                jsObject.SetValue(member, value);
-                return true;
-            }
-
-            if (instance is IDictionary dic)
-            {
-                if (dic.Contains(member))
-                {
-                    dic[member] = value;
-                    return true;
-                }
-                else
-                {
-                    dic.Add(member, value);
+                    jsObject.SetValue(member, value);
                     return true;
                 }
             }
-
-            if (instance is IList list)
+            else
             {
-                if (isIndexedProperty)
+                if (instance is IDictionary dic)
                 {
-                    if (member is double d)
+                    if (dic.Contains(member))
                     {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
+                        dic[member] = value;
+                        return true;
+                    }
+                    else
+                    {
+                        dic.Add(member, value);
+                        return true;
+                    }
+                }
+                if (instance is IList list)
+                {
+                    if (isIndexedProperty)
+                    {
+                        if (member is double d)
                         {
-                            list[converted] = value;
+                            var converted = Convert.ToInt32(d);
+                            if (converted == d)
+                            {
+                                list[converted] = value;
+                                return true;
+                            }
+                        }
+                        else if (member is long l)
+                        {
+                            list[(int)l] = value;
                             return true;
                         }
-                    }
-                    else if (member is long l)
-                    {
-                        list[(int)l] = value;
-                        return true;
-                    }
-                    else if (member is int i)
-                    {
-                        list[i] = value;
-                        return true;
+                        else if (member is int i)
+                        {
+                            list[i] = value;
+                            return true;
+                        }
                     }
                 }
             }
@@ -291,7 +301,7 @@ namespace Tenray.Topaz.Interop
             var options = ProxyOptions;
             var allowProperty =
                 options.HasFlag(ProxyOptions.AllowProperty);
-            if (isIndexedProperty)
+            if (!isJsObject && isIndexedProperty)
             {
                 if (!allowProperty)
                     return false;
@@ -348,7 +358,7 @@ namespace Tenray.Topaz.Interop
                 if (property.SetMethod == null ||
                     property.SetMethod.IsPrivate)
                     return false;
-                 property.SetValue(instance, value);
+                property.SetValue(instance, value);
                 return true;
             }
             var allowField =

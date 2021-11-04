@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -68,15 +69,48 @@ namespace Tenray.Topaz.Interop
             {
                 var parameters = allParameters[i];
                 var paramLen = parameters.Length;
-                if (argsLen != paramLen)
-                    continue;
-                var argsCopy = args.ToArray();
-                bool failed = false;
+
+                var hasParamArrayAttribute = false;
+                var paramArrayAttributeIndex = -1;
+                Type paramArrayInnerType = null;
+                IList paramsCollection = null;
                 for (var j = 0; j < paramLen; ++j)
                 {
-                    var arg = argsCopy[j];
                     var p = parameters[j];
-                    var ptype = p.ParameterType;
+                    hasParamArrayAttribute =
+                            p.GetCustomAttribute<ParamArrayAttribute>() != null;
+                    if (hasParamArrayAttribute)
+                    {
+                        paramsCollection = (IList)Activator
+                            .CreateInstance(p.ParameterType, argsLen-j);
+                        paramArrayInnerType = p.ParameterType.GetElementType();
+                        paramArrayAttributeIndex = j;
+                    }
+                }
+
+                if (hasParamArrayAttribute)
+                {
+                    if (argsLen < paramLen - 1)
+                        continue;
+                }
+                else if (argsLen != paramLen)
+                    continue;
+
+                var argsCopy = args.ToArray();
+                bool failed = false;
+                Type useParamArrayInnerType = null;
+                for (var j = 0; j < argsLen; ++j)
+                {
+                    var arg = argsCopy[j];
+                    var parametersIndex = j;
+                    if (hasParamArrayAttribute && j >= paramArrayAttributeIndex)
+                    {
+                        parametersIndex = paramArrayAttributeIndex;
+                        useParamArrayInnerType = paramArrayInnerType;
+                    }
+
+                    var p = parameters[parametersIndex];
+                    var ptype = useParamArrayInnerType ?? p.ParameterType;
                     if (arg == Undefined.Value)
                     {
                         argsCopy[i] = null;
@@ -115,6 +149,17 @@ namespace Tenray.Topaz.Interop
                 if (failed)
                     continue;
                 index = i;
+
+                if (hasParamArrayAttribute)
+                {
+                    convertedArgs = new object[paramArrayAttributeIndex + 1];
+                    Array.Copy(argsCopy, convertedArgs, paramArrayAttributeIndex);
+                    convertedArgs[paramArrayAttributeIndex] = paramsCollection;
+                    var z = 0;
+                    for (var k = paramArrayAttributeIndex; k < argsLen; ++k)
+                        paramsCollection[z++] = argsCopy[k];
+                    return true;
+                }
                 convertedArgs = argsCopy;
                 return true;
             }

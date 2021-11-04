@@ -129,5 +129,19 @@ namespace Tenray.Topaz.API
                     return value;
                 });
         }
+
+        bool IJsObject.IsPrototypeProperty(object member)
+        {
+            if (member == null)
+                return false;
+            if (member is not string memberName)
+                return false;
+            return IsPrototypePropertyInternal(memberName);
+        }
+
+        protected virtual bool IsPrototypePropertyInternal(string memberName)
+        {
+            return false;
+        }
     }
 }

@@ -10,6 +10,8 @@ namespace Tenray.Topaz.API
         void SetArrayValue(int index, object value);
 
         void AddArrayValue(object value);
+        
+        void AddArrayValues(IEnumerable enumerable);
 
         internal void UnwrapArray(ScriptExecutor scriptExecutor);
     }
