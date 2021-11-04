@@ -42,7 +42,20 @@ namespace Tenray.Topaz.API
         public void join() { }
         public void keys() { }
         public void lastIndexOf() { }
-        public void length() { }
+
+        public int length
+        {
+            get
+            {
+                return arraylist.Count;
+            }
+            set
+            {
+                SetMinimumArraySize(arraylist, value);
+                SetMaximumArraySize(arraylist, value);
+            }
+        }
+
         public void map() { }
 
         public object pop() {
@@ -62,8 +75,28 @@ namespace Tenray.Topaz.API
 
         public void reduce() { }
         public void reduceRight() { }
-        public void reverse() { }
-        public void shift() { }
+        
+        public IJsArray reverse() {
+            var len = arraylist.Count;
+            var mid = len / 2;
+            for (var i = 0; i < mid; ++i)
+            {
+                var j = len - i - 1;
+                var a = arraylist[i];
+                arraylist[i] = arraylist[j];
+                arraylist[j] = a;
+            }
+            return this;
+        }
+
+        public object shift()
+        {
+            if (arraylist.Count < 1)
+                return Undefined.Value;
+            var item = arraylist[0];
+            arraylist.RemoveAt(0);
+            return item;
+        }
         public void slice() { }
         public void some() { }
         public void sort() { }

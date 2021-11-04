@@ -21,6 +21,7 @@ namespace Tenray.Topaz.Test
             engine.ExecuteScript(@"
 var a = []
 var b = [4,5,6]
+a[0] = 'abc'
 a[3] = 3
 model.js = a
 model.x = a[55]
@@ -31,6 +32,7 @@ model.p.push(7,8,9,10)
 model.p.push(11)
 model.q = model.p.pop()
 model.p.push(12,13)
+model.r = model.p.shift()
 ");
             var js = model.js;
             var json = JsonSerializer.Serialize<JsArray>(js);
@@ -48,18 +50,35 @@ model.p.push(12,13)
                 Assert.AreEqual(js, deserialized);
             }
 
-            Assert.AreEqual(null, js[0]);
+            Assert.AreEqual("abc", js[0]);
             Assert.AreEqual(null, js[1]);
             Assert.AreEqual(null, js[2]);
             Assert.AreEqual(3, js[3]);
             Assert.AreEqual(Undefined.Value, js[4]);
             Assert.AreEqual(null, model.x);
             Assert.AreEqual(3, model.y);
-            Assert.AreEqual("[null,null,null,3,4,5,6]", 
+            Assert.AreEqual("[\"abc\",null,null,3,4,5,6]", 
                 JsonSerializer.Serialize<JsArray>((model.z)));
-            Assert.AreEqual("[null,null,null,3,4,5,6,7,8,9,10,12,13]",
+            Assert.AreEqual("[null,null,3,4,5,6,7,8,9,10,12,13]",
                 JsonSerializer.Serialize<JsArray>((model.p)));
             Assert.AreEqual(11, model.q);
+            Assert.AreEqual("abc", model.r);
+
+            engine.ExecuteScript(@"
+model.u = model.p.length
+model.p.length = 9
+model.p.shift()
+model.p.shift()
+");
+            Assert.AreEqual(12, model.u);
+            Assert.AreEqual("[3,4,5,6,7,8,9]",
+                JsonSerializer.Serialize<JsArray>((model.p)));
+
+            engine.ExecuteScript(@"
+model.p.reverse()
+");
+            Assert.AreEqual("[9,8,7,6,5,4,3]",
+                JsonSerializer.Serialize<JsArray>((model.p)));
         }
     }
 }

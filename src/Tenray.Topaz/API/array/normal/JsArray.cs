@@ -83,6 +83,14 @@ namespace Tenray.Topaz.API
             }
         }
 
+        private void SetMaximumArraySize(List<object> list, int maxSize)
+        {
+            while (list.Count > maxSize)
+            {
+                list.RemoveAt(list.Count - 1);
+            }
+        }
+
         protected override IEnumerable GetObjectKeysInternal()
         {
             var list = arraylist;
