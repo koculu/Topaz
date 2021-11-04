@@ -14,9 +14,7 @@ namespace Tenray.Topaz.Statements
             var body = expr.Body;
             var left = expr.Left;
             var right = expr.Right;
-            scriptExecutor = scriptExecutor.NewBlockScope();
-            scriptExecutor.ExecuteStatement(left);
-
+            
             var variableDeclaration = (VariableDeclaration)left;
             var rightValue = scriptExecutor.ExecuteExpressionAndGetValue(right);
             if (rightValue is not IEnumerable enumerable)
@@ -26,8 +24,10 @@ namespace Tenray.Topaz.Statements
             {
                 foreach (var item in enumerable)
                 {
-                    BindingHelper.BindVariables(scriptExecutor, item, variableDeclaration);                    
-                    var result = scriptExecutor.ExecuteStatement(body);
+                    var bodyScope = scriptExecutor.NewBlockScope();
+                    variableDeclaration.Declarations[0].Init = new ValueWrapper(item);
+                    bodyScope.ExecuteStatement(variableDeclaration);
+                    var result = bodyScope.ExecuteStatement(body);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -40,16 +40,15 @@ namespace Tenray.Topaz.Statements
             var len = list.Count;
             foreach (var item in enumerable)
             {
-                BindingHelper.BindVariables(scriptExecutor, item, variableDeclaration);
                 var bodyScope = scriptExecutor.NewBlockScope();
+                variableDeclaration.Declarations[0].Init = new ValueWrapper(item);
+                bodyScope.ExecuteStatement(variableDeclaration);
                 var breaked = false;
-                var continued = false;
                 for (var i = 0; i < len; ++i)
                 {
                     var result = bodyScope.ExecuteStatement(list[i]);
                     if (result is ContinueWrapper)
                     {
-                        continued = true;
                         break;
                     }
                     else if (result is BreakWrapper)
@@ -61,7 +60,6 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
-                if (continued) continue;
             }
             return scriptExecutor.GetNullOrUndefined();
         }

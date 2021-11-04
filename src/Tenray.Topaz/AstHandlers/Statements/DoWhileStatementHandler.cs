@@ -31,13 +31,11 @@ namespace Tenray.Topaz.Statements
             {
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
-                var continued = false;
                 for (var i = 0; i < len; ++i)
                 {
                     var result = bodyScope.ExecuteStatement(list[i]);
                     if (result is ContinueWrapper)
                     {
-                        continued = true;
                         break;
                     }
                     else if (result is BreakWrapper)
@@ -49,7 +47,6 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
-                if (continued) continue;
             }
             while (JavascriptTypeUtility
                 .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)));

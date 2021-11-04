@@ -13,7 +13,7 @@ namespace Tenray.Topaz.Benchmark
             if (runTopaz)
             {
                 sw.Start();
-                b.Playground();
+                b.RunTopaz();
                 sw.Stop();
                 Console.WriteLine("Topaz: " + sw.ElapsedMilliseconds + " ms");
             }

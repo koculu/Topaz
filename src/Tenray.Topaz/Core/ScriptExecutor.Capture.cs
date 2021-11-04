@@ -21,6 +21,7 @@ namespace Tenray.Topaz.Core
                 if (scope.isEmptyScope)
                 {
                     scope = scope.ParentScope;
+                    continue;
                 }
                 KeyValuePair<string, Variable>[] list;
                 if (scope.IsThreadSafeScope)
@@ -31,9 +32,12 @@ namespace Tenray.Topaz.Core
                 for (var i = 0; i < len; ++i)
                 {
                     var variable = list[i].Value;
-                    if (!variable.ShouldCapture)
-                        continue;
                     var key = list[i].Key;
+                    if (!variable.ShouldCapture)
+                    {
+                        capturedKeys.Add(key);
+                        continue;
+                    }
                     if (!capturedKeys.Contains(key))
                     {
                         AddOrUpdateVariableValueAndKindInTheScope(

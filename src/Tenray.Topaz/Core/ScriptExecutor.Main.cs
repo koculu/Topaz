@@ -230,7 +230,7 @@ namespace Tenray.Topaz.Core
                 Nodes.VariableDeclaration => VariableDeclarationHandler.Execute(this, statement),
                 Nodes.WhileStatement => WhileStatementHandler.Execute(this, statement),
                 Nodes.ForOfStatement => ForOfStatementHandler.Execute(this, statement),
-                  
+                Nodes.ValueWrapper => ((ValueWrapper)statement).Value,
                 // Nodes.CatchClause => DONE,
                 // Nodes.Program => DONE,
                 // Nodes.Property => DONE,
@@ -315,7 +315,7 @@ namespace Tenray.Topaz.Core
                 Nodes.VariableDeclaration => await VariableDeclarationHandler.ExecuteAsync(this, statement),
                 Nodes.WhileStatement => await WhileStatementHandler.ExecuteAsync(this, statement),
                 Nodes.ForOfStatement => await ForOfStatementHandler.ExecuteAsync(this, statement),
-             
+                Nodes.ValueWrapper => ((ValueWrapper)statement).Value,
                 _ => ThrowNotImplemented(this, statement)
             };
         }

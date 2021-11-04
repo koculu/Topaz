@@ -1,5 +1,7 @@
 ﻿using Jint;
+using Jint.Runtime.Interop;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -9,11 +11,13 @@ namespace Tenray.Topaz.Benchmark
 {
     public class Benchmark1
     {
+        public string CodeParallel = @"
+Parallel.For(0, 10000000 , (i) => i + i)
+";
         public string Code = @"
-function f1(i) {
-    return i * i
-}
-for (var i = 0 ; i < 100000; ++i) {
+f1 = (i) => i * i
+
+for (var i = 0.0 ; i < 10000000; ++i) {
     f1(i)
 }
 ";
@@ -32,10 +36,19 @@ for (var i = 0 ; i < 100000; ++i) {
             }
         }
 
+        public bool RunParallelTopaz()
+        {
+            var topazEngine = new TopazEngine(true);
+            topazEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
+            topazEngine.AddType(typeof(Parallel), "Parallel");
+            topazEngine.ExecuteScript(CodeParallel);
+            return true;
+        }
+
         public bool RunTopaz()
         {
-            var topazEngine = new TopazEngine();
-            topazEngine.AddType(typeof(Console), "Console");
+            var topazEngine = new TopazEngine(false);
+            topazEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
             topazEngine.ExecuteScript(Code);
             return true;
         }
@@ -43,6 +56,9 @@ for (var i = 0 ; i < 100000; ++i) {
         public void RunJint()
         {
             var jintEngine = new Engine();
+            jintEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
+            jintEngine.SetValue("log", new Action<object>(Console.WriteLine));
+            jintEngine.SetValue("model", new List<int>());
             jintEngine.Execute(Code);
         }
 
@@ -65,9 +81,17 @@ for (var i = 0 ; i < 100000; ++i) {
             topazEngine.AddType(typeof(Enumerable), "Enumerable");
             topazEngine.AddType(typeof(Parallel), "Parallel");
             topazEngine.AddType(typeof(Action), "Action");
+            topazEngine.AddType(typeof(Dictionary<,>), "GenericDictionary");
             topazEngine.AddType(typeof(Action<,>), "Action2d");
             topazEngine.AddType(typeof(Func<,>), "Func2d");
-
+            /*topazEngine.ExecuteScript(@"
+var dic = new GenericDictionary(string, int)
+dic.Add('hello', 1)
+dic.Add('dummy', 0)
+dic.Add('world', 2)
+dic.Remove('dummy')
+Console.WriteLine(`Final value: {dic['hello']}`);
+");*/
             topazEngine.ExecuteScript(@"
 
 function f3(i) {
@@ -83,17 +107,17 @@ Console.WriteLine('f2:' + s + i);
 return s + i
 }
 
-forEach(0,100000, f3);
+//forEach(0,100000, f3);
 
 var g = 8
 function f1(x, y) {
-g = x * x
+return x * x
 //Console.WriteLine('f1:' + x + y.IsExceptional)
 }
 var a = new Action2d(string, int, f2)
 a(3,9)
 
-Parallel.For(0, 100000 , f1)
+Parallel.For(0, 1000000 , f1)
 ");
         }
 

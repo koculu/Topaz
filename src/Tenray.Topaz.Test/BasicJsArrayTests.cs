@@ -270,7 +270,7 @@ model.c = elements.join('-')
 
         [TestCase(false)]
         [TestCase(true)]
-        public void TestJsArrayValuesSome(bool useThreadSafeJsObjects)
+        public void TestJsArraySome(bool useThreadSafeJsObjects)
         {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
@@ -306,6 +306,28 @@ model.e = getBoolean('true');  // true
             Assert.IsFalse(model.c);
             Assert.IsTrue(model.d);
             Assert.IsTrue(model.e);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayEntries(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const a = [5,6,7]
+const b = []
+for (const [index, element] of a.entries()) {
+  b.push(index)
+  b.push(element)
+}
+model.b = b
+");
+            Assert.AreEqual("[0,5,1,6,2,7]",
+                JsonSerializer.Serialize<JsArray>(model.b));
         }
     }
 }

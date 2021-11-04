@@ -29,7 +29,18 @@ namespace Tenray.Topaz.API
 
         public void constructor() { }
         public void copyWithin() { }
-        public void entries() { }
+
+        public IEnumerable entries() {
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                var row = new JsArray();
+                row.AddArrayValue(i);
+                row.AddArrayValue(arraylist[i]);
+                yield return row;
+            }
+        }
+
         public void every() { }
         public void fill() { }
         public void filter() { }
