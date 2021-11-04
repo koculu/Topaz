@@ -411,5 +411,22 @@ model.d = [1, 2, 3, 4, 5].copyWithin(-2, -3, -1)
             Assert.AreEqual("[1,2,3,3,4]",
                 JsonSerializer.Serialize<JsArray>(model.d));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayForeach(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var sum = 0;
+[1, 2, 3, 4, 5].forEach((x) => sum += x)
+model.sum = sum
+");
+            Assert.AreEqual(15, model.sum);
+        }
     }
 }

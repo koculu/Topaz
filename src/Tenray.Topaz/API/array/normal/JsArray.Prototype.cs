@@ -160,7 +160,36 @@ namespace Tenray.Topaz.API
         public void findIndex() { }
         public void flat() { }
         public void flatMap() { }
-        public void forEach() { }
+
+        public void forEach(Action<object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for(var i = 0; i < len; ++i)
+            {
+                callbackFn(list[i]);
+            }
+        }
+
+        public void forEach(Action<object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                callbackFn(list[i], i);
+            }
+        }
+
+        public void forEach(Action<object, object, object> callbackFn)
+        {
+            var list = arraylist;
+            var len = arraylist.Count;
+            for (var i = 0; i < len; ++i)
+            {
+                callbackFn(list[i], i, this);
+            }
+        }
 
         public bool includes(object item)
         {
