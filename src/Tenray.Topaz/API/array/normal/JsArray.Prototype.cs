@@ -28,7 +28,60 @@ namespace Tenray.Topaz.API
         }
 
         public void constructor() { }
-        public void copyWithin() { }
+
+        public IJsArray copyWithin(int target)
+        {
+            return copyWithin(target, 0, arraylist.Count);
+        }
+
+        public IJsArray copyWithin(int target, int start)
+        {
+            return copyWithin(target, start, arraylist.Count);
+        }
+
+        public IJsArray copyWithin(int target, int start, int end) 
+        {
+            var list = arraylist;
+            var len = list.Count;
+            if (target < 0)
+                target = len + target;
+            if (start < 0)
+                start = len + start;
+            
+            if (target == start)
+                return this;
+
+            if (end < 0)
+                end = len + end + 1; //exclusive end
+            
+            end = Math.Min(len, end);
+            
+            if (target < start)
+            {
+                var j = 0;
+                for (var i = start; i < end; ++i)
+                {
+                    var k = target + j;
+                    if (k >= len)
+                        break;
+                    list[k] = list[i];
+                    ++j;
+                }
+            }
+            else
+            {
+                var j = end - start - 1;
+                for (var i = end - 1; i >= start; --i)
+                {
+                    var k = target + j;
+                    if (k < len)
+                        list[k] = list[i];
+                    --j;
+                }
+            }
+            
+            return this;
+        }
 
         public IEnumerable entries() {
             var len = arraylist.Count;
@@ -73,7 +126,35 @@ namespace Tenray.Topaz.API
             return true;
         }
 
-        public void fill() { }
+        public IJsArray fill(object value) {
+            var list = arraylist;
+            var len = list.Count;
+            for (var i = 0; i < len; ++i)
+                list[i] = value;
+            return this;
+        }
+
+        public IJsArray fill(object value, int start)
+        {
+            var list = arraylist;
+            var len = list.Count;
+            for (var i = start; i < len; ++i)
+                list[i] = value;
+            return this;
+        }
+
+        public IJsArray fill(object value, int start, int end)
+        {
+            // end is exclusive!
+            var list = arraylist;
+            var len = list.Count;
+            if (len < end)
+                end = len;
+            for (var i = start; i < end; ++i)
+                list[i] = value;
+            return this;
+        }
+
         public void filter() { }
         public void find() { }
         public void findIndex() { }

@@ -355,10 +355,61 @@ function isSubset(array1, array2) {
 model.c = isSubset([1, 2, 3, 4, 5, 6, 7], [5, 7, 6]) // true
 model.d = isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7]) // false
 ");
-            /*Assert.IsTrue(model.a);
-            Assert.IsFalse(model.b);*/
+            Assert.IsTrue(model.a);
+            Assert.IsFalse(model.b);
             Assert.IsTrue(model.c);
             Assert.IsFalse(model.d);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayFill(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const array1 = [1, 2, 3, 4];
+model.a = array1.fill(0, 2, 4).concat()
+model.b = array1.fill(5, 1).concat()
+model.c = array1.fill(6).concat()
+model.d = array1
+");
+            Assert.AreEqual("[1,2,0,0]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[1,5,5,5]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+            Assert.AreEqual("[6,6,6,6]",
+                JsonSerializer.Serialize<JsArray>(model.c));
+            Assert.AreEqual("[6,6,6,6]",
+                JsonSerializer.Serialize<JsArray>(model.d));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayCopyWithin(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+model.a = [1, 2, 3, 4, 5].copyWithin(-2)
+model.b = [1, 2, 3, 4, 5].copyWithin(0, 3)
+model.c = [1, 2, 3, 4, 5].copyWithin(0, 3, 4)
+model.d = [1, 2, 3, 4, 5].copyWithin(-2, -3, -1)
+");
+            Assert.AreEqual("[1,2,3,1,2]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[4,5,3,4,5]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+            Assert.AreEqual("[4,2,3,4,5]",
+                JsonSerializer.Serialize<JsArray>(model.c));
+            Assert.AreEqual("[1,2,3,3,4]",
+                JsonSerializer.Serialize<JsArray>(model.d));
         }
     }
 }
