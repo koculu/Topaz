@@ -49,6 +49,7 @@ namespace Tenray.Topaz.Interop
             var instanceVar = Expression.Constant(proxy);
             var body = Expression
                 .Call(instanceVar, targetMethod, convertedParameters);
+
             Expression convertedBody
                 = returnType == targetMethod.ReturnType
                 ? body

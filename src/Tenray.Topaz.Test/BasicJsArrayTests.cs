@@ -176,5 +176,69 @@ model.f = a.includes(2, -2)
             Assert.IsTrue(model.e);
             Assert.IsTrue(model.f);
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayUnshift(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [3]
+a.unshift(2)
+a.unshift(1)
+a.unshift(6,5,4)
+model.a = a
+model.b = a.toString()
+");
+            Assert.AreEqual("[6,5,4,1,2,3]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("6,5,4,1,2,3", model.b);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayValuesIterator(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const array1 = ['a', 'b', 'c']
+const iterator = array1.values()
+let a = []
+for (const value of iterator) {
+  a.push(value)
+}
+model.a = a
+");
+            Assert.AreEqual("[\"a\",\"b\",\"c\"]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayValuesSort(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [4, 2, 5, 1, 3];
+a.sort(function(a, b) {
+  return a - b;
+});
+model.a = a
+");
+            Assert.AreEqual("[1,2,3,4,5]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+        }
     }
 }

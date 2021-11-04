@@ -16,6 +16,12 @@ namespace Tenray.Topaz.API
                 AddArrayValue(item);
         }
 
+        public void AddArrayValue(object value)
+        {
+            var list = arraylist;
+            list.Add(value);
+        }
+
         public void SetArrayValue(int index, object value)
         {
             var list = arraylist;
@@ -48,12 +54,6 @@ namespace Tenray.Topaz.API
         IEnumerator IEnumerable.GetEnumerator()
         {
             return arraylist.GetEnumerator();
-        }
-
-        public void AddArrayValue(object value)
-        {
-            var list = arraylist;
-            list.Add(value);
         }
 
         public object this[int index]

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
@@ -130,11 +131,57 @@ namespace Tenray.Topaz.API
         }
         public void slice() { }
         public void some() { }
-        public void sort() { }
+
+        public IJsArray sort() {
+            arraylist.Sort();
+            return this;
+        }
+
+        public IJsArray sort(Func<object, object, object> compareFn)
+        {
+            var wrapper = new Func<object, object, int>((x, y) =>
+            {
+                return (int)Convert.ChangeType(compareFn(x, y), typeof(int));
+            });
+            arraylist.Sort(new Comparison<object>(wrapper));
+            return this;
+        }
+
         public void splice() { }
-        public void toLocaleString() { }
-        public void toString() { }
-        public void unshift() { }
-        public void values() { }
+
+        public string toLocaleString() {
+            return toString();
+        }
+
+        public override string toString() {
+            var sb = new StringBuilder();
+            var passedFirst = false;
+            foreach (var x in arraylist)
+            {
+                if (passedFirst)
+                    sb.Append(',');
+                else 
+                    passedFirst = true;
+                if (x is JsObject jsObject)
+                    sb.Append(jsObject.toString());
+                else
+                    sb.Append(x.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public int unshift(object item, params object[] items)
+        {
+            var mergedItems = new object[items.Length + 1];
+            mergedItems[0] = item;
+            Array.Copy(items, 0, mergedItems, 1, items.Length);
+            arraylist.InsertRange(0, mergedItems);
+            return arraylist.Count;
+        }
+
+        public IEnumerable values() {
+            foreach (var item in arraylist)
+                yield return item;
+        }
     }
 }

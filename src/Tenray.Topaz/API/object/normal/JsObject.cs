@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
@@ -159,6 +160,11 @@ namespace Tenray.Topaz.API
         protected virtual bool IsPrototypePropertyInternal(string memberName)
         {
             return false;
+        }
+
+        public virtual string toString()
+        {
+            return "[object Object]";
         }
     }
 }

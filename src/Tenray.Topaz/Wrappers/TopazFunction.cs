@@ -297,10 +297,13 @@ namespace Tenray.Topaz
                expr2?.Params ??
                expr3.Params;
 
-            var argTypes = conversionType.GetTypeInfo().GenericTypeArguments;            
-            if (argTypes.Length != topazParameters.Count)
-                throw new NotSupportedException();
+            var argTypes = conversionType.GetTypeInfo().GenericTypeArguments;
             var returnType = conversionType.GetMethod("Invoke").ReturnType;
+            var isVoid = returnType == typeof(void);
+            if (isVoid && argTypes.Length != topazParameters.Count ||
+                !isVoid && argTypes.Length - 1 != topazParameters.Count
+                )
+                throw new NotSupportedException();
             return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
                 (args) => this.Execute(args));
         }
