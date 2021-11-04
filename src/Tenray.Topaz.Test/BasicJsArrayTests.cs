@@ -216,9 +216,16 @@ for (const value of iterator) {
   a.push(value)
 }
 model.a = a
+let b = []
+for (const value of array1.keys()) {
+  b.push(value)
+}
+model.b = b
 ");
             Assert.AreEqual("[\"a\",\"b\",\"c\"]",
                 JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[0,1,2]",
+                JsonSerializer.Serialize<JsArray>(model.b));
         }
 
         [TestCase(false)]
@@ -239,6 +246,66 @@ model.a = a
 ");
             Assert.AreEqual("[1,2,3,4,5]",
                 JsonSerializer.Serialize<JsArray>(model.a));
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayJoin(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const elements = ['Fire', 'Air', 'Water']
+model.a = elements.join()
+model.b = elements.join('')
+model.c = elements.join('-')
+");
+            Assert.AreEqual("Fire,Air,Water", model.a);
+            Assert.AreEqual("FireAirWater", model.b);
+            Assert.AreEqual("Fire-Air-Water", model.c);
+        }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayValuesSome(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const array = [1, 2, 3, 4, 5]
+const even = (element) => element % 2 === 0
+model.a = array.some(even)
+
+const TRUTHY_VALUES = [true, 'true', 1];
+
+function getBoolean(value) {
+  'use strict';
+
+  if (typeof value === 'string') {
+    value = value.ToLower().Trim();
+  }
+
+  return TRUTHY_VALUES.some(function(t) {
+    return t === value;
+  });
+}
+
+model.b = getBoolean(false);   // false
+model.c = getBoolean('false'); // false
+model.d = getBoolean(1);       // true
+model.e = getBoolean('true');  // true
+");
+            Assert.IsTrue(model.a);
+            Assert.IsFalse(model.b);
+            Assert.IsFalse(model.c);
+            Assert.IsTrue(model.d);
+            Assert.IsTrue(model.e);
         }
     }
 }

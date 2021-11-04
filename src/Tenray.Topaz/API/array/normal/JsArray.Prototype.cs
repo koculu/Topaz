@@ -60,8 +60,17 @@ namespace Tenray.Topaz.API
             return arraylist.IndexOf(item, fromIndex);
         }
 
-        public void join() { }
-        public void keys() { }
+        public string join() { 
+            return string.Join(",", arraylist.ToArray()); 
+        }
+
+        public string join(string seperator) {
+            return string.Join(seperator ?? ",", arraylist.ToArray());
+        }
+
+        public IEnumerable keys() {
+            return Enumerable.Range(0, arraylist.Count);
+        }
 
         public int lastIndexOf(object item)
         {
@@ -130,7 +139,37 @@ namespace Tenray.Topaz.API
             return item;
         }
         public void slice() { }
-        public void some() { }
+
+        public bool some(Func<object, bool> callbackFn) {
+            foreach (var item in arraylist)
+            {
+                if (callbackFn(item))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool some(Func<object, object, bool> callbackFn)
+        { 
+            var i = 0;
+            foreach (var item in arraylist)
+            {
+                if (callbackFn(item, i++))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool some(Func<object, object, object, bool> callbackFn)
+        {
+            var i = 0;
+            foreach (var item in arraylist)
+            {
+                if (callbackFn(item, i++, this))
+                    return true;
+            }
+            return false;
+        }
 
         public IJsArray sort() {
             arraylist.Sort();
