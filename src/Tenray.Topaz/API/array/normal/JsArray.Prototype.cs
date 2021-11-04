@@ -41,7 +41,38 @@ namespace Tenray.Topaz.API
             }
         }
 
-        public void every() { }
+        public bool every(Func<object, object> callbackFn)
+        {
+            foreach (var item in arraylist)
+            {
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item)))
+                    return false;
+            }
+            return true;
+        }
+
+        public bool every(Func<object, object, object> callbackFn)
+        {
+            var i = 0;
+            foreach (var item in arraylist)
+            {
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item, i++)))
+                    return false;
+            }
+            return true;
+        }
+
+        public bool every(Func<object, object, object, object> callbackFn)
+        {
+            var i = 0;
+            foreach (var item in arraylist)
+            {
+                if (JavascriptTypeUtility.IsObjectFalse(callbackFn(item, i++, this)))
+                    return false;
+            }
+            return true;
+        }
+
         public void fill() { }
         public void filter() { }
         public void find() { }
@@ -151,32 +182,32 @@ namespace Tenray.Topaz.API
         }
         public void slice() { }
 
-        public bool some(Func<object, bool> callbackFn) {
+        public bool some(Func<object, object> callbackFn) {
             foreach (var item in arraylist)
             {
-                if (callbackFn(item))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item)))
                     return true;
             }
             return false;
         }
 
-        public bool some(Func<object, object, bool> callbackFn)
+        public bool some(Func<object, object, object> callbackFn)
         { 
             var i = 0;
             foreach (var item in arraylist)
             {
-                if (callbackFn(item, i++))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++)))
                     return true;
             }
             return false;
         }
 
-        public bool some(Func<object, object, object, bool> callbackFn)
+        public bool some(Func<object, object, object, object> callbackFn)
         {
             var i = 0;
             foreach (var item in arraylist)
             {
-                if (callbackFn(item, i++, this))
+                if (JavascriptTypeUtility.IsObjectTrue(callbackFn(item, i++, this)))
                     return true;
             }
             return false;

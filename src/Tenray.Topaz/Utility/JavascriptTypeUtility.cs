@@ -7,6 +7,8 @@ namespace Tenray.Topaz
     {
         internal static bool IsObjectTrue(object value)
         {
+            // https://developer.mozilla.org/en-US/docs/Glossary/Truthy
+            // https://developer.mozilla.org/en-US/docs/Glossary/Falsy
             if (value == null)
                 return false;
             if (value is bool b)
@@ -37,6 +39,8 @@ namespace Tenray.Topaz
                 return ub != 0;
             if (value is sbyte sb)
                 return sb != 0;
+            if (value == Undefined.Value)
+                return false;
             return true;
         }
 

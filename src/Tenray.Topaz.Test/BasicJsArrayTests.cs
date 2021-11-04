@@ -329,5 +329,36 @@ model.b = b
             Assert.AreEqual("[0,5,1,6,2,7]",
                 JsonSerializer.Serialize<JsArray>(model.b));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArrayEvery(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+const isBelowThreshold = (currentValue) => currentValue < 40
+const isAboveThreshold = (currentValue) => currentValue > 27
+const array1 = [34, 30, 39, 29, 10, 13]
+model.a = array1.every(isBelowThreshold)
+model.b = array1.every(isAboveThreshold)
+
+function isSubset(array1, array2) {
+  return array2.every(function (element) {
+    return array1.includes(element)
+  })
+}
+
+model.c = isSubset([1, 2, 3, 4, 5, 6, 7], [5, 7, 6]) // true
+model.d = isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7]) // false
+");
+            /*Assert.IsTrue(model.a);
+            Assert.IsFalse(model.b);*/
+            Assert.IsTrue(model.c);
+            Assert.IsFalse(model.d);
+        }
     }
 }
