@@ -51,7 +51,7 @@ namespace Tenray.Topaz.API
                 return this;
 
             if (end < 0)
-                end = len + end + 1; //exclusive end
+                end = len + end; //exclusive end
             
             end = Math.Min(len, end);
             
@@ -710,11 +710,36 @@ namespace Tenray.Topaz.API
             arraylist.RemoveAt(0);
             return item;
         }
-        public void slice() { }
+
+        public IJsArray slice() {
+            return slice(0, arraylist.Count);
+        }
+        
+        public IJsArray slice(int start)
+        {
+            return slice(start, arraylist.Count);
+        }
+        
+        public IJsArray slice(int start, int end)
+        {
+            var list = arraylist;
+            var len = list.Count;
+            var result = new JsArray();
+            if (start < 0)
+                start = len + start;
+            if (end < 0)
+                end = len + end;
+            end = Math.Min(len, end);
+            for (var i = start; i < end; ++i)
+            {
+                result.AddArrayValue(list[i]);
+            }
+            return result;
+        }
 
         public bool some(Func<object, object> callbackFn) {
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for (var i = 0; i < len; ++i)
             {
                 if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i])))
@@ -726,7 +751,7 @@ namespace Tenray.Topaz.API
         public bool some(Func<object, object, object> callbackFn)
         { 
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for (var i = 0; i < len; ++i)
             {
                 if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i], i)))
@@ -738,7 +763,7 @@ namespace Tenray.Topaz.API
         public bool some(Func<object, object, object, object> callbackFn)
         {
             var list = arraylist;
-            var len = arraylist.Count;
+            var len = list.Count;
             for (var i = 0; i < len; ++i)
             {
                 if (JavascriptTypeUtility.IsObjectTrue(callbackFn(list[i], i, this)))

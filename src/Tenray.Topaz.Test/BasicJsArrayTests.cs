@@ -688,5 +688,25 @@ model.d = a.flatMap( (n) =>
             Assert.AreEqual("[4,1,4,20,16,1,18]",
                 JsonSerializer.Serialize<JsArray>(model.d));
         }
+
+        [TestCase(false)]
+        [TestCase(true)]
+        public void TestJsArraySlice(bool useThreadSafeJsObjects)
+        {
+            var engine = new TopazEngine();
+            engine.Options.NoUndefined = true;
+            engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+let fruits = ['Banana', 'Orange', 'Lemon', 'Apple', 'Mango']
+model.a = fruits.slice(1, 3)
+model.b = [1,2,3,4,5].slice(-3,-1)
+");
+            Assert.AreEqual("[\"Orange\",\"Lemon\"]",
+                JsonSerializer.Serialize<JsArray>(model.a));
+            Assert.AreEqual("[3,4]",
+                JsonSerializer.Serialize<JsArray>(model.b));
+        }
     }
 }
