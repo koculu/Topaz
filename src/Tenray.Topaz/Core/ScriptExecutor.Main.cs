@@ -219,7 +219,7 @@ namespace Tenray.Topaz.Core
 
                 Nodes.BlockStatement => BlockStatementHandler.Execute(this, statement),
                 Nodes.DoWhileStatement => DoWhileStatementHandler.Execute(this, statement),
-                Nodes.ExpressionStatement => ExpressionStatementHandler.Execute(this, statement),
+                Nodes.ExpressionStatement => ExecuteStatement(((ExpressionStatement)statement).Expression),
                 Nodes.ForStatement => ForStatementHandler.Execute(this, statement),
                 Nodes.ForInStatement => ForInStatementHandler.Execute(this, statement),
                 Nodes.FunctionDeclaration => FunctionDeclarationHandler.Execute(this, statement),
@@ -303,7 +303,7 @@ namespace Tenray.Topaz.Core
 
                 Nodes.BlockStatement => await BlockStatementHandler.ExecuteAsync(this, statement),
                 Nodes.DoWhileStatement => await DoWhileStatementHandler.ExecuteAsync(this, statement),
-                Nodes.ExpressionStatement => await ExpressionStatementHandler.ExecuteAsync(this, statement),
+                Nodes.ExpressionStatement => await ExecuteStatementAsync(((ExpressionStatement)statement).Expression),
                 Nodes.ForStatement => await ForStatementHandler.ExecuteAsync(this, statement),
                 Nodes.ForInStatement => await ForInStatementHandler.ExecuteAsync(this, statement),
                 Nodes.FunctionDeclaration => FunctionDeclarationHandler.Execute(this, statement),
