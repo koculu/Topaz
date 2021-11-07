@@ -5,12 +5,6 @@ namespace Tenray.Topaz.Interop
     public interface IObjectProxy
     {
         /// <summary>
-        /// Proxied type.
-        /// If it is null, proxy can work for any type.
-        /// </summary>
-        Type ProxiedType { get; }
-
-        /// <summary>
         /// Returns true if a member is found, false otherwise.
         /// Output value is member of the given instance.
         /// If instance member is a function then output value is IInvokable.
