@@ -181,10 +181,11 @@ namespace Tenray.Topaz
                 return;
             var disableReflection =
                 !Options.SecurityPolicy.HasFlag(SecurityPolicy.EnableReflection);
-            if (disableReflection &&
-                obj.GetType().Namespace.StartsWith("System.Reflection"))
+            if (disableReflection)
             {
-                Exceptions.ThrowReflectionSecurityException(obj, member);
+                var ns = obj.GetType().Namespace;
+                if (ns != null && ns.StartsWith("System.Reflection"))
+                    Exceptions.ThrowReflectionSecurityException(obj, member);
             }
 
             if (MemberAccessPolicy

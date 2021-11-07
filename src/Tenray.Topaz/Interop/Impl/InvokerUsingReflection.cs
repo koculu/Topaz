@@ -21,6 +21,18 @@ namespace Tenray.Topaz.Interop
         {
             Name = name;
             this.methodInfos = methodInfos;
+            var len = methodInfos.Length;
+            for (var i = 0; i < len; ++i)
+            {
+                if (methodInfos[i].ContainsGenericParameters)
+                {
+                    var methodInfo = methodInfos[i];
+                    var genericParamCount = 
+                        methodInfo.GetGenericArguments().Length;
+                    var genericArgs = Enumerable.Range(0, genericParamCount).Select(x => typeof(object)).ToArray();
+                    methodInfos[i] = methodInfo.MakeGenericMethod(genericArgs);
+                }
+            }
             this.instance = instance;
             this.options = options; 
             allParameters = methodInfos
@@ -55,6 +67,10 @@ namespace Tenray.Topaz.Interop
                 out var convertedArgs2))
             {
                 var bestMethod = methodInfos[index2];
+                if (bestMethod.ContainsGenericParameters)
+                {
+                    bestMethod = bestMethod.MakeGenericMethod(typeof(object));
+                }
                 return bestMethod.Invoke(instance, convertedArgs2);
             }
             Exceptions
