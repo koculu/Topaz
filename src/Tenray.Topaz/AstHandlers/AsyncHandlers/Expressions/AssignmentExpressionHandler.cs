@@ -77,7 +77,6 @@ namespace Tenray.Topaz.Expressions
                 return right;
             }
             var binaryOperator = GetBinaryOperator(@operator);
-            // TODO: call non-dynamic operator!!!
             right = BinaryExpressionHandler.ExecuteBinaryOperator(scriptExecutor, binaryOperator, referenceValue, right);
             scriptExecutor.SetReferenceValue(reference, right);
             return right;
