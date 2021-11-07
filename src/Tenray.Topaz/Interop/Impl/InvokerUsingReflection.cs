@@ -67,10 +67,6 @@ namespace Tenray.Topaz.Interop
                 out var convertedArgs2))
             {
                 var bestMethod = methodInfos[index2];
-                if (bestMethod.ContainsGenericParameters)
-                {
-                    bestMethod = bestMethod.MakeGenericMethod(typeof(object));
-                }
                 return bestMethod.Invoke(instance, convertedArgs2);
             }
             Exceptions
