@@ -147,15 +147,15 @@ Console.WriteLine(`Final value: {dic['hello']} {dic['world']}`);
 ### Cancellation support:
 Cancellation of a long running script with time constraint.
 ```c#
-var engine = new TopazEngine();
-using var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
 try
 {
+  var engine = new TopazEngine();
+  using var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
   engine.ExecuteScript(@"
 var i = 0;
 while(true) {
   ++i; // infinite loop
-}");
+}", cancellationSource.Token);
 } catch (OperationCanceledException e) {
     // ...
 }
