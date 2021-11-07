@@ -85,6 +85,13 @@ namespace Tenray.Topaz.ErrorHandling
                     $"Security Exception: Member '{GetArgumentString(property)}' of {GetArgumentString(instance)} is not accessible.");
         }
 
+        internal static void ThrowCannotCallDelegateArgumentMismatch(object[] args)
+        {
+            var argString = string.Join(", ", args);            
+            throw new TopazException(
+                    $"Type Error: Delegate method call argument mismatch. delegate({argString})");
+        }
+
         internal static void ThrowFunctionIsNull(object callee, ScriptExecutor scope)
         {
             throw new NullReferenceException($"Function {GetArgumentString(callee)} is null.");
@@ -158,7 +165,7 @@ namespace Tenray.Topaz.ErrorHandling
         internal static void ThrowCannotFindFunctionMatchingGivenArguments(string name, IReadOnlyList<object> args)
         {
             var argString = string.Join(", ", args);
-            throw new TopazException($"Interop error: Cannot find function matching giving arguments:\n{name}({argString})");
+            throw new TopazException($"Interop error: Cannot find function matching given arguments:\n{name}({argString})");
         }
 
         internal static void ThrowReduceOfEmptyArrayWithNoInitialValue()

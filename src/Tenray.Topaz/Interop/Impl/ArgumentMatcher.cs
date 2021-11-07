@@ -109,8 +109,8 @@ namespace Tenray.Topaz.Interop
                         useParamArrayInnerType = paramArrayInnerType;
                     }
 
-                    var p = parameters[parametersIndex];
-                    var ptype = useParamArrayInnerType ?? p.ParameterType;
+                    var ptype = useParamArrayInnerType ??
+                        parameters[parametersIndex].ParameterType;
                     if (arg == Undefined.Value)
                     {
                         argsCopy[i] = null;
