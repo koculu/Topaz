@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 
@@ -14,10 +15,11 @@ namespace Tenray.Topaz.Expressions
             ScriptExecutor scriptExecutor,
             ArrayPattern arrayPattern,
             object value,
-            Action<object, object> callback)
+            Action<object, object, CancellationToken> callback,
+            CancellationToken token)
         {
             if (value is not IEnumerable enumerable)
-                return Exceptions.ThrowValueIsNotEnumerable(value);
+                return Exceptions.ThrowValueIsNotEnumerable(value); 
             var enumerator = enumerable.GetEnumerator();
             var elements = arrayPattern.Elements;
             var len = arrayPattern.Elements.Count;
@@ -25,6 +27,7 @@ namespace Tenray.Topaz.Expressions
             {
                 if (!enumerator.MoveNext())
                     return value;
+                token.ThrowIfCancellationRequested();
                 var item = enumerator.Current;
                 var el = elements[i];
                 if (el == null)
@@ -36,10 +39,11 @@ namespace Tenray.Topaz.Expressions
                     var restArray = new List<object>();
                     do
                     {
+                        token.ThrowIfCancellationRequested();
                         restArray.Add(enumerator.Current);
                     }
                     while (enumerator.MoveNext());
-                    callback(rest.Argument, restArray);
+                    callback(rest.Argument, restArray, token);
                     return value;
                 }
                 if (el is ArrayPattern nestedArrayPattern)
@@ -48,7 +52,8 @@ namespace Tenray.Topaz.Expressions
                         scriptExecutor,
                         nestedArrayPattern,
                         item,
-                        callback);
+                        callback,
+                        token);
                     continue;
                 }
                 else if (el is ObjectPattern nestedObjectPattern)
@@ -57,10 +62,11 @@ namespace Tenray.Topaz.Expressions
                         scriptExecutor,
                         nestedObjectPattern,
                         item,
-                        callback);
+                        callback,
+                        token);
                     continue;
                 }
-                callback(el, item);
+                callback(el, item, token);
             }
             return value;
         }

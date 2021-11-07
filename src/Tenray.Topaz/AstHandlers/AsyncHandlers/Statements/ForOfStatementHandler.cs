@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System.Collections;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -9,7 +10,7 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class ForOfStatementHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (ForOfStatement)statement;
             var body = expr.Body;
@@ -17,7 +18,7 @@ namespace Tenray.Topaz.Statements
             var right = expr.Right;
 
             var variableDeclaration = (VariableDeclaration)left;
-            var rightValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(right);
+            var rightValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(right, token);
             if (rightValue is not IEnumerable enumerable)
                 return Exceptions.ThrowValueIsNotEnumerable(rightValue);
 
@@ -25,10 +26,11 @@ namespace Tenray.Topaz.Statements
             {
                 foreach (var item in enumerable)
                 {
+                    token.ThrowIfCancellationRequested();
                     var bodyScope = scriptExecutor.NewBlockScope();
                     variableDeclaration.Declarations[0].Init = new ValueWrapper(item);
-                    bodyScope.ExecuteStatement(variableDeclaration);
-                    var result = await bodyScope.ExecuteStatementAsync(body);
+                    bodyScope.ExecuteStatement(variableDeclaration, token);
+                    var result = await bodyScope.ExecuteStatementAsync(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -41,13 +43,14 @@ namespace Tenray.Topaz.Statements
             var len = list.Count;
             foreach (var item in enumerable)
             {
+                token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 variableDeclaration.Declarations[0].Init = new ValueWrapper(item);
-                bodyScope.ExecuteStatement(variableDeclaration);
+                bodyScope.ExecuteStatement(variableDeclaration, token);
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    var result = await bodyScope.ExecuteStatementAsync(list[i]);
+                    var result = await bodyScope.ExecuteStatementAsync(list[i], token);
                     if (result is ContinueWrapper)
                     {
                         break;

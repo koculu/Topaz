@@ -2,6 +2,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 
@@ -9,11 +10,11 @@ namespace Tenray.Topaz.Expressions
 {
     internal static partial class BinaryExpressionHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var expr = (BinaryExpression)expression;
-            var left = scriptExecutor.ExecuteExpressionAndGetValue(expr.Left);
-            var right = scriptExecutor.ExecuteExpressionAndGetValue(expr.Right);
+            var left = scriptExecutor.ExecuteExpressionAndGetValue(expr.Left, token);
+            var right = scriptExecutor.ExecuteExpressionAndGetValue(expr.Right, token);
             var @operator = expr.Operator;
 
             // Try to avoid slow dynamic operator execution by type casting

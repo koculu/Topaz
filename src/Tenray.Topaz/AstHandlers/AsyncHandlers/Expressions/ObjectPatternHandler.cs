@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -14,7 +15,8 @@ namespace Tenray.Topaz.Expressions
             ScriptExecutor scriptExecutor,
             ObjectPattern objectPattern,
             object value,
-            Func<object, object, ValueTask> callback)
+            Func<object, object, CancellationToken, ValueTask> callback,
+            CancellationToken token)
         {
             var topazEngine = scriptExecutor.TopazEngine;
             var scope = scriptExecutor;
@@ -22,23 +24,24 @@ namespace Tenray.Topaz.Expressions
             var len = props.Count;
             for (var i = 0; i < len; ++i)
             {
+                token.ThrowIfCancellationRequested();
                 var p = props[i];
                 if (p is RestElement restElement)
                 {
                     var arg = await scriptExecutor
-                        .ExecuteStatementAsync(restElement.Argument);
+                        .ExecuteStatementAsync(restElement.Argument, token);
                     if (arg is TopazIdentifier topazIdentifier)
                     {
                         if (topazEngine
                             .TryGetObjectMember(value, topazIdentifier.Name,
                             out var item, false))
-                            await callback(arg, item);
+                            await callback(arg, item, token);
                     }
                     continue;
                 }
                 if (p is Property prop)
                 {
-                    var left = await scriptExecutor.ExecuteStatementAsync(prop.Key);
+                    var left = await scriptExecutor.ExecuteStatementAsync(prop.Key, token);
                     var key = left;
                     if (prop.Computed)
                         key = scriptExecutor.GetValue(key);
@@ -61,7 +64,8 @@ namespace Tenray.Topaz.Expressions
                                 scriptExecutor,
                                 nestedArrayPattern,
                                 nestedValue,
-                                callback);
+                                callback,
+                                token);
                             continue;
                         }
                         else if (prop.Value is ObjectPattern nestedObjectPattern)
@@ -74,20 +78,21 @@ namespace Tenray.Topaz.Expressions
                                 scriptExecutor,
                                 nestedObjectPattern,
                                 nestedValue,
-                                callback);
+                                callback,
+                                token);
                             continue;
                         }
                         if (prop.Value is AssignmentPattern assignmentPattern)
                         {
                             defaultValue = await scriptExecutor
-                                .ExecuteExpressionAndGetValueAsync(assignmentPattern.Right);
+                                .ExecuteExpressionAndGetValueAsync(assignmentPattern.Right, token);
                         }
                     }
                     if (topazEngine
                         .TryGetObjectMember(value, keyString, out var item))
-                        await callback(left, item);
+                        await callback(left, item, token);
                     else
-                        await callback(left, defaultValue);
+                        await callback(left, defaultValue, token);
                 }
             }
             return value;

@@ -144,6 +144,23 @@ Console.WriteLine(`Final value: {dic['hello']} {dic['world']}`);
 
 ```
 
+### Cancellation support:
+Cancellation of a long running script with time constraint.
+```c#
+var engine = new TopazEngine();
+using var cancellationSource = new CancellationTokenSource(TimeSpan.FromSeconds(2));
+try
+{
+  engine.ExecuteScript(@"
+var i = 0;
+while(true) {
+  ++i; // infinite loop
+}");
+} catch (OperationCanceledException e) {
+    // ...
+}
+```
+
 ### Fully Customizable Type Conversions:
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -47,8 +48,9 @@ namespace Tenray.Topaz
             this.expr3 = expr;
         }
 
-        public object Execute(IReadOnlyList<object> args)
+        public object Execute(IReadOnlyList<object> args, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
             var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
             var parameters = 
                 expr1?.Params ??
@@ -67,7 +69,7 @@ namespace Tenray.Topaz
                     // ex: (x = 1) => x * x
                     p = assignmentPattern.Left;
                     defaultValue = scriptExecutor
-                        .ExecuteExpressionAndGetValue(assignmentPattern.Right);
+                        .ExecuteExpressionAndGetValue(assignmentPattern.Right, token);
                 }
                 else if (p is RestElement r)
                 {
@@ -84,10 +86,11 @@ namespace Tenray.Topaz
                         scriptExecutor,
                         objectPattern,
                         i < args.Count ? args[i] : defaultValue,
-                        (x, y) =>
+                        (x, y, token) =>
                         {
                             scriptExecutor.DefineVariable(x, y, VariableKind.Var);
-                        });
+                        },
+                        token);
                     continue;
                 }
                 var id = (Identifier)p;
@@ -117,18 +120,19 @@ namespace Tenray.Topaz
             var result = scriptExecutor.ExecuteStatement(
                 expr1?.Body ??
                 expr2?.Body ??
-                expr3.Body);
+                expr3.Body, token);
 
             if (result is ReturnWrapper ret)
                 return ret.Result;
 
             if (result is Expression expr)
-                return scriptExecutor.ExecuteExpressionAndGetValue(expr);
+                return scriptExecutor.ExecuteExpressionAndGetValue(expr, token);
             return scriptExecutor.GetValue(result);
         }
 
-        public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args)
+        public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
             var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
             var parameters =
                 expr1?.Params ??
@@ -147,7 +151,7 @@ namespace Tenray.Topaz
                     // ex: (x = 1) => x * x
                     p = assignmentPattern.Left;
                     defaultValue = await scriptExecutor
-                        .ExecuteExpressionAndGetValueAsync(assignmentPattern.Right);
+                        .ExecuteExpressionAndGetValueAsync(assignmentPattern.Right, token);
                 }
                 else if (p is RestElement r)
                 {
@@ -164,11 +168,12 @@ namespace Tenray.Topaz
                         scriptExecutor,
                         objectPattern,
                         i < args.Count ? args[i] : defaultValue,
-                        (x, y) =>
+                        (x, y, token) =>
                         {
                             scriptExecutor.DefineVariable(x, y, VariableKind.Var);
                             return ValueTask.CompletedTask;
-                        });
+                        },
+                        token);
                     continue;
                 }
                 var id = (Identifier)p;
@@ -198,13 +203,13 @@ namespace Tenray.Topaz
             var result = await scriptExecutor.ExecuteStatementAsync(
                 expr1?.Body ??
                 expr2?.Body ??
-                expr3.Body);
+                expr3.Body, token);
 
             if (result is ReturnWrapper ret)
                 return ret.Result;
 
             if (result is Expression expr)
-                return await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr);
+                return await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr, token);
             return scriptExecutor.GetValue(result);
         }
 
@@ -306,7 +311,7 @@ namespace Tenray.Topaz
                 )
                 throw new NotSupportedException();
             return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
-                (args) => this.Execute(args));
+                (args) => Execute(args, default));
         }
     }
 }

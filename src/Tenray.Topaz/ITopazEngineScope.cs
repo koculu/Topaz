@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tenray.Topaz
 {
@@ -45,59 +46,67 @@ namespace Tenray.Topaz
         /// Executes the script in the scope.
         /// </summary>
         /// <param name="code"></param>
-        void ExecuteScript(string code);
+        /// <param name="token"></param>
+        void ExecuteScript(string code, CancellationToken token = default);
 
         /// <summary>
         /// Executes the single line expression in the scope.
         /// </summary>
         /// <param name="code"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        object ExecuteExpression(string code);
+        object ExecuteExpression(string code, CancellationToken token = default);
 
         /// <summary>
         /// Executes the script in the scope.
         /// </summary>
         /// <param name="code"></param>
-        Task ExecuteScriptAsync(string code);
+        /// <param name="token"></param>
+        Task ExecuteScriptAsync(string code, CancellationToken token = default);
 
         /// <summary>
         /// Executes the single line expression in the scope.
         /// </summary>
         /// <param name="code"></param>
+        /// <param name="token"></param>
         /// <returns></returns>
-        Task<object> ExecuteExpressionAsync(string code);
+        Task<object> ExecuteExpressionAsync(string code, CancellationToken token = default);
 
         /// <summary>
         /// Executes the function that is declared in the scope with given name.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="token"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        object InvokeFunction(string name, params object[] args);
+        object InvokeFunction(string name, CancellationToken token, params object[] args);
 
         /// <summary>
         /// Executes given function object.
         /// </summary>
         /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
-        /// <param name="args">The arguments passed into the function.</param>
+        /// <param name="token"></param>
+        /// /// <param name="args">The arguments passed into the function.</param>
         /// <returns></returns>
-        object InvokeFunction(object functionObject, params object[] args);
+        object InvokeFunction(object functionObject, CancellationToken token, params object[] args);
 
         /// <summary>
         /// Executes the function that is declared in the scope with given name.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="token"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<object> InvokeFunctionAsync(string name, params object[] args);
+        Task<object> InvokeFunctionAsync(string name, CancellationToken token, params object[] args);
 
         /// <summary>
         /// Executes given function object.
         /// </summary>
         /// <param name="functionObject">A Javascript function, Action<> or Func<> object.</param>
-        /// <param name="args">The arguments passed into the function.</param>
+        /// <param name="token"></param>
+        /// /// <param name="args">The arguments passed into the function.</param>
         /// <returns></returns>
-        Task<object> InvokeFunctionAsync(object functionObject, params object[] args);
+        Task<object> InvokeFunctionAsync(object functionObject, CancellationToken token, params object[] args);
 
         /// <summary>
         /// Gets the value of the variable that is defined in the scope

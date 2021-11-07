@@ -49,9 +49,9 @@ f2(5)
             Parallel.For(0, 10000, (x) =>
             {
                 if (random.Next(0, 1) == 1)
-                    engine.InvokeFunction("f1", 3);
+                    engine.InvokeFunction("f1", default, 3);
                 else
-                    engine.InvokeFunction("f2", 5);
+                    engine.InvokeFunction("f2", default, 5);
                 Assert.AreEqual(3, model.a);
                 Assert.AreEqual(5, model.b);
             });

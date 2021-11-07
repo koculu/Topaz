@@ -1,4 +1,5 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
@@ -6,7 +7,7 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class IfStatementHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (IfStatement)statement;
             var test = expr.Test;
@@ -14,9 +15,9 @@ namespace Tenray.Topaz.Statements
             var onFalse = expr.Alternate;
             if (JavascriptTypeUtility
                 .IsObjectTrue(await
-                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test)))
-                return await scriptExecutor.ExecuteStatementAsync(onTrue);
-            return await scriptExecutor.ExecuteStatementAsync(onFalse);
+                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test, token)))
+                return await scriptExecutor.ExecuteStatementAsync(onTrue, token);
+            return await scriptExecutor.ExecuteStatementAsync(onFalse, token);
         }
     }
 

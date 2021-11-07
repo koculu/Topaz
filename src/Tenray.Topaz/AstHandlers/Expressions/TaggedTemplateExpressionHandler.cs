@@ -1,13 +1,14 @@
 ﻿using Esprima.Ast;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
 {
     internal static partial class TaggedTemplateExpressionHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var tagged = (TaggedTemplateExpression)expression;
             var tag = tagged.Tag;
@@ -26,10 +27,10 @@ namespace Tenray.Topaz.Expressions
             args.Add(strings);
             for (var i = 0; i < listLen; ++i)
             {
-                args.Add(scriptExecutor.ExecuteExpressionAndGetValue(list[i]));
+                args.Add(scriptExecutor.ExecuteExpressionAndGetValue(list[i], token));
             }
-            var callee = scriptExecutor.ExecuteExpressionAndGetValue(tag);
-            return scriptExecutor.CallFunction(callee, args.ToArray(), false);
+            var callee = scriptExecutor.ExecuteExpressionAndGetValue(tag, token);
+            return scriptExecutor.CallFunction(callee, args.ToArray(), false, token);
         }
     }
 

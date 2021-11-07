@@ -49,24 +49,24 @@ namespace Tenray.Topaz
             MemberAccessPolicy = memberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
         }
 
-        public void ExecuteScript(string code)
+        public void ExecuteScript(string code, CancellationToken token = default)
         {
-            GlobalScope.ExecuteScript(code);
+            GlobalScope.ExecuteScript(code, token);
         }
 
-        public object ExecuteExpression(string code)
+        public object ExecuteExpression(string code, CancellationToken token = default)
         {
-            return GlobalScope.ExecuteExpression(code);
+            return GlobalScope.ExecuteExpression(code, token);
         }
 
-        public object InvokeFunction(string name, params object[] args)
+        public object InvokeFunction(string name, CancellationToken token, params object[] args)
         {
-            return GlobalScope.InvokeFunction(name, args);
+            return GlobalScope.InvokeFunction(name, token, args);
         }
 
-        public object InvokeFunction(object functionObject, params object[] args)
+        public object InvokeFunction(object functionObject, CancellationToken token, params object[] args)
         {
-            return GlobalScope.InvokeFunction(functionObject, args);
+            return GlobalScope.InvokeFunction(functionObject, token, args);
         }
 
         public void AddType<T>(string name = null, ITypeProxy typeProxy = null)
@@ -97,24 +97,24 @@ namespace Tenray.Topaz
             GlobalScope.SetValueAndKind(name, value, variableKind);
         }
 
-        public async Task ExecuteScriptAsync(string code)
+        public async Task ExecuteScriptAsync(string code, CancellationToken token = default)
         {
-            await GlobalScope.ExecuteScriptAsync(code);
+            await GlobalScope.ExecuteScriptAsync(code, token);
         }
 
-        public async Task<object> ExecuteExpressionAsync(string code)
+        public async Task<object> ExecuteExpressionAsync(string code, CancellationToken token = default)
         {
-            return await GlobalScope.ExecuteExpressionAsync(code);
+            return await GlobalScope.ExecuteExpressionAsync(code, token);
         }
 
-        public async Task<object> InvokeFunctionAsync(string name, params object[] args)
+        public async Task<object> InvokeFunctionAsync(string name, CancellationToken token, params object[] args)
         {
-            return await GlobalScope.InvokeFunctionAsync(name, args);
+            return await GlobalScope.InvokeFunctionAsync(name, token, args);
         }
 
-        public async Task<object> InvokeFunctionAsync(object functionObject, params object[] args)
+        public async Task<object> InvokeFunctionAsync(object functionObject, CancellationToken token, params object[] args)
         {
-            return await GlobalScope.InvokeFunctionAsync(functionObject, args);
+            return await GlobalScope.InvokeFunctionAsync(functionObject, token, args);
         }
 
         internal bool TryGetObjectMember(

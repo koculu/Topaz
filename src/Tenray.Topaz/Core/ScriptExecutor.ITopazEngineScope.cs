@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tenray.Topaz.Core
@@ -17,34 +18,34 @@ namespace Tenray.Topaz.Core
 
         bool ITopazEngineScope.IsGlobalScope => ScopeType == ScopeType.Global;
 
-        void ITopazEngineScope.ExecuteScript(string code)
+        void ITopazEngineScope.ExecuteScript(string code, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(code))
                 return;
             var script = new JavaScriptParser(code, Options.ParserOptions)
                 .ParseScript();
-            ExecuteScript(script);
+            ExecuteScript(script, token);
         }
 
-        object ITopazEngineScope.ExecuteExpression(string code)
+        object ITopazEngineScope.ExecuteExpression(string code, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(code))
                 return null;
             var script = new JavaScriptParser(code, Options.ParserOptions)
                 .ParseExpression();
-            return ExecuteExpressionAndGetValue(script);
+            return ExecuteExpressionAndGetValue(script, token);
         }
 
-        object ITopazEngineScope.InvokeFunction(string name, params object[] args)
+        object ITopazEngineScope.InvokeFunction(string name, CancellationToken token, params object[] args)
         {
             return CallFunction(
                 new TopazIdentifier(name),
-                args.ToArray(), false);
+                args.ToArray(), false, token);
         }
 
-        object ITopazEngineScope.InvokeFunction(object functionObject, params object[] args)
+        object ITopazEngineScope.InvokeFunction(object functionObject, CancellationToken token, params object[] args)
         {
-            return CallFunction(functionObject, args, false);
+            return CallFunction(functionObject, args, false, token);
         }
 
         ITopazEngineScope ITopazEngineScope.NewChildScope(bool? isThreadSafe)
@@ -69,34 +70,34 @@ namespace Tenray.Topaz.Core
                    (name, value, variableKind);
         }
 
-        async Task ITopazEngineScope.ExecuteScriptAsync(string code)
+        async Task ITopazEngineScope.ExecuteScriptAsync(string code, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(code))
                 return;
             var script = new JavaScriptParser(code, Options.ParserOptions)
                 .ParseScript();
-            await ExecuteScriptAsync(script);
+            await ExecuteScriptAsync(script, token);
         }
 
-        async Task<object> ITopazEngineScope.ExecuteExpressionAsync(string code)
+        async Task<object> ITopazEngineScope.ExecuteExpressionAsync(string code, CancellationToken token)
         {
             if (string.IsNullOrWhiteSpace(code))
                 return null;
             var script = new JavaScriptParser(code, Options.ParserOptions)
                 .ParseExpression();
-            return await ExecuteExpressionAndGetValueAsync(script);
+            return await ExecuteExpressionAndGetValueAsync(script, token);
         }
 
-        async Task<object> ITopazEngineScope.InvokeFunctionAsync(string name, params object[] args)
+        async Task<object> ITopazEngineScope.InvokeFunctionAsync(string name, CancellationToken token, params object[] args)
         {
             return await CallFunctionAsync(
                 new TopazIdentifier(name),
-                args.ToArray(), false);
+                args.ToArray(), false, token);
         }
 
-        async Task<object> ITopazEngineScope.InvokeFunctionAsync(object functionObject, params object[] args)
+        async Task<object> ITopazEngineScope.InvokeFunctionAsync(object functionObject, CancellationToken token, params object[] args)
         {
-            return await CallFunctionAsync(functionObject, args, false);
+            return await CallFunctionAsync(functionObject, args, false, token);
         }
     }
 }

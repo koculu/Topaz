@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System;
+using System.Threading;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions
@@ -8,24 +9,25 @@ namespace Tenray.Topaz.Expressions
     {
         internal static object Execute(
             ScriptExecutor scriptExecutor,
-            Node expression)
+            Node expression, 
+            CancellationToken token)
         {
             var expr = (AssignmentExpression)expression;
             var left = expr.Left;
             var right = expr.Right;
             var @operator = expr.Operator;
 
-            object value = scriptExecutor.ExecuteExpressionAndGetValue(right);
+            object value = scriptExecutor.ExecuteExpressionAndGetValue(right, token);
             if (left is ArrayPattern arrayPattern)
             {
                 return ArrayPatternHandler.ProcessArrayPattern(
                     scriptExecutor,
                     arrayPattern,
                     value,
-                    (x, y) =>
+                    (x, y, token) =>
                     {
-                        ProcessAssignment(scriptExecutor, @operator, x, y);
-                    });
+                        ProcessAssignment(scriptExecutor, @operator, x, y, token);
+                    }, token);
             }
             else if (left is ObjectPattern objectPattern)
             {
@@ -33,24 +35,26 @@ namespace Tenray.Topaz.Expressions
                     scriptExecutor,
                     objectPattern,
                     value,
-                    (x, y) =>
+                    (x, y, token) =>
                     {
-                        ProcessAssignment(scriptExecutor, @operator, x, y);
-                    });
+                        ProcessAssignment(scriptExecutor, @operator, x, y, token);
+                    },
+                    token);
             }
 
-            return ProcessAssignment(scriptExecutor, expr.Operator, left, value);
+            return ProcessAssignment(scriptExecutor, expr.Operator, left, value, token);
         }
 
         private static object ProcessAssignment(
             ScriptExecutor scriptExecutor,
             AssignmentOperator @operator,
             object left,
-            object right)
+            object right,
+            CancellationToken token)
         {
             var scope = scriptExecutor;
             var reference = left is Expression leftExpr ?
-                scriptExecutor.ExecuteStatement(leftExpr) :
+                scriptExecutor.ExecuteStatement(leftExpr, token) :
                 left;
             if (@operator == AssignmentOperator.Assign)
             {

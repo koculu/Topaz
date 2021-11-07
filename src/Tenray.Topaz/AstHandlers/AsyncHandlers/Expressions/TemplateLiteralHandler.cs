@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
@@ -7,7 +8,7 @@ namespace Tenray.Topaz.Expressions
 {
     internal static partial class TemplateLiteralHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var literal = (TemplateLiteral)expression;
             var quasis = literal.Quasis;
@@ -21,7 +22,7 @@ namespace Tenray.Topaz.Expressions
                 sb.Append(quasi.Value.Cooked);
                 if (i < listLen)
                 {
-                    sb.Append(await scriptExecutor.ExecuteExpressionAndGetValueAsync(list[i]));
+                    sb.Append(await scriptExecutor.ExecuteExpressionAndGetValueAsync(list[i], token));
                 }
             }
             return sb.ToString();

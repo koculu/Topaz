@@ -1,11 +1,12 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Statements
 {
     internal static partial class ForStatementHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (ForStatement)statement;
             var body = expr.Body;
@@ -13,18 +14,19 @@ namespace Tenray.Topaz.Statements
             var test = expr.Test;
             var update = expr.Update;
             scriptExecutor = scriptExecutor.NewBlockScope();
-            scriptExecutor.ExecuteStatement(init);
+            scriptExecutor.ExecuteStatement(init, token);
             if (body is not BlockStatement blockBody)
             {
                 while (JavascriptTypeUtility
-                  .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)))
+                  .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
                 {
-                    var result = scriptExecutor.ExecuteStatement(body);
+                    token.ThrowIfCancellationRequested();
+                    var result = scriptExecutor.ExecuteStatement(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
-                    scriptExecutor.ExecuteStatement(update);
+                    scriptExecutor.ExecuteStatement(update, token);
                     continue;
                 }
                 return scriptExecutor.GetNullOrUndefined();
@@ -33,13 +35,14 @@ namespace Tenray.Topaz.Statements
             var list = blockBody.Body;
             var len = list.Count;
             while (JavascriptTypeUtility
-                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)))
+                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
             {
+                token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    var result = bodyScope.ExecuteStatement(list[i]);
+                    var result = bodyScope.ExecuteStatement(list[i], token);
                     if (result is ContinueWrapper)
                     {
                         break;
@@ -53,7 +56,7 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
-                scriptExecutor.ExecuteStatement(update);
+                scriptExecutor.ExecuteStatement(update, token);
             }
             return scriptExecutor.GetNullOrUndefined();
         }

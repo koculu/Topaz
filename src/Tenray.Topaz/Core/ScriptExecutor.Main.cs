@@ -128,26 +128,26 @@ namespace Tenray.Topaz.Core
             }
         }
 
-        internal void ExecuteScript(Script script)
+        internal void ExecuteScript(Script script, CancellationToken token)
         {
             var nodes = script.Body;
             var len = nodes.Count;
             for (var i = 0; i < len; ++i)
             {
                 var el = nodes[i];
-                ExecuteStatement(el);
+                ExecuteStatement(el, token);
             }
             return;
         }
 
-        internal async ValueTask ExecuteScriptAsync(Script script)
+        internal async ValueTask ExecuteScriptAsync(Script script, CancellationToken token)
         {
             var nodes = script.Body;
             var len = nodes.Count;
             for (var i = 0; i < len; ++i)
             {
                 var el = nodes[i];
-                await ExecuteStatementAsync(el);
+                await ExecuteStatementAsync(el, token);
             }
         }
 
@@ -173,18 +173,18 @@ namespace Tenray.Topaz.Core
             return new ScriptExecutor(TopazEngine, this, ScopeType.FunctionInnerBlock);
         }
 
-        internal object ExecuteExpressionAndGetValue(Expression expression)
+        internal object ExecuteExpressionAndGetValue(Expression expression, CancellationToken token)
         {
-            return GetValue(ExecuteStatement(expression));
+            return GetValue(ExecuteStatement(expression, token));
         }
 
-        internal async ValueTask<object> ExecuteExpressionAndGetValueAsync(Expression expression)
+        internal async ValueTask<object> ExecuteExpressionAndGetValueAsync(Expression expression, CancellationToken token)
         {
-            var value = await ExecuteStatementAsync(expression);
+            var value = await ExecuteStatementAsync(expression, token);
             return GetValue(value);
         }
 
-        internal object ExecuteStatement(Node statement)
+        internal object ExecuteStatement(Node statement, CancellationToken token)
         {
             if (statement == null)
                 return GetNullOrUndefined();
@@ -192,45 +192,46 @@ namespace Tenray.Topaz.Core
             {
                 Nodes.Literal => LiteralHandler.Execute(this, statement),
                 Nodes.Identifier => ((Identifier)statement).TopazIdentifier,
-                Nodes.AssignmentExpression => AssignmentExpressionHandler.Execute(this, statement),
-                Nodes.ArrayExpression => ArrayExpressionHandler.Execute(this, statement),
-                Nodes.BinaryExpression => BinaryExpressionHandler.Execute(this, statement),
-                Nodes.CallExpression => CallExpressionHandler.Execute(this, statement),
-                Nodes.ChainExpression => ChainExpressionHandler.Execute(this, statement),
-                Nodes.ConditionalExpression => ConditionalExpressionHandler.Execute(this, statement),
+                Nodes.AssignmentExpression => AssignmentExpressionHandler.Execute(this, statement, token),
+                Nodes.ArrayExpression => ArrayExpressionHandler.Execute(this, statement, token),
+                Nodes.BinaryExpression => BinaryExpressionHandler.Execute(this, statement, token),
+                Nodes.CallExpression => CallExpressionHandler.Execute(this, statement, token),
+                Nodes.ChainExpression => ChainExpressionHandler.Execute(this, statement, token),
+                Nodes.ConditionalExpression => ConditionalExpressionHandler.Execute(this, statement, token),
                 Nodes.FunctionExpression => FunctionExpressionHandler.Execute(this, statement),
-                Nodes.LogicalExpression => BinaryExpressionHandler.Execute(this, statement),
-                Nodes.MemberExpression => MemberExpressionHandler.Execute(this, statement),
-                Nodes.ObjectExpression => ObjectExpressionHandler.Execute(this, statement),
-                Nodes.SequenceExpression => SequenceExpressionHandler.Execute(this, statement),
-                Nodes.UnaryExpression => UnaryExpressionHandler.Execute(this, statement),
-                Nodes.UpdateExpression => UpdateExpressionHandler.Execute(this, statement),
-                Nodes.TemplateLiteral => TemplateLiteralHandler.Execute(this, statement),
-                Nodes.TaggedTemplateExpression => TaggedTemplateExpressionHandler.Execute(this, statement),
+                Nodes.LogicalExpression => BinaryExpressionHandler.Execute(this, statement, token),
+                Nodes.MemberExpression => MemberExpressionHandler.Execute(this, statement, token),
+                Nodes.ObjectExpression => ObjectExpressionHandler.Execute(this, statement, token),
+                Nodes.SequenceExpression => SequenceExpressionHandler.Execute(this, statement, token),
+                Nodes.UnaryExpression => UnaryExpressionHandler.Execute(this, statement, token),
+                Nodes.UpdateExpression => UpdateExpressionHandler.Execute(this, statement, token),
+                Nodes.TemplateLiteral => TemplateLiteralHandler.Execute(this, statement, token),
+                Nodes.TaggedTemplateExpression => TaggedTemplateExpressionHandler.Execute(this, statement, token),
                 Nodes.ArrowFunctionExpression => ArrowFunctionExpressionHandler.Execute(this, statement),
-                Nodes.AwaitExpression => AwaitExpressionHandler.Execute(this, statement),
-                Nodes.AssignmentPattern => AssignmentPatternHandler.Execute(this, statement),
-                Nodes.NewExpression => NewExpressionHandler.Execute(this, statement),
+                Nodes.AwaitExpression => AwaitExpressionHandler.Execute(this, statement, token),
+                Nodes.AssignmentPattern => AssignmentPatternHandler.Execute(this, statement, token),
+                Nodes.NewExpression => NewExpressionHandler.Execute(this, statement, token),
                 
                 Nodes.ReturnStatement => new ReturnWrapper(
-                    ExecuteExpressionAndGetValue(((ReturnStatement)statement).Argument)),
+                    ExecuteExpressionAndGetValue(((ReturnStatement)statement).Argument, token)),
                 Nodes.BreakStatement => BreakWrapper.Instance,
                 Nodes.ContinueStatement => ContinueWrapper.Instance,
 
-                Nodes.BlockStatement => BlockStatementHandler.Execute(this, statement),
-                Nodes.DoWhileStatement => DoWhileStatementHandler.Execute(this, statement),
-                Nodes.ExpressionStatement => ExecuteStatement(((ExpressionStatement)statement).Expression),
-                Nodes.ForStatement => ForStatementHandler.Execute(this, statement),
-                Nodes.ForInStatement => ForInStatementHandler.Execute(this, statement),
+                Nodes.BlockStatement => BlockStatementHandler.Execute(this, statement, token),
+                Nodes.DoWhileStatement => DoWhileStatementHandler.Execute(this, statement, token),
+                Nodes.ExpressionStatement => ExecuteStatement(((ExpressionStatement)statement).Expression, token),
+                Nodes.ForStatement => ForStatementHandler.Execute(this, statement, token),
+                Nodes.ForInStatement => ForInStatementHandler.Execute(this, statement, token),
                 Nodes.FunctionDeclaration => FunctionDeclarationHandler.Execute(this, statement),
-                Nodes.IfStatement => IfStatementHandler.Execute(this, statement),
-                Nodes.SwitchStatement => SwitchStatementHandler.Execute(this, statement),
-                Nodes.ThrowStatement => ThrowStatementHandler.Execute(this, statement),
-                Nodes.TryStatement => TryStatementHandler.Execute(this, statement),
-                Nodes.VariableDeclaration => VariableDeclarationHandler.Execute(this, statement),
-                Nodes.WhileStatement => WhileStatementHandler.Execute(this, statement),
-                Nodes.ForOfStatement => ForOfStatementHandler.Execute(this, statement),
+                Nodes.IfStatement => IfStatementHandler.Execute(this, statement, token),
+                Nodes.SwitchStatement => SwitchStatementHandler.Execute(this, statement, token),
+                Nodes.ThrowStatement => ThrowStatementHandler.Execute(this, statement, token),
+                Nodes.TryStatement => TryStatementHandler.Execute(this, statement, token),
+                Nodes.VariableDeclaration => VariableDeclarationHandler.Execute(this, statement, token),
+                Nodes.WhileStatement => WhileStatementHandler.Execute(this, statement, token),
+                Nodes.ForOfStatement => ForOfStatementHandler.Execute(this, statement, token),
                 Nodes.ValueWrapper => ((ValueWrapper)statement).Value,
+                Nodes.EmptyStatement => GetNullOrUndefined(),
                 // Nodes.CatchClause => DONE,
                 // Nodes.Program => DONE,
                 // Nodes.Property => DONE,
@@ -242,7 +243,7 @@ namespace Tenray.Topaz.Core
                 // Nodes.TemplateElement => DONE,
                 // Nodes.ObjectPattern => DONE,
                 // Nodes.ArrowParameterPlaceHolder => never appear in the final tree and only used during the construction of a tree,
-                // Nodes.EmptyStatement => nop,
+
 
                 // Nodes.DebuggerStatement => ThrowNotImplemented(this, statement),
                 // Nodes.Import => ThrowNotImplemented(this, statement),
@@ -268,7 +269,7 @@ namespace Tenray.Topaz.Core
                 _ => ThrowNotImplemented(this, statement)
             };
         }
-        internal async ValueTask<object> ExecuteStatementAsync(Node statement)
+        internal async ValueTask<object> ExecuteStatementAsync(Node statement, CancellationToken token)
         {
             if (statement == null)
                 return GetNullOrUndefined();
@@ -276,46 +277,47 @@ namespace Tenray.Topaz.Core
             {
                 Nodes.Literal => LiteralHandler.Execute(this, statement),
                 Nodes.Identifier => ((Identifier)statement).TopazIdentifier,
-                Nodes.AssignmentExpression => await AssignmentExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.ArrayExpression => await ArrayExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.BinaryExpression => await BinaryExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.CallExpression => await CallExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.ChainExpression => await ChainExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.ConditionalExpression => await ConditionalExpressionHandler.ExecuteAsync(this, statement),
+                Nodes.AssignmentExpression => await AssignmentExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.ArrayExpression => await ArrayExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.BinaryExpression => await BinaryExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.CallExpression => await CallExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.ChainExpression => await ChainExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.ConditionalExpression => await ConditionalExpressionHandler.ExecuteAsync(this, statement, token),
                 Nodes.FunctionExpression => FunctionExpressionHandler.Execute(this, statement),
-                Nodes.LogicalExpression => await BinaryExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.MemberExpression => await MemberExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.ObjectExpression => await ObjectExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.SequenceExpression => await SequenceExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.UnaryExpression => await UnaryExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.UpdateExpression => await UpdateExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.TemplateLiteral => await TemplateLiteralHandler.ExecuteAsync(this, statement),
-                Nodes.TaggedTemplateExpression => await TaggedTemplateExpressionHandler.ExecuteAsync(this, statement),
+                Nodes.LogicalExpression => await BinaryExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.MemberExpression => await MemberExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.ObjectExpression => await ObjectExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.SequenceExpression => await SequenceExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.UnaryExpression => await UnaryExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.UpdateExpression => await UpdateExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.TemplateLiteral => await TemplateLiteralHandler.ExecuteAsync(this, statement, token),
+                Nodes.TaggedTemplateExpression => await TaggedTemplateExpressionHandler.ExecuteAsync(this, statement, token),
                 Nodes.ArrowFunctionExpression => ArrowFunctionExpressionHandler.Execute(this, statement),
-                Nodes.AwaitExpression => await AwaitExpressionHandler.ExecuteAsync(this, statement),
-                Nodes.AssignmentPattern => await AssignmentPatternHandler.ExecuteAsync(this, statement),
-                Nodes.NewExpression => await NewExpressionHandler.ExecuteAsync(this, statement),
+                Nodes.AwaitExpression => await AwaitExpressionHandler.ExecuteAsync(this, statement, token),
+                Nodes.AssignmentPattern => await AssignmentPatternHandler.ExecuteAsync(this, statement, token),
+                Nodes.NewExpression => await NewExpressionHandler.ExecuteAsync(this, statement, token),
 
                 Nodes.ReturnStatement => new ReturnWrapper(
-                    await ExecuteExpressionAndGetValueAsync(((ReturnStatement)statement).Argument)),
+                    await ExecuteExpressionAndGetValueAsync(((ReturnStatement)statement).Argument, token)),
                 Nodes.BreakStatement => BreakWrapper.Instance,
                 Nodes.ContinueStatement => ContinueWrapper.Instance,
 
-                Nodes.BlockStatement => await BlockStatementHandler.ExecuteAsync(this, statement),
-                Nodes.DoWhileStatement => await DoWhileStatementHandler.ExecuteAsync(this, statement),
-                Nodes.ExpressionStatement => await ExecuteStatementAsync(((ExpressionStatement)statement).Expression),
-                Nodes.ForStatement => await ForStatementHandler.ExecuteAsync(this, statement),
-                Nodes.ForInStatement => await ForInStatementHandler.ExecuteAsync(this, statement),
+                Nodes.BlockStatement => await BlockStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.DoWhileStatement => await DoWhileStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.ExpressionStatement => await ExecuteStatementAsync(((ExpressionStatement)statement).Expression, token),
+                Nodes.ForStatement => await ForStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.ForInStatement => await ForInStatementHandler.ExecuteAsync(this, statement, token),
                 Nodes.FunctionDeclaration => FunctionDeclarationHandler.Execute(this, statement),
-                Nodes.IfStatement => await IfStatementHandler.ExecuteAsync(this, statement),
+                Nodes.IfStatement => await IfStatementHandler.ExecuteAsync(this, statement, token),
                 
-                Nodes.SwitchStatement => await SwitchStatementHandler.ExecuteAsync(this, statement),
-                Nodes.ThrowStatement => await ThrowStatementHandler.ExecuteAsync(this, statement),
-                Nodes.TryStatement => await TryStatementHandler.ExecuteAsync(this, statement),
-                Nodes.VariableDeclaration => await VariableDeclarationHandler.ExecuteAsync(this, statement),
-                Nodes.WhileStatement => await WhileStatementHandler.ExecuteAsync(this, statement),
-                Nodes.ForOfStatement => await ForOfStatementHandler.ExecuteAsync(this, statement),
+                Nodes.SwitchStatement => await SwitchStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.ThrowStatement => await ThrowStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.TryStatement => await TryStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.VariableDeclaration => await VariableDeclarationHandler.ExecuteAsync(this, statement, token),
+                Nodes.WhileStatement => await WhileStatementHandler.ExecuteAsync(this, statement, token),
+                Nodes.ForOfStatement => await ForOfStatementHandler.ExecuteAsync(this, statement, token),
                 Nodes.ValueWrapper => ((ValueWrapper)statement).Value,
+                Nodes.EmptyStatement => GetNullOrUndefined(),
                 _ => ThrowNotImplemented(this, statement)
             };
         }

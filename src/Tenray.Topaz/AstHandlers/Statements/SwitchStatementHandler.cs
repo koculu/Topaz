@@ -1,4 +1,5 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Expressions;
 
@@ -6,10 +7,10 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class SwitchStatementHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (SwitchStatement)statement;
-            var testValue = scriptExecutor.ExecuteExpressionAndGetValue(expr.Discriminant);
+            var testValue = scriptExecutor.ExecuteExpressionAndGetValue(expr.Discriminant, token);
             var cases = expr.Cases;
             var len = cases.Count;
             var matchedAnyCase = false;
@@ -23,7 +24,7 @@ namespace Tenray.Topaz.Statements
                     defaultCase = @case;
                     continue;
                 }
-                var caseValue = scriptExecutor.ExecuteExpressionAndGetValue(test);
+                var caseValue = scriptExecutor.ExecuteExpressionAndGetValue(test, token);
                 var comparison = matchedAnyCase ?
                     null :
                     BinaryExpressionHandler
@@ -37,7 +38,7 @@ namespace Tenray.Topaz.Statements
                     var jlen = list.Count;
                     for (var j = 0; j < jlen; ++j)
                     {
-                        var result = scriptExecutor.ExecuteStatement(list[j]);
+                        var result = scriptExecutor.ExecuteStatement(list[j], token);
                         if (result is ReturnWrapper)
                             return result;
                         if (result is BreakWrapper)
@@ -54,7 +55,7 @@ namespace Tenray.Topaz.Statements
                 var jlen = list.Count;
                 for (var j = 0; j < jlen; ++j)
                 {
-                    var result = scriptExecutor.ExecuteStatement(list[j]);
+                    var result = scriptExecutor.ExecuteStatement(list[j], token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Interop;
@@ -12,7 +13,7 @@ namespace Tenray.Topaz.Core
 {
     internal partial class ScriptExecutor
     {
-        internal object CallFunction(object callee, IReadOnlyList<object> args, bool optional)
+        internal object CallFunction(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
         {
             var value = GetValue(callee);
             if (value == null)
@@ -24,7 +25,7 @@ namespace Tenray.Topaz.Core
 
             if (value is TopazFunction topazFunction)
             {
-                return topazFunction.Execute(args);
+                return topazFunction.Execute(args, token);
             }
 
             if (value is IInvokable invokable)
@@ -35,7 +36,7 @@ namespace Tenray.Topaz.Core
             return TopazEngine.DelegateInvoker.Invoke(value, args);
         }
 
-        internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional)
+        internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
         {
             var value = GetValue(callee);
             if (value == null)
@@ -47,7 +48,7 @@ namespace Tenray.Topaz.Core
 
             if (value is TopazFunction topazFunction)
             {
-                return await topazFunction.ExecuteAsync(args);
+                return await topazFunction.ExecuteAsync(args, token);
             }
 
             if (value is IInvokable invokable)

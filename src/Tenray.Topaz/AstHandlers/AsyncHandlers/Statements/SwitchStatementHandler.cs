@@ -1,4 +1,5 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Expressions;
@@ -7,10 +8,10 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class SwitchStatementHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (SwitchStatement)statement;
-            var testValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr.Discriminant);
+            var testValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(expr.Discriminant, token);
             var cases = expr.Cases;
             var len = cases.Count;
             var matchedAnyCase = false;
@@ -24,7 +25,7 @@ namespace Tenray.Topaz.Statements
                     defaultCase = @case;
                     continue;
                 }
-                var caseValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(test);
+                var caseValue = await scriptExecutor.ExecuteExpressionAndGetValueAsync(test, token);
                 var comparison = matchedAnyCase ?
                     null :
                     BinaryExpressionHandler
@@ -38,7 +39,7 @@ namespace Tenray.Topaz.Statements
                     var jlen = list.Count;
                     for (var j = 0; j < jlen; ++j)
                     {
-                        var result = await scriptExecutor.ExecuteStatementAsync(list[j]);
+                        var result = await scriptExecutor.ExecuteStatementAsync(list[j], token);
                         if (result is ReturnWrapper)
                             return result;
                         if (result is BreakWrapper)
@@ -55,7 +56,7 @@ namespace Tenray.Topaz.Statements
                 var jlen = list.Count;
                 for (var j = 0; j < jlen; ++j)
                 {
-                    var result = await scriptExecutor.ExecuteStatementAsync(list[j]);
+                    var result = await scriptExecutor.ExecuteStatementAsync(list[j], token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)

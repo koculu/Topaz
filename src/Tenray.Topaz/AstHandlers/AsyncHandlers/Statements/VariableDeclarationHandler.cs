@@ -1,6 +1,7 @@
 ﻿using Esprima.Ast;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -11,7 +12,7 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class VariableDeclarationHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (VariableDeclaration)statement;
             var kind = (VariableKind)expr.Kind;
@@ -26,16 +27,17 @@ namespace Tenray.Topaz.Statements
                 {
                     if (declaration.Init == null)
                         Exceptions.ThrowMissingInitializerInDestructuringDeclaration();
-                    var itemValue = await scriptExecutor.ExecuteStatementAsync(declaration.Init);
+                    var itemValue = await scriptExecutor.ExecuteStatementAsync(declaration.Init, token);
                     await ArrayPatternHandler.ProcessArrayPatternAsync(
                         scriptExecutor,
                         arrayPattern,
                         itemValue,
-                        (x, y) =>
+                        (x, y, token) =>
                         {
                             scope.DefineVariable(x, y, kind);
                             return ValueTask.CompletedTask;
-                        });
+                        },
+                        token);
                     continue;
                 }
                 else if (id is ObjectPattern objectPattern)
@@ -43,24 +45,25 @@ namespace Tenray.Topaz.Statements
                     if (declaration.Init == null)
                         Exceptions.ThrowMissingInitializerInDestructuringDeclaration();
                     var itemValue = await scriptExecutor
-                        .ExecuteStatementAsync(declaration.Init);
+                        .ExecuteStatementAsync(declaration.Init, token);
                     await ObjectPatternHandler.ProcessObjectPatternAsync(
                         scriptExecutor,
                         objectPattern,
                         itemValue,
-                        (x, y) =>
+                        (x, y, token) =>
                         {
                             scope.DefineVariable(x, y, kind);
                             return ValueTask.CompletedTask;
-                        });
+                        },
+                        token);
                     continue;
                 }
-                var identifier = (TopazIdentifier)await scriptExecutor.ExecuteStatementAsync(id);
+                var identifier = (TopazIdentifier)await scriptExecutor.ExecuteStatementAsync(id, token);
                 var init = declaration.Init;
                 object value = scriptExecutor.GetNullOrUndefined();
                 if (init != null)
                 {
-                    value = await scriptExecutor.ExecuteExpressionAndGetValueAsync(init);
+                    value = await scriptExecutor.ExecuteExpressionAndGetValueAsync(init, token);
                 }
                 scope.DefineVariable(identifier.Name, value, kind);
             }

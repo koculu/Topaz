@@ -1,4 +1,5 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
@@ -6,7 +7,7 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class DoWhileStatementHandler
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement)
+        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (DoWhileStatement)statement;
             var body = expr.Body;
@@ -15,16 +16,17 @@ namespace Tenray.Topaz.Statements
             {
                 do
                 {
-                    var result = await scriptExecutor.ExecuteStatementAsync(body);
+                    var result = await scriptExecutor.ExecuteStatementAsync(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
                     continue;
+                    token.ThrowIfCancellationRequested();
                 }
                 while (JavascriptTypeUtility
                     .IsObjectTrue(await
-                        scriptExecutor.ExecuteExpressionAndGetValueAsync(test)));
+                        scriptExecutor.ExecuteExpressionAndGetValueAsync(test, token)));
                 return scriptExecutor.GetNullOrUndefined();
             }
             var list = blockBody.Body;
@@ -35,7 +37,7 @@ namespace Tenray.Topaz.Statements
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    var result = await bodyScope.ExecuteStatementAsync(list[i]);
+                    var result = await bodyScope.ExecuteStatementAsync(list[i], token);
                     if (result is ContinueWrapper)
                     {
                         break;
@@ -49,10 +51,11 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
+                token.ThrowIfCancellationRequested();
             }
             while (JavascriptTypeUtility
                 .IsObjectTrue(await 
-                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test)));
+                    scriptExecutor.ExecuteExpressionAndGetValueAsync(test, token)));
             return scriptExecutor.GetNullOrUndefined();
         }
     }

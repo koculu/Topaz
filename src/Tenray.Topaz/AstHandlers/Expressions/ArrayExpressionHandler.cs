@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -10,7 +11,7 @@ namespace Tenray.Topaz.Expressions
 {
     internal static partial class ArrayExpressionHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var expr = (ArrayExpression)expression;
             var elements = expr.Elements;
@@ -20,22 +21,24 @@ namespace Tenray.Topaz.Expressions
                 return result;
             for (var i = 0; i < len; ++i)
             {
+                token.ThrowIfCancellationRequested();
                 var el = elements[i];
                 if (el is SpreadElement spreadElement)
                 {
                     var value = scriptExecutor
-                        .ExecuteExpressionAndGetValue(spreadElement.Argument);
+                        .ExecuteExpressionAndGetValue(spreadElement.Argument, token);
                     if (value is not IEnumerable enumerable)
                     {
                         return Exceptions.ThrowValueIsNotEnumerable(value);
                     }
                     foreach (var item in enumerable)
                     {
+                        token.ThrowIfCancellationRequested();
                         result.AddArrayValue(item);
                     }
                     continue;
                 }
-                result.AddArrayValue(scriptExecutor.ExecuteStatement(el));
+                result.AddArrayValue(scriptExecutor.ExecuteStatement(el, token));
             }
             // We cannot return salt array or
             // unwrap here as assignment pattern can define variables

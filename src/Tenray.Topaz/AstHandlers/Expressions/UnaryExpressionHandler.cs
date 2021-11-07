@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System;
+using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Interop;
 
@@ -7,10 +8,10 @@ namespace Tenray.Topaz.Expressions
 {
     internal static partial class UnaryExpressionHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var unaryExpr = (UnaryExpression)expression;
-            var expr = scriptExecutor.ExecuteStatement(unaryExpr.Argument);
+            var expr = scriptExecutor.ExecuteStatement(unaryExpr.Argument, token);
             var value = scriptExecutor.GetValue(expr);
             var unaryOperator = unaryExpr.Operator;
             if (unaryOperator == UnaryOperator.Delete)

@@ -1,11 +1,12 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Statements
 {
     internal static partial class DoWhileStatementHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node statement, CancellationToken token)
         {
             var expr = (DoWhileStatement)statement;
             var body = expr.Body;
@@ -14,7 +15,7 @@ namespace Tenray.Topaz.Statements
             {
                 do
                 {
-                    var result = scriptExecutor.ExecuteStatement(body);
+                    var result = scriptExecutor.ExecuteStatement(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -22,7 +23,7 @@ namespace Tenray.Topaz.Statements
                     continue;
                 }
                 while (JavascriptTypeUtility
-                    .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)));
+                    .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)));
                 return scriptExecutor.GetNullOrUndefined();
             }
             var list = blockBody.Body;
@@ -33,7 +34,7 @@ namespace Tenray.Topaz.Statements
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    var result = bodyScope.ExecuteStatement(list[i]);
+                    var result = bodyScope.ExecuteStatement(list[i], token);
                     if (result is ContinueWrapper)
                     {
                         break;
@@ -47,9 +48,10 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
+                token.ThrowIfCancellationRequested();
             }
             while (JavascriptTypeUtility
-                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)));
+                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)));
             return scriptExecutor.GetNullOrUndefined();
         }
     }

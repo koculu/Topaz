@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
@@ -7,10 +8,10 @@ namespace Tenray.Topaz.Expressions
 {
     internal static partial class AwaitExpressionHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression)
+        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
         {
             var expr = (AwaitExpression)expression;
-            var result = scriptExecutor.ExecuteStatement(expr.Argument);
+            var result = scriptExecutor.ExecuteStatement(expr.Argument, token);
             if (result is Task task)
             {
                 return GetTaskResult(task);

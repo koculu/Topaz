@@ -112,7 +112,7 @@ namespace Tenray.Topaz.Interop
                 throw new TopazException("Delegate constructor requires Javascript function.");
 
             return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
-                (x) => topazFunction.Execute(x));
+                (x) => topazFunction.Execute(x, default));
         }
 
         private object CallGenericConstructor(Type type, IReadOnlyList<object> args)

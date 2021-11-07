@@ -1,4 +1,5 @@
 ﻿using Esprima.Ast;
+using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Utility;
 
@@ -6,7 +7,10 @@ namespace Tenray.Topaz.Statements
 {
     internal static partial class WhileStatementHandler
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node statement)
+        internal static object Execute(
+            ScriptExecutor scriptExecutor,
+            Node statement,
+            CancellationToken token)
         {
             var expr = (WhileStatement)statement;
             var body = expr.Body;
@@ -14,9 +18,10 @@ namespace Tenray.Topaz.Statements
             if (body is not BlockStatement blockBody)
             {
                 while (JavascriptTypeUtility
-                   .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)))
+                   .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
                 {
-                    var result = scriptExecutor.ExecuteStatement(body);
+                    token.ThrowIfCancellationRequested();
+                    var result = scriptExecutor.ExecuteStatement(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -29,13 +34,14 @@ namespace Tenray.Topaz.Statements
             var list = blockBody.Body;
             var len = list.Count;
             while (JavascriptTypeUtility
-                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test)))
+                .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
             {
+                token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    var result = bodyScope.ExecuteStatement(list[i]);
+                    var result = bodyScope.ExecuteStatement(list[i], token);
                     if (result is ContinueWrapper)
                     {
                         break;
