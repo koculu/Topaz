@@ -24,8 +24,6 @@ However, that process requires marshaling and locking and also requires a lot of
 
 Topaz will not be a JS engine that supports entire Javascript runtime features, but it will be a lightweight script interpreter which provides the full power of .NET runtime into Javascript language.
 
-Is it faster (compilation + execution together) than Roslyn? For many use cases yes it is. Even you can write a template engine faster than Razor using Topaz with ease.
-
 Topaz Runtime is actually the .NET runtime, therefore every variable written in the script is a .NET type. if you write `const a = 3.0` the `a` variable's type will be double and so on.
 
 ## What will be supported in Topaz?
