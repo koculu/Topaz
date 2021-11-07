@@ -136,6 +136,12 @@ namespace Tenray.Topaz
         void AddType(Type type,string name = null, ITypeProxy typeProxy = null);
 
         /// <summary>
+        /// Adds extension methods defined in type.
+        /// </summary>
+        /// <param name="type">The type that defines extension methods.</param>
+        public void AddExtensionMethods(Type type);
+
+        /// <summary>
         /// Gets the value of the variable that is defined in the global scope.
         /// </summary>
         /// <param name="name">The name of the variable.</param>

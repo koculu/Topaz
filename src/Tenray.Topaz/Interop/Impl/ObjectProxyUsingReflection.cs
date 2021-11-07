@@ -13,7 +13,9 @@ namespace Tenray.Topaz.Interop
         public object Instance { get; }
 
         public Type ProxiedType { get; }
-
+        
+        public ExtensionMethodRegistry ExtensionMethodRegistry { get; }
+        
         public ProxyOptions ProxyOptions { get; }
 
         readonly PropertyInfo[] _indexedProperties;
@@ -22,9 +24,11 @@ namespace Tenray.Topaz.Interop
 
         public ObjectProxyUsingReflection(
             Type proxiedType,
+            ExtensionMethodRegistry extensionMethodRegistry,
             ProxyOptions proxyOptions = ProxyOptions.Default)
         {
             ProxiedType = proxiedType;
+            ExtensionMethodRegistry = extensionMethodRegistry;
             ProxyOptions = proxyOptions;
 
             if (proxiedType != null &&
@@ -172,7 +176,17 @@ namespace Tenray.Topaz.Interop
             var members = instanceType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
             if (members.Length == 0)
-                return false;
+            {
+                var extMethodParameterInfo = ExtensionMethodRegistry
+                    .GetMethodAndParameterInfo(memberName);
+                if (!extMethodParameterInfo.HasAny)
+                {
+                    return false;
+                }
+                value = new InvokerUsingReflection(
+                    memberName, Array.Empty<MethodInfo>(), instance, options, extMethodParameterInfo);
+                return true;
+            }
             var firstMember = members[0];
             if (firstMember is PropertyInfo property)
             {
@@ -201,10 +215,13 @@ namespace Tenray.Topaz.Interop
                 .Where(x => x is MethodInfo)
                 .Cast<MethodInfo>()
                 .ToArray();
-            if (methods.Length == 0)
+            var extMethodParameterInfo2 = ExtensionMethodRegistry.GetMethodAndParameterInfo(memberName);
+            if (methods.Length == 0 && !extMethodParameterInfo2.HasAny)
+            {
                 return false;
+            }
             value = new InvokerUsingReflection(
-                memberName, methods, instance, options);
+                memberName, methods, instance, options, extMethodParameterInfo2);
             return true;
         }
 

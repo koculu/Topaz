@@ -14,6 +14,8 @@ namespace Tenray.Topaz
 
         private readonly ScriptExecutor globalScope;
 
+        private readonly ExtensionMethodRegistry extensionMethodRegistry;
+
         public int Id { get; }
 
         public bool IsThreadSafe => GlobalScope.IsThreadSafe;
@@ -44,7 +46,8 @@ namespace Tenray.Topaz
             if (!optionsHasGiven)
                 Options.UseThreadSafeJsObjects = isThreadSafeEngine;
             ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
-            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null);
+            extensionMethodRegistry = new();
+            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry);
             DelegateInvoker = delegateInvoker ?? new DelegateInvoker();
             MemberAccessPolicy = memberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
         }
@@ -80,6 +83,11 @@ namespace Tenray.Topaz
                 name ?? type.FullName,
                 typeProxy ?? new TypeProxyUsingReflection(type, name),
                 VariableKind.Const);
+        }
+
+        public void AddExtensionMethods(Type type)
+        {
+            extensionMethodRegistry.AddType(type);
         }
 
         public object GetValue(string name)

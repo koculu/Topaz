@@ -161,6 +161,32 @@ while(true) {
 }
 ```
 
+### Linq and Extension method support:
+You can use Linq or other extension methods in your script. Underlying argument type conversion and method selection is automated.
+```c#
+var engine = new TopazEngine();
+engine.AddExtensionMethods(typeof(Enumerable));
+engine.AddType(typeof(Console), "Console");
+var items = Enumerable.Range(1, 100).Select(x => new
+{
+    Name = "item " + x,
+    Index = x
+}).ToArray();
+engine.SetValue("items", items);
+engine.ExecuteScript(@"
+var filteredItems =
+    items
+    .Where((x) => x.Index % 2 == 1)
+    .Select((x, i) => x.Name + ' : ' + i)
+    .ToArray()
+
+foreach (var item in filteredItems)
+{
+    Console.WriteLine(item.Name)
+}
+}");
+```
+
 ### Fully Customizable Type Conversions:
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.
