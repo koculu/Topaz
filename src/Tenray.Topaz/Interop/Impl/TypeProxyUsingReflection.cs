@@ -65,7 +65,7 @@ namespace Tenray.Topaz.Interop
             if (!options.HasFlag(ProxyOptions.AllowConstructor))
                 Exceptions.ThrowCanNotCallConstructor(type);
 
-            if (type.IsSubclassOf(typeof(MulticastDelegate)))
+            if (type.IsSubclassOf(typeof(Delegate)))
                 return CreateDelegate(type, args);
 
             if (args.Count == 0)

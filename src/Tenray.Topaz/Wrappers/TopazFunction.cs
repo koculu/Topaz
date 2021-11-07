@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
+using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
 using Tenray.Topaz.Interop;
 
@@ -289,7 +290,7 @@ namespace Tenray.Topaz
 
         public object ToType(Type conversionType, IFormatProvider provider)
         {
-            if (!conversionType.IsSubclassOf(typeof(MulticastDelegate)))
+            if (!conversionType.IsSubclassOf(typeof(Delegate)))
                 throw new NotSupportedException();
             
             var topazParameters =
