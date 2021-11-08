@@ -24,7 +24,7 @@ namespace Tenray.Topaz.Expressions
                 unaryOperator == UnaryOperator.Decrement ||
                 unaryOperator == UnaryOperator.Delete)
                 scriptExecutor.SetReferenceValue(expr, newValue);
-            return newValue;
+            return unaryExpr.Prefix ? newValue : value;
         }
     }
 }
