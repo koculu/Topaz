@@ -34,7 +34,6 @@ namespace Tenray.Topaz.Statements
                         return result;
                     if (result is BreakWrapper)
                         break;
-                    continue;
                 }
                 return scriptExecutor.GetNullOrUndefined();
             }

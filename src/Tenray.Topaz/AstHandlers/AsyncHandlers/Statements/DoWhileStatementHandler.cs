@@ -16,13 +16,12 @@ namespace Tenray.Topaz.Statements
             {
                 do
                 {
+                    token.ThrowIfCancellationRequested();
                     var result = await scriptExecutor.ExecuteStatementAsync(body, token);
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
                         break;
-                    continue;
-                    token.ThrowIfCancellationRequested();
                 }
                 while (JavascriptTypeUtility
                     .IsObjectTrue(await
@@ -33,6 +32,7 @@ namespace Tenray.Topaz.Statements
             var len = list.Count;
             do
             {
+                token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
@@ -51,7 +51,6 @@ namespace Tenray.Topaz.Statements
                         return result;
                 }
                 if (breaked) break;
-                token.ThrowIfCancellationRequested();
             }
             while (JavascriptTypeUtility
                 .IsObjectTrue(await 

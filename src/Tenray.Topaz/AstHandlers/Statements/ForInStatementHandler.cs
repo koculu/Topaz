@@ -34,7 +34,6 @@ namespace Tenray.Topaz.Statements
                         return result;
                     if (result is BreakWrapper)
                         break;
-                    continue;
                 }
                 return scriptExecutor.GetNullOrUndefined();
             }
@@ -43,13 +42,13 @@ namespace Tenray.Topaz.Statements
             var len = list.Count;
             foreach (var key in objectKeys)
             {
+                token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 variableDeclaration.Declarations[0].Init = new ValueWrapper(key);
                 bodyScope.ExecuteStatement(variableDeclaration, token);
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
                 {
-                    token.ThrowIfCancellationRequested();
                     var result = bodyScope.ExecuteStatement(list[i], token);
                     if (result is ContinueWrapper)
                     {

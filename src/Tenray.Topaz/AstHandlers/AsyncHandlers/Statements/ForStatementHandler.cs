@@ -29,7 +29,6 @@ namespace Tenray.Topaz.Statements
                     if (result is BreakWrapper)
                         break;
                     await scriptExecutor.ExecuteStatementAsync(update, token);
-                    continue;
                 }
                 return scriptExecutor.GetNullOrUndefined();
             }
