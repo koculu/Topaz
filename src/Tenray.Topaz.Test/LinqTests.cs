@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
@@ -67,6 +68,42 @@ items
 model.a = 'Hello world, from Topaz Script!'.WordCount();
 ");
             Assert.AreEqual(5, model.a);
+        }
+
+        [Test]
+        public void TestLinqGroupByViaExtension()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new CaseSensitiveDynamicObject();
+            engine.AddExtensionMethods(typeof(Enumerable));
+            engine.SetValue("model", model);
+            var items = Enumerable.Range(1, 100).Select(x => new
+            {
+                Name = "item " + x,
+                Index = x
+            }).ToArray();
+            engine.SetValue("items", items);
+            engine.SetValue("JSON", new JSONObject());
+            engine.ExecuteScript(@"
+var a =
+items
+    .GroupBy((x) => x.Name.Substring(0, 6))
+    .Select((x) => 
+{ 
+    return { 
+        key: x.Key,
+        count: x.Sum((y) => y.Index)
+    }
+})
+.ToArray();
+
+model.a = JSON.parse(JSON.stringify(a));
+");
+            Console.WriteLine(model.a);
+            Assert.AreEqual("item 6", model.a[5].key);
+            Assert.AreEqual(651, model.a[5].count);
+            Assert.AreEqual("item 7", model.a[6].key);
+            Assert.AreEqual(752, model.a[6].count);
         }
     }
 

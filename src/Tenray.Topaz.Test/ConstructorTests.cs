@@ -17,7 +17,7 @@ namespace Tenray.Topaz.Test
             engine.ExecuteScript(@"
 model.a = new DateTime(2021, 7, 21, 5, 5, 5, 'uTC')
 model.a = model.a.AddTicks(5555);
-model.b = DateTime.Parse('2021-11-11').ToString()
+model.b = DateTime.Parse('2021-11-11').ToString('dd/MM/yyyy HH:mm:ss')
 model.c = (DateTime.Now.GetType()).ToString()
 ");
             Assert.AreEqual(

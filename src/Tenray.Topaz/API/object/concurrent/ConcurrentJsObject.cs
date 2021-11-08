@@ -13,6 +13,8 @@ namespace Tenray.Topaz.API
     {
         private const string NullString = "null";
 
+        // ConcurrentDictionary enumeration key order is NOT guaranteed.
+        // Hence, serialization and deserialization becomes flaky. Find out a solution!
         readonly ConcurrentDictionary<string, object> dictionary = new();
 
         public object this[object key] { 
