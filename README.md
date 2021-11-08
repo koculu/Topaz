@@ -180,7 +180,7 @@ var filteredItems =
     .Select((x, i) => x.Name + ' : ' + i)
     .ToArray()
 
-foreach (var item in filteredItems)
+for (var item of filteredItems)
 {
     Console.WriteLine(item.Name)
 }
