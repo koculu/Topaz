@@ -85,6 +85,7 @@ model.a = 'Hello world, from Topaz Script!'.WordCount();
             engine.SetValue("items", items);
             engine.SetValue("JSON", new JSONObject());
             engine.ExecuteScript(@"
+JSON.stringify(1)
 var a =
 items
     .GroupBy((x) => x.Name.Substring(0, 6))

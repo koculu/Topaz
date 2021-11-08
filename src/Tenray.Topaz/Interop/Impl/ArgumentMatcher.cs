@@ -53,6 +53,131 @@ namespace Tenray.Topaz.Interop
 
         public static bool TryFindBestMatchWithTypeConversion(
             IReadOnlyList<object> args,
+            ParameterInfo[] parameters,
+            bool convertStringsToEnum,
+            out object[] convertedArgs)
+        {
+            var argsLen = args.Count;
+            var paramLen = parameters.Length;
+
+            var hasDefaultValue = false;
+            var defaultValueIndex = argsLen;
+            var hasParamArrayAttribute = false;
+            var paramArrayAttributeIndex = argsLen;
+            Type paramArrayInnerType = null;
+            IList paramsCollection = null;
+            for (var j = 0; j < paramLen; ++j)
+            {
+                var p = parameters[j];
+                if (!hasDefaultValue && j > argsLen - 1)
+                {
+                    hasDefaultValue = p.HasDefaultValue;
+                    if (hasDefaultValue)
+                    {
+                        defaultValueIndex = j;
+                    }
+                }
+                hasParamArrayAttribute = p.IsDefined(typeof(ParamArrayAttribute), true);
+                if (hasParamArrayAttribute)
+                {
+                    paramsCollection = (IList)Activator
+                        .CreateInstance(p.ParameterType, argsLen - j);
+                    paramArrayInnerType = p.ParameterType.GetElementType();
+                    paramArrayAttributeIndex = j;
+                }
+            }
+
+            if (!hasParamArrayAttribute && !hasDefaultValue && argsLen != paramLen)
+            {
+                convertedArgs = null;
+                return false;
+            }
+
+            var minimumAcceptableArgsLen = Math.Min(paramArrayAttributeIndex, defaultValueIndex);
+            if (argsLen < minimumAcceptableArgsLen)
+            {
+                convertedArgs = null;
+                return false;
+            }
+
+            var argsCopy = args.ToArray();
+            Type useParamArrayInnerType = null;
+            for (var j = 0; j < argsLen; ++j)
+            {
+                var parametersIndex = j;
+                if (j >= paramArrayAttributeIndex)
+                {
+                    parametersIndex = paramArrayAttributeIndex;
+                    useParamArrayInnerType = paramArrayInnerType;
+                }
+
+                var ptype = useParamArrayInnerType ??
+                    parameters[parametersIndex].ParameterType;
+                var arg = argsCopy[j];
+                if (arg == Undefined.Value)
+                {
+                    argsCopy[j] = null;
+                    arg = null;
+                }
+                if (arg == null)
+                {
+                    if (ptype.IsClass)
+                        continue;
+                    convertedArgs = null;
+                    return false;
+                }
+                var argType = arg.GetType();
+                if (ptype == typeof(object) ||
+                    ptype == argType ||
+                    ptype.IsAssignableFrom(argType))
+                    continue;
+                try
+                {
+                    if (convertStringsToEnum &&
+                        ptype.IsEnum &&
+                        arg is string s &&
+                        Enum.TryParse(ptype, s, true, out var enumValue))
+                    {
+                        argsCopy[j] = enumValue;
+                        continue;
+                    }
+                    argsCopy[j] = Convert.ChangeType(arg, ptype);
+                }
+                catch (Exception)
+                {
+                    convertedArgs = null;
+                    return false;
+                }
+            }
+
+            if (argsLen < paramLen && hasDefaultValue)
+            {
+                var filledArgs = new object[paramLen];
+                Array.Copy(argsCopy, filledArgs, argsLen);
+                for (var k = argsLen; k < paramLen; ++k)
+                {
+                    filledArgs[k] = parameters[k].DefaultValue;
+                }
+                argsCopy = filledArgs;
+            }
+
+            if (hasParamArrayAttribute)
+            {
+                convertedArgs = new object[paramArrayAttributeIndex + 1];
+                Array.Copy(argsCopy, convertedArgs, paramArrayAttributeIndex);
+                convertedArgs[paramArrayAttributeIndex] = paramsCollection;
+                var z = 0;
+                for (var k = paramArrayAttributeIndex; k < argsLen; ++k)
+                    paramsCollection[z++] = argsCopy[k];
+                return true;
+            }
+
+            convertedArgs = argsCopy;
+            return true;
+        }
+
+        public static bool TryFindBestMatchWithTypeConversion(
+            IReadOnlyList<object> args,
             ParameterInfo[][] allParameters,
             bool convertStringsToEnum,
             out int index,
@@ -63,105 +188,16 @@ namespace Tenray.Topaz.Interop
                 convertedArgs = args as object[] ?? args.ToArray();
                 return true;
             }
-            var argsLen = args.Count;
             var allParametersLen = allParameters.Length;
             for (var i = 0; i < allParametersLen; ++i)
             {
-                var parameters = allParameters[i];
-                var paramLen = parameters.Length;
 
-                var hasParamArrayAttribute = false;
-                var paramArrayAttributeIndex = -1;
-                Type paramArrayInnerType = null;
-                IList paramsCollection = null;
-                for (var j = 0; j < paramLen; ++j)
+                var parameters = allParameters[i]; 
+                if (TryFindBestMatchWithTypeConversion(args, parameters, convertStringsToEnum, out convertedArgs))
                 {
-                    var p = parameters[j];
-                    hasParamArrayAttribute =
-                            p.GetCustomAttribute<ParamArrayAttribute>() != null;
-                    if (hasParamArrayAttribute)
-                    {
-                        paramsCollection = (IList)Activator
-                            .CreateInstance(p.ParameterType, argsLen-j);
-                        paramArrayInnerType = p.ParameterType.GetElementType();
-                        paramArrayAttributeIndex = j;
-                    }
-                }
-
-                if (hasParamArrayAttribute)
-                {
-                    if (argsLen < paramLen - 1)
-                        continue;
-                }
-                else if (argsLen != paramLen)
-                    continue;
-
-                var argsCopy = args.ToArray();
-                bool failed = false;
-                Type useParamArrayInnerType = null;
-                for (var j = 0; j < argsLen; ++j)
-                {
-                    var arg = argsCopy[j];
-                    var parametersIndex = j;
-                    if (hasParamArrayAttribute && j >= paramArrayAttributeIndex)
-                    {
-                        parametersIndex = paramArrayAttributeIndex;
-                        useParamArrayInnerType = paramArrayInnerType;
-                    }
-
-                    var ptype = useParamArrayInnerType ??
-                        parameters[parametersIndex].ParameterType;
-                    if (arg == Undefined.Value)
-                    {
-                        argsCopy[i] = null;
-                        arg = null;
-                    }
-                    if (arg == null)
-                    {
-                        if (ptype.IsClass)
-                            continue;
-                        failed = true;
-                        break;
-                    }
-                    var argType = arg.GetType();
-                    if (ptype == typeof(object) ||
-                        ptype == argType ||
-                        ptype.IsAssignableFrom(argType))
-                        continue;
-                    try
-                    {
-                        if (convertStringsToEnum &&
-                            ptype.IsEnum &&
-                            arg is string s &&
-                            Enum.TryParse(ptype, s, true, out var enumValue))
-                        {
-                            argsCopy[j] = enumValue;
-                            continue;
-                        }
-                        argsCopy[j] = Convert.ChangeType(arg, ptype);
-                    }
-                    catch (Exception)
-                    {
-                        failed = true;
-                        break;
-                    }
-                }
-                if (failed)
-                    continue;
-                index = i;
-
-                if (hasParamArrayAttribute)
-                {
-                    convertedArgs = new object[paramArrayAttributeIndex + 1];
-                    Array.Copy(argsCopy, convertedArgs, paramArrayAttributeIndex);
-                    convertedArgs[paramArrayAttributeIndex] = paramsCollection;
-                    var z = 0;
-                    for (var k = paramArrayAttributeIndex; k < argsLen; ++k)
-                        paramsCollection[z++] = argsCopy[k];
+                    index = i;
                     return true;
                 }
-                convertedArgs = argsCopy;
-                return true;
             }
             index = -1;
             convertedArgs = null;

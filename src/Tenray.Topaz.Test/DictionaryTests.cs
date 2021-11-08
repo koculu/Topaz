@@ -30,10 +30,10 @@ model.a5 = dic.ContainsKey('b')
 dic.Remove('b')
 model.a6 = dic.ContainsKey('b')
 ");
-            Assert.AreEqual(model.a1, 1);
-            Assert.AreEqual(model.a2, 1);
-            Assert.AreEqual(model.a3, 3);
-            Assert.AreEqual(model.a4, 4);
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(1, model.a2);
+            Assert.AreEqual(3, model.a3);
+            Assert.AreEqual(4, model.a4);
             Assert.IsTrue(model.a5);
             Assert.IsFalse(model.a6);
         }

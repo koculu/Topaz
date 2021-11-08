@@ -1,11 +1,5 @@
-﻿using Microsoft.Collections.Extensions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.Encodings.Web;
+﻿using System.Text.Encodings.Web;
 using System.Text.Json;
-using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
 {
@@ -21,15 +15,24 @@ namespace Tenray.Topaz.API
             PropertyNameCaseInsensitive = true
         };
 
-        public string stringify(object value)
+        public JsonSerializerOptions OptionsIndented { get; set; } = new()
         {
-            return JsonSerializer.Serialize(value, Options);
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            AllowTrailingCommas = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            ReadCommentHandling = JsonCommentHandling.Skip,
+            WriteIndented = true,
+            PropertyNameCaseInsensitive = true
+        };
+
+        public string stringify(object value, object replacer = null, int space = 0)
+        {
+            return JsonSerializer.Serialize(value, space == 0 ? Options : OptionsIndented);
         }
 
         public object parse(string json)
         {
             return JsonSerializer.Deserialize<JsonElement>(json, Options).ConvertToJsObject();
         }
-
     }
 }
