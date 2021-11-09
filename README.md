@@ -129,8 +129,8 @@ An example of generic type construction. Generic Type Arguments are passed throu
 var engine = new TopazEngine();
 var types = new JsObject();
 engine.SetValue("Types", types);
-model["int"] = typeof(int);
-model["string"] = typeof(string);
+types["int"] = typeof(int);
+types["string"] = typeof(string);
 engine.AddType(typeof(Dictionary<,>), "Dictionary");
 engine.AddType(typeof(Console), "Console");
 engine.ExecuteScript(@"
