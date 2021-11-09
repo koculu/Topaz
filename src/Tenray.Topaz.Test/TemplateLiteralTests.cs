@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -9,7 +9,7 @@ namespace Tenray.Topaz.Test
         public void TaggedTemplate()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 let person = 'Mike';
@@ -49,7 +49,7 @@ model.b = myTag`That ${ person } is a ${ 157 }.`
         public void TemplateArithmetic()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 model.a = `2 + 3 = ${2+3}`

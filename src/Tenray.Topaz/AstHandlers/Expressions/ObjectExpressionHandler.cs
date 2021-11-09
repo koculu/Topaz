@@ -4,7 +4,6 @@ using System.Threading;
 using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Expressions
 {

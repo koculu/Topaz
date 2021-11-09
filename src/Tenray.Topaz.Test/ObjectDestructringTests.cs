@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -9,7 +9,7 @@ namespace Tenray.Topaz.Test
         public void DefineObjectWithVariables()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = 5, g = 9
@@ -33,7 +33,7 @@ model.b = b
         public void DefineVariablesWithObjectAssignmentPattern()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 ({ a, b = 3 } = { a: 1 })
@@ -58,7 +58,7 @@ model.c = c
         public void DefineVariablesWithObjectDestructring()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var { a, b = 3 } = { a: 1 }
@@ -89,7 +89,7 @@ model.bar = bar
         {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = false;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var complicatedObj = {

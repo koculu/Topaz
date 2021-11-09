@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Options;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -12,7 +12,7 @@ namespace Tenray.Topaz.Test
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.VarScopeBehavior = VarScopeBehavior.FunctionScope;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 function equals(a,b) { if (a !== b) throw `${a ?? 'null'} != ${b ?? 'null'}` }
@@ -31,7 +31,7 @@ function f3() { { { { const u = 9; equals(u,9) } equals(u,null) } } model.u = u 
         public void ClosureTest()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 function makeFunc() {
@@ -66,7 +66,7 @@ model.b = add10(2)
         public void ClosurePrivateMethods()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var counter = (function() {
@@ -107,7 +107,7 @@ model.c = counter.value()
         public void ClosureScopeChain()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var e = 10;
@@ -131,7 +131,7 @@ model.a = sum(1)(2)(3)(4)
         public void ClosureScopeChain2()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var e = 10;

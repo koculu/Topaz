@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -52,7 +52,7 @@ max(...arr)
         public void EnumerableObjectSpread()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             model.a = "aa";
             model.b = "bb";
             engine.SetValue("model", model);

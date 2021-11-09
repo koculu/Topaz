@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -11,7 +11,7 @@ namespace Tenray.Topaz.Test
         public void TestIdentifierSharing()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddType(typeof(Action), "Action");
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
@@ -32,7 +32,7 @@ f2(5)
         public void TestIdentifierSharingParallel()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddType(typeof(Action), "Action");
             engine.SetValue("model", model);
             engine.ExecuteScript(@"

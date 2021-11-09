@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -13,7 +12,7 @@ namespace Tenray.Topaz.Test
             var engine = new TopazEngine();
             engine.Options.LiteralNumbersAreConvertedToDouble = false;
             engine.Options.NumbersAreConvertedToDoubleInArithmeticOperations = false;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = []

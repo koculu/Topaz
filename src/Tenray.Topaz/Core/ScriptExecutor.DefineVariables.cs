@@ -1,9 +1,5 @@
 ﻿using Esprima.Ast;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Tenray.Topaz.ErrorHandling;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Core
 {

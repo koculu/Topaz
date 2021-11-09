@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Tenray.Topaz.API;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -13,7 +11,7 @@ namespace Tenray.Topaz.Test
         public void TestStaticLinq()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddType(typeof(Enumerable), "Enumerable");
             engine.SetValue("model", model);
             var items = Enumerable.Range(1, 100).Select(x => new
@@ -36,7 +34,7 @@ model.a = Enumerable.ToArray(query);
         public void TestLinqViaExtension()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddExtensionMethods(typeof(Enumerable));
             engine.SetValue("model", model);
             var items = Enumerable.Range(1, 100).Select(x => new
@@ -61,7 +59,7 @@ items
         public void TestCustomExtensionMethod()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddExtensionMethods(typeof(MyExtensions));
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
@@ -74,7 +72,7 @@ model.a = 'Hello world, from Topaz Script!'.WordCount();
         public void TestLinqGroupByViaExtension()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddExtensionMethods(typeof(Enumerable));
             engine.SetValue("model", model);
             var items = Enumerable.Range(1, 100).Select(x => new

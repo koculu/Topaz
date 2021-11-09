@@ -95,10 +95,7 @@ namespace Tenray.Topaz.API
         {
             if (key == null)
                 key = NullString;
-            if (dictionary.TryGetValue(key.ToString(), out value))
-                return true;
-            value = Undefined.Value;
-            return false;
+            return dictionary.TryGetValue(key.ToString(), out value);
         }
 
         public IEnumerable GetObjectKeys()

@@ -1,6 +1,5 @@
 using NUnit.Framework;
-using System.Collections;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -10,13 +9,13 @@ namespace Tenray.Topaz.Test
         public void MissingElements()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var [,,third] = ['foo', 'bar', 'baz'];
 model.baz = third
 ");
-            Assert.IsNull(model.foo);
+            Assert.AreSame(Undefined.Value, model["foo"]);
             Assert.AreEqual("baz", model.baz);
         }
 
@@ -27,7 +26,7 @@ model.baz = third
         public void MultipleDeclarationWithRest(string variableKind)
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@$"
 {variableKind} [a, b, ...rest] = [10, 20, 30, 40, 50], d = 2;
@@ -48,7 +47,7 @@ model.d = d
         public void DefaultValueAssignmentPattern()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var f = (x=1) => x * x
@@ -70,7 +69,7 @@ model.d = f(null,5)
         public void NestedAssignment(string variableKind)
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@$"
 {variableKind} [a, [[b], c]] = [1, [[2], 3]]
@@ -87,7 +86,7 @@ model.c = c
         public void ArrayInitializationWithVariables()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = 1, b = 2, c = [3, 4]
@@ -105,7 +104,7 @@ model.d = d
         public void ArrayVariableUpdateVariableEdgeCase()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = 1, b = 2, c = 3
@@ -120,7 +119,7 @@ model.d = d
         public void ObjectVariableUpdateVariableEdgeCase()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = 1, b = 2, c = 3

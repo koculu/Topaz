@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Text.Json;
 using Tenray.Topaz.API;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -16,7 +14,7 @@ namespace Tenray.Topaz.Test
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = []
@@ -88,7 +86,7 @@ model.p.reverse()
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [{nested: 4}, [9,8,[7,6]], 4]
@@ -112,7 +110,7 @@ model.z = a.concat([1,2,3], [4,5,6])
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [1,2,3,4,5,2]
@@ -136,7 +134,7 @@ model.f = a.indexOf(2, -2)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [1,2,3,4,5,2]
@@ -160,7 +158,7 @@ model.f = a.lastIndexOf(2, -2)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [1,2,3,4,5,2]
@@ -184,7 +182,7 @@ model.f = a.includes(2, -2)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [3]
@@ -206,7 +204,7 @@ model.b = a.toString()
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const array1 = ['a', 'b', 'c']
@@ -235,7 +233,7 @@ model.b = b
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = [4, 2, 5, 1, 3];
@@ -255,7 +253,7 @@ model.a = a
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const elements = ['Fire', 'Air', 'Water']
@@ -275,7 +273,7 @@ model.c = elements.join('-')
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const array = [1, 2, 3, 4, 5]
@@ -315,7 +313,7 @@ model.e = getBoolean('true');  // true
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const a = [5,6,7]
@@ -337,7 +335,7 @@ model.b = b
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const isBelowThreshold = (currentValue) => currentValue < 40
@@ -368,7 +366,7 @@ model.d = isSubset([1, 2, 3, 4, 5, 6, 7], [5, 8, 7]) // false
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const array1 = [1, 2, 3, 4];
@@ -394,7 +392,7 @@ model.d = array1
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 model.a = [1, 2, 3, 4, 5].copyWithin(-2)
@@ -419,7 +417,7 @@ model.d = [1, 2, 3, 4, 5].copyWithin(-2, -3, -1)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var sum = 0;
@@ -436,7 +434,7 @@ model.sum = sum
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 model.a = [1, 2, 3, 4, 5].map((x) => x * 2)
@@ -458,7 +456,7 @@ model.c = [1, 2, 3, 4, 5].map((x,i,arr) => arr[i] * x * i)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const getMax = (a, b) => a > b ? a : b;
@@ -490,7 +488,7 @@ catch(err) {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const getMax = (a, b) => a > b ? a : b;
@@ -522,7 +520,7 @@ catch(err) {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const array = [-3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
@@ -548,7 +546,7 @@ model.a = array.filter(isPrime)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const inventory = [
@@ -586,7 +584,7 @@ model.c = inventory.find(isCherries3)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const inventory = [
@@ -621,7 +619,7 @@ model.c = inventory.findIndex(isCherries3)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 const a = [0, 1, 2, [3, 4]]
@@ -660,7 +658,7 @@ model.f = arr4.flat(99);
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 let arr1 = [1, 2, 3, 4];
@@ -696,7 +694,7 @@ model.d = a.flatMap( (n) =>
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 let fruits = ['Banana', 'Orange', 'Lemon', 'Apple', 'Mango']
@@ -716,7 +714,7 @@ model.b = [1,2,3,4,5].slice(-3,-1)
             var engine = new TopazEngine();
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 model.a = [1,2,3,4,5]

@@ -1,11 +1,8 @@
 ﻿using Esprima.Ast;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Statements
 {

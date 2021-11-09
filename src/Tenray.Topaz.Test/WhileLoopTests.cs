@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -9,7 +9,7 @@ namespace Tenray.Topaz.Test
         public void WhileLoop()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 let i = 0
@@ -36,7 +36,7 @@ model.j = j
         public void DoWhileLoop()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 let i = 0

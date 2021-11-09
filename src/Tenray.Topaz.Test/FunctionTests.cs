@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Options;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -10,7 +10,7 @@ namespace Tenray.Topaz.Test
         public void VariableCapturing()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var funcs = [0, 0, 0]
@@ -36,7 +36,7 @@ for (let j = 0; j < 3; j++) {
         public void VariableCapturingConst()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var funcs = [0, 0, 0]
@@ -64,7 +64,7 @@ for (let j = 0; j < 3; j++) {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = false;
             engine.Options.AllowUndefinedReferenceAccess = true;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var model = model ?? {}
@@ -98,7 +98,7 @@ model
         public void DoubleDefaultValueAssignment()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var model = model ?? {}
@@ -144,7 +144,7 @@ model
             var engine = new TopazEngine();
             engine.Options.AssignmentWithoutDefinitionBehavior
                 = AssignmentWithoutDefinitionBehavior.DefineAsVarInGlobalScope;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var model = model ?? {}
@@ -178,7 +178,7 @@ model.outerC = c
             var engine = new TopazEngine();
             engine.Options.AssignmentWithoutDefinitionBehavior
                 = AssignmentWithoutDefinitionBehavior.DefineAsVarInFirstChildOfGlobalScope;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var model = model ?? {}
@@ -222,7 +222,7 @@ model.globalY = y
             var engine = new TopazEngine();
             engine.Options.AssignmentWithoutDefinitionBehavior
                 = AssignmentWithoutDefinitionBehavior.DefineAsVarInFirstChildOfGlobalScope;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var model = model ?? {}

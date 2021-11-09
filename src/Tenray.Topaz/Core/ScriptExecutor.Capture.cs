@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Interop;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Core
 {

@@ -1,8 +1,8 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Reflection;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Options;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -12,7 +12,7 @@ namespace Tenray.Topaz.Test
         public void TryToUseReflectionAPI()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.SetValue("args", new[] { typeof(DateTime) });
             engine.ExecuteScript(@"
@@ -29,10 +29,10 @@ catch(err) {
     model.b = err
 }
 ");
-            Assert.IsNull(model.a);
-            Assert.IsNull(model.m);
+            Assert.AreSame(Undefined.Value, model["a"]);
+            Assert.AreSame(Undefined.Value, model["m"]);
             Assert.IsInstanceOf<TopazException>(model.b);
-            Assert.IsNull(model.newDateTime);
+            Assert.AreSame(Undefined.Value, model["newDateTime"]);
         }
 
         [Test]
@@ -40,7 +40,7 @@ catch(err) {
         {
             var engine = new TopazEngine();
             engine.Options.SecurityPolicy = SecurityPolicy.EnableReflection;
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.SetValue("args", new[] { typeof(DateTime) });
             engine.ExecuteScript(@"

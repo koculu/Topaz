@@ -1,9 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using Tenray.Topaz.API;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -17,7 +15,7 @@ namespace Tenray.Topaz.Test
             engine.Options.NoUndefined = true;
             engine.Options.UseThreadSafeJsObjects = useThreadSafeJsObjects;
             engine.AddType<DateTime>("DateTime");
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 var a = {

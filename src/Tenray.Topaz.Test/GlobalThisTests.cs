@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
-using System.Collections.Generic;
 using Tenray.Topaz.API;
-using Tenray.Topaz.Utility;
 
 namespace Tenray.Topaz.Test
 {
@@ -11,7 +9,7 @@ namespace Tenray.Topaz.Test
         public void TestGlobalThis1()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("globalThis", new GlobalThis(engine.GlobalScope));
             engine.SetValue("model", model);
             engine.SetValue("JSON", new JSONObject());

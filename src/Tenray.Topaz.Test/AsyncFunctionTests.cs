@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Net.Http;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -11,7 +11,7 @@ namespace Tenray.Topaz.Test
         public void HttpGetAsync()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.AddType<HttpClient>("HttpClient");
             engine.AddType(typeof(Console), "Console");
             engine.SetValue("model", model);

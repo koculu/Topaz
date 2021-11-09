@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using Tenray.Topaz.Utility;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
@@ -12,7 +12,7 @@ namespace Tenray.Topaz.Test
         {
             var engine = new TopazEngine();
             engine.AddType<DateTime>("DateTime");
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.ExecuteScript(@"
 model.a = new DateTime(2021, 7, 21, 5, 5, 5, 'uTC')
@@ -33,7 +33,7 @@ model.c = (DateTime.Now.GetType()).ToString()
         public void GenericTypeConstruction()
         {
             var engine = new TopazEngine();
-            dynamic model = new CaseSensitiveDynamicObject();
+            dynamic model = new JsObject();
             model["int"] = typeof(int);
             model["string"] = typeof(string);
             engine.SetValue("model", model);
