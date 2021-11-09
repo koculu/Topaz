@@ -187,6 +187,21 @@ for (var item of filteredItems)
 }");
 ```
 
+### Built-in Javascript Objects:
+The global scope of Topaz is empty by default. You can add objects from `Tenray.Topaz.API` namespace which contains Javascript well known objects.
+```c#
+var engine = new TopazEngine();
+engine.SetValue("JSON", new JSONObject());
+engine.SetValue("globalThis", new GlobalThis(engine.GlobalScope));
+engine.AddType(typeof(Console), "Console");
+engine.ExecuteScript(@"
+var items = [1,2,3]
+var json = JSON.stringify(a)
+Console.WriteLine(json);
+var parsedArray = globalThis.JSON.parse(json);
+");
+```
+
 ### Fully Customizable Type Conversions:
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.
@@ -324,6 +339,7 @@ Otherwise you may not get benefit of covered security leaks by Topaz.
 * instanceof operator
 * in operator
 * top level await statement
+* globalThis
 
 more is coming...
 
