@@ -156,7 +156,8 @@ var i = 0;
 while(true) {
   ++i; // infinite loop
 }", cancellationSource.Token);
-} catch (OperationCanceledException e) {
+}
+catch (OperationCanceledException e) {
     // ...
 }
 ```
