@@ -127,13 +127,14 @@ Console.WriteLine(`Final value: {sharedVariable}`);
 An example of generic type construction. Generic Type Arguments are passed through constructor function arguments.
 ```c#
 var engine = new TopazEngine();
-engine.SetValue("model", model);
+var types = new JsObject();
+engine.SetValue("Types", types);
 model["int"] = typeof(int);
 model["string"] = typeof(string);
 engine.AddType(typeof(Dictionary<,>), "Dictionary");
 engine.AddType(typeof(Console), "Console");
 engine.ExecuteScript(@"
-var dic = new Dictionary(model.string, model.int)
+var dic = new Dictionary(Types.string, Types.int)
 dic.Add('hello', 1)
 dic.Add('dummy', 0)
 dic.Add('world', 2)
