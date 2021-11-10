@@ -14,9 +14,9 @@ namespace Tenray.Topaz.Statements
             var block = expr.Block;
             var handler = expr.Handler;
             var finalizer = expr.Finalizer;
+            var bodyScope = scriptExecutor.NewBlockScope();
             try
             {
-                var bodyScope = scriptExecutor.NewBlockScope();
                 return await bodyScope.ExecuteStatementAsync(block, token);
             }
             catch (OperationCanceledException cancelledException)
@@ -41,10 +41,12 @@ namespace Tenray.Topaz.Statements
             }
             finally
             {
+                bodyScope.ReturnToPool();
                 if (finalizer != null)
                 {
-                    var bodyScope = scriptExecutor.NewBlockScope();
+                    bodyScope = scriptExecutor.NewBlockScope();
                     await bodyScope.ExecuteStatementAsync(finalizer, token);
+                    bodyScope.ReturnToPool();
                 }
             }
         }
@@ -56,8 +58,9 @@ namespace Tenray.Topaz.Statements
             if (paramName != null)
                 bodyScope
                     .DefineVariable(paramName, e, VariableKind.Var);
-
-            return await bodyScope.ExecuteStatementAsync(handler.Body, token);
+            var result = await bodyScope.ExecuteStatementAsync(handler.Body, token);
+            bodyScope.ReturnToPool();
+            return result;
         }
     }
 }

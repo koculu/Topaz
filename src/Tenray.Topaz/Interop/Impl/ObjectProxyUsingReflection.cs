@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,10 @@ namespace Tenray.Topaz.Interop
         readonly PropertyInfo[] _indexedProperties;
 
         readonly ParameterInfo[][] _indexedPropertyParameters;
+
+        readonly ConcurrentDictionary<Tuple<Type, object>, Func<object, object>> _cachedGetters = new();
+
+        readonly ConcurrentDictionary<Tuple<Type, object>, Action<object, object>> _cachedSetters = new();
 
         public ObjectProxyUsingReflection(
             Type proxiedType,
@@ -172,7 +177,12 @@ namespace Tenray.Topaz.Interop
                 Exceptions.ThrowCannotRetrieveMemberOfType(instance.ToString(), member);
                 return false;
             }
-
+            var cacheKey = Tuple.Create(instanceType, member);
+            if (_cachedGetters.TryGetValue(cacheKey, out var cachedGetter))
+            {
+                value = cachedGetter(instance);
+                return true;
+            }
             var members = instanceType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
             if (members.Length == 0)
@@ -183,8 +193,13 @@ namespace Tenray.Topaz.Interop
                 {
                     return false;
                 }
-                value = new InvokerUsingReflection(
-                    memberName, Array.Empty<MethodInfo>(), instance, options, extMethodParameterInfo);
+                var methodGetter2 = new Func<object, object>((instance) =>
+                {
+                    return new InvokerUsingReflection(
+                        memberName, Array.Empty<MethodInfo>(), instance, options, extMethodParameterInfo);
+                });
+                _cachedGetters.TryAdd(cacheKey, methodGetter2);
+                value = methodGetter2(instance);
                 return true;
             }
             var firstMember = members[0];
@@ -195,6 +210,12 @@ namespace Tenray.Topaz.Interop
                 if (property.GetMethod == null ||
                     property.GetMethod.IsPrivate)
                     return false;
+                
+                var getter = new Func<object, object>((instance) =>
+                {
+                    return property.GetValue(instance);
+                });
+                _cachedGetters.TryAdd(cacheKey, getter);
                 value = property.GetValue(instance);
                 return true;
             }
@@ -204,6 +225,11 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowField)
                     return false;
+                var getter = new Func<object, object>((instance) =>
+                {
+                    return field.GetValue(instance);
+                });
+                _cachedGetters.TryAdd(cacheKey, getter);
                 value = field.GetValue(instance);
                 return true;
             }
@@ -220,8 +246,12 @@ namespace Tenray.Topaz.Interop
             {
                 return false;
             }
-            value = new InvokerUsingReflection(
-                memberName, methods, instance, options, extMethodParameterInfo2);
+            var methodGetter = new Func<object, object>((instance) =>
+            {
+                return new InvokerUsingReflection(memberName, methods, instance, options, extMethodParameterInfo2);
+            });
+            _cachedGetters.TryAdd(cacheKey, methodGetter); 
+            value = methodGetter(instance);
             return true;
         }
 
@@ -363,6 +393,13 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
+            var cacheKey = Tuple.Create(instanceType, member);
+            if (_cachedSetters.TryGetValue(cacheKey, out var cachedSetter))
+            {
+                cachedSetter(instance, value);
+                return true;
+            }
+
             var members = instanceType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
             if (members.Length == 0)
@@ -375,7 +412,17 @@ namespace Tenray.Topaz.Interop
                 if (property.SetMethod == null ||
                     property.SetMethod.IsPrivate)
                     return false;
-                property.SetValue(instance, value);
+                var action = new Action<object, object>((instance, value) =>
+                {
+                    if (value != null && property.PropertyType != value.GetType())
+                    {
+                        property.SetValue(instance, Convert.ChangeType(value, property.PropertyType));
+                        return;
+                    }
+                    property.SetValue(instance, value);
+                });
+                _cachedSetters.TryAdd(cacheKey, action);
+                action(instance, value);
                 return true;
             }
             var allowField =
@@ -384,7 +431,18 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowField)
                     return false;
-                field.SetValue(instance, value);
+
+                var action = new Action<object, object>((instance, value) =>
+                {
+                    if (value != null && field.FieldType != value.GetType())
+                    {
+                        field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
+                        return;
+                    }
+                    field.SetValue(instance, value);
+                });
+                _cachedSetters.TryAdd(cacheKey, action);
+                action(instance, value);
                 return true;
             }
             return false;

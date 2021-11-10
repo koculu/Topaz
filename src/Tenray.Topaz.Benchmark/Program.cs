@@ -5,25 +5,26 @@ namespace Tenray.Topaz.Benchmark
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             var sw = new Stopwatch();
-            var b = new Benchmark1();
-            var runTopaz = true;
-            if (runTopaz)
+            var b = new Benchmark4();
+            var engine = Engines.Topaz;
+            sw.Start();
+            switch (engine)
             {
-                sw.Start();
-                b.RunTopaz();
-                sw.Stop();
-                Console.WriteLine("Topaz: " + sw.ElapsedMilliseconds + " ms");
+                case Engines.Topaz:
+                    b.RunTopaz();
+                    break;
+                case Engines.V8Engine:
+                    b.RunV8Engine();
+                    break;
+                case Engines.Jint:
+                    b.RunJint();
+                    break;
             }
-            else
-            {
-                sw.Start();
-                b.RunJint();
-                sw.Stop();
-                Console.WriteLine("Jint: " + sw.ElapsedMilliseconds + " ms");
-            }
+            sw.Stop();
+            Console.WriteLine($"{engine}: {sw.ElapsedMilliseconds} ms");
         }
     }
 }

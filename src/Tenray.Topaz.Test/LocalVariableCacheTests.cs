@@ -58,5 +58,56 @@ f2(5)
             Assert.AreEqual(3, model.a);
             Assert.AreEqual(5, model.b);
         }
+
+        public class TestModel
+        {
+            public int Value = 0;
+        }
+
+        [Test]
+        public void TestVariableAdjustmentInScope()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.AddType(typeof(Action), "Action");
+            engine.SetValue("model", model);
+            engine.SetValue("a1", new TestModel());
+            engine.SetValue("a2", new TestModel());
+            engine.ExecuteScript(@"
+for (var test of [a1,a2])
+{
+    test.Value++;
+    test = a2;
+    test.Value++;
+}
+model.a = a1.Value
+model.b = a2.Value
+");
+            Assert.AreEqual(1, model.a);
+            Assert.AreEqual(3, model.b);
+        }
+
+        [Test]
+        public void TestLetVariableAdjustmentInScope()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.AddType(typeof(Action), "Action");
+            engine.SetValue("model", model);
+            engine.SetValue("a1", new TestModel());
+            engine.SetValue("a2", new TestModel());
+            engine.ExecuteScript(@"
+for (let test of [a1,a2])
+{
+    test.Value++;
+    test = a2;
+    test.Value++;
+}
+model.a = a1.Value
+model.b = a2.Value
+");
+            Assert.AreEqual(1, model.a);
+            Assert.AreEqual(3, model.b);
+        }
     }
 }

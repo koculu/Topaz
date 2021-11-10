@@ -32,6 +32,8 @@ namespace Tenray.Topaz
 
         public IMemberAccessPolicy MemberAccessPolicy { get; }
 
+        internal ScriptExecutorPool ScriptExecutorPool = new();
+
         public TopazEngine(bool isThreadSafeEngine = true,
             TopazEngineOptions options = null,
             IObjectProxyRegistry objectProxyRegistry = null,
@@ -192,7 +194,7 @@ namespace Tenray.Topaz
             if (disableReflection)
             {
                 var ns = obj.GetType().Namespace;
-                if (ns != null && ns.StartsWith("System.Reflection"))
+                if (ns != null && ns.StartsWith("System.Reflection", StringComparison.Ordinal))
                     Exceptions.ThrowReflectionSecurityException(obj, member);
             }
 

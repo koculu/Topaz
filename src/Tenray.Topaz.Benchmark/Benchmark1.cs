@@ -1,5 +1,5 @@
 ﻿using Jint;
-using Jint.Runtime.Interop;
+using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +27,12 @@ for (var i = 0.0 ; i < 10000000; ++i) {
             return i * i;
         }
 
+        internal void RunV8Engine()
+        {
+            var v8Engine = new V8ScriptEngine();
+            v8Engine.Execute(Code);
+        }
+
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         public void RunNet()
         {
@@ -48,7 +54,6 @@ for (var i = 0.0 ; i < 10000000; ++i) {
         public bool RunTopaz()
         {
             var topazEngine = new TopazEngine(false);
-            topazEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
             topazEngine.ExecuteScript(Code);
             return true;
         }
@@ -56,7 +61,6 @@ for (var i = 0.0 ; i < 10000000; ++i) {
         public void RunJint()
         {
             var jintEngine = new Engine();
-            jintEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
             jintEngine.Execute(Code);
         }
 

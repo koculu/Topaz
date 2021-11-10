@@ -46,8 +46,12 @@ namespace Tenray.Topaz.Statements
                         break;
                     }
                     else if (result is ReturnWrapper)
+                    {
+                        bodyScope.ReturnToPool();
                         return result;
+                    }
                 }
+                bodyScope.ReturnToPool();
                 if (breaked) break;
             }
             while (JavascriptTypeUtility

@@ -1207,7 +1207,7 @@ namespace Esprima
             }
             else
             {
-                d = number.TrimStart().StartsWith("-")
+                d = number.TrimStart().StartsWith("-", StringComparison.Ordinal)
                     ? double.NegativeInfinity
                     : double.PositiveInfinity;
 

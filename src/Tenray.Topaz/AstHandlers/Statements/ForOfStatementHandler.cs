@@ -29,6 +29,7 @@ namespace Tenray.Topaz.Statements
                     variableDeclaration.Declarations[0].Init = new ValueWrapper(item);
                     bodyScope.ExecuteStatement(variableDeclaration, token);
                     var result = bodyScope.ExecuteStatement(body, token);
+                    bodyScope.ReturnToPool();
                     if (result is ReturnWrapper)
                         return result;
                     if (result is BreakWrapper)
@@ -58,8 +59,12 @@ namespace Tenray.Topaz.Statements
                         break;
                     }
                     else if (result is ReturnWrapper)
+                    {
+                        bodyScope.ReturnToPool();
                         return result;
+                    }
                 }
+                bodyScope.ReturnToPool();
                 if (breaked) break;
             }
             return scriptExecutor.GetNullOrUndefined();

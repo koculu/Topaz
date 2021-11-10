@@ -15,7 +15,7 @@ namespace Tenray.Topaz.Core
     {
         private static int lastScriptExecutorId = 0;
 
-        public int Id { get; }
+        public int Id { get; private set; }
 
         private bool isEmptyScope = true;
 
@@ -35,15 +35,15 @@ namespace Tenray.Topaz.Core
         /// </summary>
         internal bool IsFrozen { get; set; }
 
-        internal bool IsThreadSafeScope { get; }
+        internal bool IsThreadSafeScope { get; private set; }
 
-        internal TopazEngine TopazEngine { get; }
+        internal TopazEngine TopazEngine { get; private set; }
 
-        internal ScopeType ScopeType { get; }
+        internal ScopeType ScopeType { get; private set; }
 
-        internal ScriptExecutor GlobalScope { get; }
+        internal ScriptExecutor GlobalScope { get; private set; }
 
-        internal ScriptExecutor ParentScope { get; }
+        internal ScriptExecutor ParentScope { get; private set; }
 
         /// <summary>
         /// Variables dictionary that support thread safe access.
@@ -88,6 +88,16 @@ namespace Tenray.Topaz.Core
         internal ScriptExecutor(TopazEngine topazEngine, ScriptExecutor parentScope, ScopeType scope)
         {
             Id = Interlocked.Increment(ref lastScriptExecutorId);
+            Reconstruct(topazEngine, parentScope, scope);
+        }
+
+        internal void Reconstruct(TopazEngine topazEngine, ScriptExecutor parentScope, ScopeType scope)
+        {
+            // TODO:
+            // Find a way to reuse existing scope id to speed up variable access with local variable cache.
+            // New variable definitions prevents reusing scope id for now.
+            Id = Interlocked.Increment(ref lastScriptExecutorId);
+
             TopazEngine = topazEngine;
             var globalScope = parentScope.GlobalScope;
             GlobalScope = globalScope;
@@ -111,16 +121,29 @@ namespace Tenray.Topaz.Core
              * Note that scope without thread safety
              * uses optimized Dictionary for variable access.
              */
-            IsThreadSafeScope = 
+            IsThreadSafeScope =
                 globalScope.IsThreadSafeScope &&
                 scope != ScopeType.Block &&
                 scope != ScopeType.Function &&
                 scope != ScopeType.FunctionInnerBlock;
 
             if (IsThreadSafeScope)
-                SafeVariables = new();
+            {
+                UnsafeVariables = null;
+                if (SafeVariables == null)
+                    SafeVariables = new();
+                else
+                    SafeVariables.Clear();
+
+            }
             else
-                UnsafeVariables = new();
+            {
+                if (UnsafeVariables == null)
+                    UnsafeVariables = new();
+                else
+                    UnsafeVariables.Clear();
+                SafeVariables = null;
+            }
 
             if (scope == ScopeType.Function)
             {
@@ -151,13 +174,34 @@ namespace Tenray.Topaz.Core
             }
         }
 
+        private bool CanReturnToPool = false;
+
+        private void MarkCanNotReturnToPool()
+        {
+            var scope = this;
+            while (scope != null) {
+                scope.CanReturnToPool = false;
+                scope = scope.ParentScope;
+            }
+        }
+
+        internal void ReturnToPool()
+        {
+            if (CanReturnToPool)
+                TopazEngine.ScriptExecutorPool.Return(this);
+        }
+
         internal ScriptExecutor NewBlockScope()
         {
-            return new ScriptExecutor(TopazEngine, this, ScopeType.Block);
+            var result = TopazEngine.ScriptExecutorPool.Get(TopazEngine, this, ScopeType.Block);
+            result.CanReturnToPool = true;
+            return result;
         }
 
         internal ScriptExecutor NewFunctionScope()
         {
+            // Closures cannot return to pool. Handled in CaptureVariables function.
+            // Any other scope can return to pool safely.
             return new ScriptExecutor(TopazEngine, this, ScopeType.Function);
         }
 
@@ -170,7 +214,9 @@ namespace Tenray.Topaz.Core
 
         internal ScriptExecutor NewFunctionInnerBlockScope()
         {
-            return new ScriptExecutor(TopazEngine, this, ScopeType.FunctionInnerBlock);
+            var result = TopazEngine.ScriptExecutorPool.Get(TopazEngine, this, ScopeType.FunctionInnerBlock);
+            result.CanReturnToPool = true;
+            return result;
         }
 
         internal object ExecuteExpressionAndGetValue(Expression expression, CancellationToken token)

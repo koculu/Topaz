@@ -13,6 +13,8 @@ namespace Tenray.Topaz.Core
     {
         private void CaptureVariables()
         {
+            // Closure and its ancesstors should not return to pool.
+            MarkCanNotReturnToPool();
             var scope = ParentScope;
             var capturedKeys = new HashSet<string>();
             while (scope != null)

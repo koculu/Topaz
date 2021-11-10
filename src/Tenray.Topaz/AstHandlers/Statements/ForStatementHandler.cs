@@ -23,12 +23,17 @@ namespace Tenray.Topaz.Statements
                     token.ThrowIfCancellationRequested();
                     var result = scriptExecutor.ExecuteStatement(body, token);
                     if (result is ReturnWrapper)
+                    {
+                        scriptExecutor.ReturnToPool();
                         return result;
+                    }
                     if (result is BreakWrapper)
                         break;
                     scriptExecutor.ExecuteStatement(update, token);
                 }
-                return scriptExecutor.GetNullOrUndefined();
+                var returnValue2 = scriptExecutor.GetNullOrUndefined();
+                scriptExecutor.ReturnToPool();
+                return returnValue2;
             }
 
             var list = blockBody.Body;
@@ -37,6 +42,7 @@ namespace Tenray.Topaz.Statements
                 .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
             {
                 token.ThrowIfCancellationRequested();
+                
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
@@ -52,12 +58,19 @@ namespace Tenray.Topaz.Statements
                         break;
                     }
                     else if (result is ReturnWrapper)
+                    {
+                        bodyScope.ReturnToPool();
+                        scriptExecutor.ReturnToPool();
                         return result;
+                    }
                 }
+                bodyScope.ReturnToPool();
                 if (breaked) break;
                 scriptExecutor.ExecuteStatement(update, token);
             }
-            return scriptExecutor.GetNullOrUndefined();
+            var returnValue = scriptExecutor.GetNullOrUndefined();
+            scriptExecutor.ReturnToPool();
+            return returnValue;
         }
     }
 }

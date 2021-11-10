@@ -123,11 +123,22 @@ namespace Tenray.Topaz
                 expr3.Body, token);
 
             if (result is ReturnWrapper ret)
+            {
+                scriptExecutor.ReturnToPool();
                 return ret.Result;
-
+            }
             if (result is Expression expr)
-                return scriptExecutor.ExecuteExpressionAndGetValue(expr, token);
-            return scriptExecutor.GetValue(result);
+            {
+                var returnValue = scriptExecutor.ExecuteExpressionAndGetValue(expr, token);
+                scriptExecutor.ReturnToPool();
+                return returnValue;
+            }
+            else
+            {
+                var returnValue = scriptExecutor.GetValue(result);
+                scriptExecutor.ReturnToPool();
+                return returnValue;
+            }
         }
 
         public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args, CancellationToken token)

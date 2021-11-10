@@ -20,9 +20,14 @@ namespace Tenray.Topaz.Statements
                 if (result is ReturnWrapper ||
                     result is BreakWrapper ||
                     result is ContinueWrapper)
+                {
+                    scriptExecutor.ReturnToPool();
                     return result;
+                }
             }
-            return scriptExecutor.GetNullOrUndefined();
+            var returnValue = scriptExecutor.GetNullOrUndefined();
+            scriptExecutor.ReturnToPool();
+            return returnValue;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,10 @@ namespace Tenray.Topaz.Interop
         readonly PropertyInfo[] _indexedProperties;
 
         readonly ParameterInfo[][] _indexedPropertyParameters;
+
+        readonly ConcurrentDictionary<object, Func<object>> _cachedGetters = new();
+
+        readonly ConcurrentDictionary<object, Action<object>> _cachedSetters = new();
 
         public TypeProxyUsingReflection(
             Type proxiedType,
@@ -164,6 +169,11 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
+            if (_cachedGetters.TryGetValue(member, out var cachedGetter))
+            {
+                value = cachedGetter();
+                return true;
+            }
             var members = ProxiedType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Static);
             if (members.Length == 0)
@@ -176,6 +186,11 @@ namespace Tenray.Topaz.Interop
                 if (property.GetMethod == null ||  
                     property.GetMethod.IsPrivate)
                     return false;
+                var getter = new Func<object>(() =>
+                {
+                    return property.GetValue(null);
+                });
+                _cachedGetters.TryAdd(member, getter);
                 value = property.GetValue(null);
                 return true;
             }
@@ -185,6 +200,11 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowField)
                     return false;
+                var getter = new Func<object>(() =>
+                {
+                    return field.GetValue(null);
+                });
+                _cachedGetters.TryAdd(member, getter);
                 value = field.GetValue(null);
                 return true;
             }
@@ -198,7 +218,13 @@ namespace Tenray.Topaz.Interop
                 .ToArray();
             if (methods.Length == 0)
                 return false;
-            value = new InvokerUsingReflection(Name + "." + memberName, methods, null, options);
+
+            var methodGetter = new Func<object>(() =>
+            {
+                return new InvokerUsingReflection(Name + "." + memberName, methods, null, options);
+            });
+            _cachedGetters.TryAdd(member, methodGetter);
+            value = methodGetter();
             return true;
         }
 
@@ -247,6 +273,12 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
+            if (_cachedSetters.TryGetValue(member, out var cachedSetter))
+            {
+                cachedSetter(value);
+                return true;
+            }
+
             var members = ProxiedType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Static);
             if (members.Length == 0)
@@ -258,7 +290,18 @@ namespace Tenray.Topaz.Interop
                     return false;
                 if (property.SetMethod == null || property.SetMethod.IsPrivate)
                     return false;
-                property.SetValue(null, value);
+
+                var action = new Action<object>((value) =>
+                {
+                    if (value != null && property.PropertyType != value.GetType())
+                    {
+                        property.SetValue(null, Convert.ChangeType(value, property.PropertyType));
+                        return;
+                    }
+                    property.SetValue(null, value);
+                });
+                _cachedSetters.TryAdd(member, action);
+                action(value);
                 return true;
             }
             var allowField =
@@ -267,7 +310,18 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowField)
                     return false;
-                field.SetValue(null, value);
+
+                var action = new Action<object>((value) =>
+                {
+                    if (value != null && field.FieldType != value.GetType())
+                    {
+                        field.SetValue(null, Convert.ChangeType(value, field.FieldType));
+                        return;
+                    }
+                    field.SetValue(null, value);
+                });
+                _cachedSetters.TryAdd(member, action);
+                action(value);
                 return true;
             }
             return false;
