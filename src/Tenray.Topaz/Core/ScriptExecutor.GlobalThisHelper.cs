@@ -65,10 +65,14 @@ namespace Tenray.Topaz.Core
             var scope = this;
             if (scope.IsThreadSafeScope)
             {
+                if (scope.SafeVariables == null)
+                    return 0;
                 return scope.SafeVariables.Count;
             }
             else
             {
+                if (scope.UnsafeVariables == null)
+                    return 0;
                 return scope.UnsafeVariables.Count;
             }
         }

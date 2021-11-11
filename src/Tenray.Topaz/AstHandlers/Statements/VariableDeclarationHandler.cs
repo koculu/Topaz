@@ -60,7 +60,7 @@ namespace Tenray.Topaz.Statements
                 {
                     value = scriptExecutor.ExecuteExpressionAndGetValue(init, token);
                 }
-                scope.DefineVariable(identifier.Name, value, kind);
+                scope.DefineVariable(identifier, value, kind);
             }
             return scriptExecutor.GetNullOrUndefined();
         }

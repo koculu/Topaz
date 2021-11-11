@@ -64,7 +64,7 @@ namespace Tenray.Topaz.Statements
                 {
                     value = await scriptExecutor.ExecuteExpressionAndGetValueAsync(init, token);
                 }
-                scope.DefineVariable(identifier.Name, value, kind);
+                scope.DefineVariable(identifier, value, kind);
             }
             return scriptExecutor.GetNullOrUndefined();
         }

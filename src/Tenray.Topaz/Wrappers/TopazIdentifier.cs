@@ -39,6 +39,11 @@ namespace Tenray.Topaz
             return Name;
         }
 
+        internal void InvalidateLocalCache()
+        {
+            Cache = CacheEntry.EmptyEntry;
+        }
+
         internal object GetVariableValue(ScriptExecutor scriptExecutor)
         {
             var scopeId = scriptExecutor.Id;

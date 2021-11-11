@@ -105,13 +105,13 @@ namespace Tenray.Topaz
                     {
                         rested[j] = args[i + j];
                     }
-                    scriptExecutor.DefineVariable(id.Name,
+                    scriptExecutor.DefineVariable(id,
                         rested,
                         VariableKind.Var);
                 }
                 else
                 {
-                    scriptExecutor.DefineVariable(id.Name,
+                    scriptExecutor.DefineVariable(id,
                         i < args.Count ? args[i] : defaultValue,
                         VariableKind.Var);
                 }
@@ -199,13 +199,13 @@ namespace Tenray.Topaz
                     {
                         rested[j] = args[i + j];
                     }
-                    scriptExecutor.DefineVariable(id.Name,
+                    scriptExecutor.DefineVariable(id,
                         rested,
                         VariableKind.Var);
                 }
                 else
                 {
-                    scriptExecutor.DefineVariable(id.Name,
+                    scriptExecutor.DefineVariable(id,
                         i < args.Count ? args[i] : defaultValue,
                         VariableKind.Var);
                 }

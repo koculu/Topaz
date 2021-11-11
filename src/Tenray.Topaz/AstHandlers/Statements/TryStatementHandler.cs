@@ -52,11 +52,8 @@ namespace Tenray.Topaz.Statements
         private static object HandleCatch(ScriptExecutor scriptExecutor, CatchClause handler, Exception e, CancellationToken token)
         {
             var bodyScope = scriptExecutor.NewBlockScope();
-            var paramName = (handler.Param as Identifier)?.Name;
-            if (paramName != null)
-                bodyScope
-                    .DefineVariable(paramName, e, VariableKind.Var);
-
+            var identifier = handler.Param as Identifier;
+            bodyScope.DefineVariable(identifier, e, VariableKind.Var);
             var result = bodyScope.ExecuteStatement(handler.Body, token);
             bodyScope.ReturnToPool();
             return result;

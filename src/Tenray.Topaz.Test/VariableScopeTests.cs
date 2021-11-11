@@ -157,5 +157,41 @@ model.a = result
 ");
             Assert.AreEqual(20, model.a);
         }
+
+        [Test]
+        public void InvalidateLocalCache1()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = 1
+{
+    model.a1 = a
+    let a = 2
+    model.a2 = a
+}
+");
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(2, model.a2);
+        }
+
+        [Test]
+        public void InvalidateLocalCache2()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = 1
+model.a1 = a
+{
+    let a = 2
+    model.a2 = a
+}
+");
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(2, model.a2);
+        }
     }
 }
