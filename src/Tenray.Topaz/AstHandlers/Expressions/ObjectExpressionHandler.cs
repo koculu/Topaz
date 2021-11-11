@@ -26,8 +26,11 @@ namespace Tenray.Topaz.Expressions
                     var key = scriptExecutor.ExecuteStatement(prop.Key, token);
                     if (prop.Computed)
                         key = scriptExecutor.GetValue(key);
-                    else if (key is TopazIdentifier identifier)
-                        key = identifier.Name;
+                    else if (key is TopazIdentifier topazIdentifier)
+                    {
+                        topazIdentifier.InvalidateLocalCache();
+                        key = topazIdentifier.Name;
+                    }
                     if (prop.Kind == PropertyKind.Init || prop.Kind == PropertyKind.Data)
                     {
                         var value =

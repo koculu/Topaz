@@ -41,7 +41,7 @@ function makeFunc() {
         model.name = name;
     }
     return displayName;
-}   
+}
 var myFunc = makeFunc();
 myFunc();
 
@@ -192,6 +192,64 @@ model.a1 = a
 ");
             Assert.AreEqual(1, model.a1);
             Assert.AreEqual(2, model.a2);
+        }
+
+        [Test]
+        public void InvalidateLocalCache3()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+function f1(key) {
+    var a = key
+    {
+        model['a' + key] = a
+        let a = key+1
+        model['b' + key] = a
+    }
+}
+f1(1)
+f1(2)
+");
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(2, model.b1);
+            Assert.AreEqual(2, model.a2);
+            Assert.AreEqual(3, model.b2);
+        }
+
+        [Test]
+        public void InvalidateLocalCache4()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+function f1(key) {
+    var a = key
+    {
+        model['a' + key] = a
+        let a = key+1
+        model['b' + key] = a
+        {
+            model['c' + key] = a
+            let a = key+1
+            model['d' + key] = a
+        }
+    }
+}
+f1(1)
+f1(2)
+");
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(2, model.b1);
+            Assert.AreEqual(2, model.a2);
+            Assert.AreEqual(3, model.b2);
+
+            Assert.AreEqual(2, model.c1);
+            Assert.AreEqual(2, model.d1);
+            Assert.AreEqual(3, model.c2);
+            Assert.AreEqual(3, model.d2);
         }
     }
 }

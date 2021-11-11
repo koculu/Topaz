@@ -8,7 +8,7 @@ namespace Tenray.Topaz.Benchmark
         static void Main()
         {
             var sw = new Stopwatch();
-            var b = new Benchmark4();
+            var b = new Benchmark1();
             var engine = Engines.Topaz;
             sw.Start();
             switch (engine)

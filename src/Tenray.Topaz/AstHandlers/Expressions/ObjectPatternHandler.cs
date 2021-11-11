@@ -29,6 +29,7 @@ namespace Tenray.Topaz.Expressions
                     var arg = scriptExecutor.ExecuteStatement(restElement.Argument, token);
                     if (arg is TopazIdentifier topazIdentifier)
                     {
+                        topazIdentifier.InvalidateLocalCache();
                         if (topazEngine
                             .TryGetObjectMember(
                                 value,
@@ -44,8 +45,11 @@ namespace Tenray.Topaz.Expressions
                     var key = left;
                     if (prop.Computed)
                         key = scriptExecutor.GetValue(key);
-                    else if (key is TopazIdentifier identifier)
-                        key = identifier.Name;
+                    else if (key is TopazIdentifier topazIdentifier)
+                    {
+                        topazIdentifier.InvalidateLocalCache();
+                        key = topazIdentifier.Name;
+                    }
                     var keyString = key.ToString();
                     if (keyString == null)
                         Exceptions.ThrowNullReferenceException("Object destructor property key is null.");

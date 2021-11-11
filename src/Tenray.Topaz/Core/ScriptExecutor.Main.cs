@@ -87,7 +87,6 @@ namespace Tenray.Topaz.Core
 
         internal ScriptExecutor(TopazEngine topazEngine, ScriptExecutor parentScope, ScopeType scope)
         {
-            Id = Interlocked.Increment(ref lastScriptExecutorId);
             Reconstruct(topazEngine, parentScope, scope);
         }
 
