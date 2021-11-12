@@ -85,7 +85,7 @@ namespace Tenray.Topaz.ErrorHandling
                     $"Security Exception: Member '{GetArgumentString(property)}' of {GetArgumentString(instance)} is not accessible.");
         }
 
-        internal static void ThrowCannotCallDelegateArgumentMismatch(object[] args)
+        internal static void ThrowCannotCallDelegateArgumentMismatch(IReadOnlyList<object> args)
         {
             var argString = string.Join(", ", args);            
             throw new TopazException(

@@ -9,11 +9,19 @@ namespace Tenray.Topaz.Test
     {
         private class DelegateTester
         {
+            public delegate void DelegateNoArgument();
             public delegate int Delegate1(int x);
             public delegate int Delegate2(int x, params int[] args);
 
+            public DelegateNoArgument TheDelegateNoArgument => Sum;
             public Delegate1 TheDelegate1 => Sum;
             public Delegate2 TheDelegate2 => Sum;
+
+            public int Counter1;
+            public void Sum()
+            {
+                ++Counter1;
+            }
 
             public int Sum(int x)
             {
@@ -33,7 +41,6 @@ namespace Tenray.Topaz.Test
             dynamic model = new JsObject();
             engine.SetValue("model", model);
             engine.SetValue("delegateTester", new DelegateTester());
-
             engine.ExecuteScript(@"
 model.a = delegateTester.TheDelegate1(3)
 model.b = delegateTester.TheDelegate2(5)
@@ -44,14 +51,36 @@ model.f = delegateTester.Sum(7,6,5,4,3,2,1,0)
 model.g = delegateTester.Sum(7,6,5,4,3,2,1,0,'33')
 model.h = delegateTester.TheDelegate2(7,6,5,4,3,2,1,0,'55')
 ");
-            Assert.AreEqual(model.a, 3);
-            Assert.AreEqual(model.b, 5);
-            Assert.AreEqual(model.c, 15);
-            Assert.AreEqual(model.d, 7);
-            Assert.AreEqual(model.e, 13);
-            Assert.AreEqual(model.f, 28);
-            Assert.AreEqual(model.g, 61);
-            Assert.AreEqual(model.h, 83);
+            Assert.AreEqual(3, model.a);
+            Assert.AreEqual(5, model.b);
+            Assert.AreEqual(15, model.c);
+            Assert.AreEqual(7, model.d);
+            Assert.AreEqual(13, model.e);
+            Assert.AreEqual(28, model.f);
+            Assert.AreEqual(61, model.g);
+            Assert.AreEqual(83, model.h);
+        }
+
+        [Test]
+        public void TestDelegateWithNoArgument()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            var delegateTester = new DelegateTester();
+            engine.SetValue("delegateTester", delegateTester);
+
+            var test1 = 0;
+            engine.SetValue("action1", new Action(() => test1 = 1));
+
+            engine.ExecuteScript(@"
+var a = delegateTester.TheDelegateNoArgument
+delegateTester.TheDelegateNoArgument()
+a()
+action1()
+");
+            Assert.AreEqual(2, delegateTester.Counter1);
+            Assert.AreEqual(1, test1);
         }
     }
 }

@@ -52,9 +52,9 @@ namespace Tenray.Topaz.Interop
             var paramLen = parameters.Length;
 
             var hasDefaultValue = false;
-            var defaultValueIndex = argsLen;
+            var defaultValueIndex = paramLen;
             var hasParamArrayAttribute = false;
-            var paramArrayAttributeIndex = argsLen;
+            var paramArrayAttributeIndex = paramLen;
             Type paramArrayInnerType = null;
             IList paramsCollection = null;
             for (var j = 0; j < paramLen; ++j)
@@ -72,7 +72,7 @@ namespace Tenray.Topaz.Interop
                 if (hasParamArrayAttribute)
                 {
                     paramsCollection = (IList)Activator
-                        .CreateInstance(p.ParameterType, argsLen - j);
+                        .CreateInstance(p.ParameterType, Math.Max(0, argsLen - j));
                     paramArrayInnerType = p.ParameterType.GetElementType();
                     paramArrayAttributeIndex = j;
                 }

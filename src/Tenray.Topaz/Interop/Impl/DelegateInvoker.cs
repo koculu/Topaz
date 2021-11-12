@@ -62,7 +62,13 @@ namespace Tenray.Topaz.Interop
                         args,
                         parameters,
                         out var convertedArgs))
+                {
                     argsArray = convertedArgs;
+                }
+                else
+                {
+                    Exceptions.ThrowCannotCallDelegateArgumentMismatch(args);
+                }
             }
             return method.Invoke(value, argsArray);
         }
