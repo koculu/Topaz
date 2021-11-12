@@ -60,6 +60,12 @@ namespace Tenray.Topaz.Interop
                     convertedValue = enumValue;
                     return true;
                 }
+                IConvertible convertible = value as IConvertible;
+                if (convertible == null)
+                {
+                    convertedValue = null;
+                    return false;
+                }
                 convertedValue = Convert.ChangeType(value, targetType);
                 return true;
             }
