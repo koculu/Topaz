@@ -92,9 +92,6 @@ namespace Tenray.Topaz.Core
 
         internal void Reconstruct(TopazEngine topazEngine, ScriptExecutor parentScope, ScopeType scope)
         {
-            // TODO:
-            // Find a way to reuse existing scope id to speed up variable access with local variable cache.
-            // New variable definitions prevents reusing scope id for now.
             Id = Interlocked.Increment(ref lastScriptExecutorId);
 
             TopazEngine = topazEngine;

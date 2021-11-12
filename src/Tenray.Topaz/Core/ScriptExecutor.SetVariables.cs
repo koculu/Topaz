@@ -184,6 +184,7 @@ namespace Tenray.Topaz.Core
                             AddOrUpdateVariableValueAndKindInTheScope(name, value, VariableKind.Let);
                             break;
                     }
+                    return;
                 }
                 // Function scope variable dictionary is frozen (immutable)!
                 if (scope.ScopeType != ScopeType.Function)

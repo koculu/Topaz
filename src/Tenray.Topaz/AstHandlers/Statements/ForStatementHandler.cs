@@ -13,6 +13,8 @@ namespace Tenray.Topaz.Statements
             var init = expr.Init;
             var test = expr.Test;
             var update = expr.Update;
+
+            // outer for loop scope is required for let and const variables not defined after for loop.
             scriptExecutor = scriptExecutor.NewBlockScope();
             scriptExecutor.ExecuteStatement(init, token);
             if (body is not BlockStatement blockBody)
@@ -42,7 +44,9 @@ namespace Tenray.Topaz.Statements
                 .IsObjectTrue(scriptExecutor.ExecuteExpressionAndGetValue(test, token)))
             {
                 token.ThrowIfCancellationRequested();
-                
+
+                // inner block scope is required for let and const variables
+                // are allowed to be defined multiple times in the loop.
                 var bodyScope = scriptExecutor.NewBlockScope();
                 var breaked = false;
                 for (var i = 0; i < len; ++i)
