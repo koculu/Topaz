@@ -82,5 +82,34 @@ action1()
             Assert.AreEqual(2, delegateTester.Counter1);
             Assert.AreEqual(1, test1);
         }
+
+        [Test]
+        public void TestActionConstruction()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.AddType<Action>("Action");
+            engine.AddType(typeof(Action<>), "Action1d");
+            engine.AddType(typeof(Func<,>), "Func1d");
+
+            engine.ExecuteScript(@"
+
+var b = 1;
+var a = new Action(() => { b++; })
+a()
+a()
+model.b = b
+
+var c = new Action1d(b.GetType(), (x) => { model.c = x })
+c(37)
+
+var d = new Func1d(b.GetType(), b.GetType(), (x) => { return x * x } )
+model.d = d(9)
+");
+            Assert.AreEqual(3, model.b);
+            Assert.AreEqual(37, model.c);
+            Assert.AreEqual(81, model.d);
+        }
     }
 }
