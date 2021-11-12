@@ -18,7 +18,10 @@ for (var i = 0.0 ; i < 10000000; ++i) {
 
         public void RunTopaz()
         {
-            var topazEngine = new TopazEngine(true);
+            var topazEngine = new TopazEngine(new TopazEngineSetup
+            {
+                IsThreadSafe = true
+            });
             var model = new Model();
             topazEngine.SetValue("model", model);
             topazEngine.ExecuteScript(Code);

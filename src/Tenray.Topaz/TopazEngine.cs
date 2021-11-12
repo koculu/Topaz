@@ -36,26 +36,22 @@ namespace Tenray.Topaz
 
         internal ScriptExecutorPool ScriptExecutorPool = new();
 
-        public TopazEngine(bool isThreadSafeEngine = true,
-            TopazEngineOptions options = null,
-            IObjectProxyRegistry objectProxyRegistry = null,
-            IObjectProxy defaultObjectProxy = null,
-            IDelegateInvoker delegateInvoker = null,
-            IMemberAccessPolicy memberAccessPolicy = null,
-            IValueConverter valueConverter = null)
+        public TopazEngine(TopazEngineSetup setup = null)
         {
+            if (setup == null)
+                setup = new TopazEngineSetup();
             Id = Interlocked.Increment(ref lastTopazEngineId);
-            globalScope = new ScriptExecutor(this, isThreadSafeEngine);
-            var optionsHasGiven = options != null;
-            Options = options ?? PresetOptions.FriendlyStyle;
+            globalScope = new ScriptExecutor(this, setup.IsThreadSafe);
+            var optionsHasGiven = setup.Options != null;
+            Options = setup.Options ?? PresetOptions.FriendlyStyle;
             if (!optionsHasGiven)
-                Options.UseThreadSafeJsObjects = isThreadSafeEngine;
-            ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
+                Options.UseThreadSafeJsObjects = setup.IsThreadSafe;
+            ObjectProxyRegistry = setup.ObjectProxyRegistry ?? new DictionaryObjectProxyRegistry();
             extensionMethodRegistry = new();
-            ValueConverter = valueConverter ?? new DefaultValueConverter();
-            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter );
-            DelegateInvoker = delegateInvoker ?? new DelegateInvoker(ValueConverter);
-            MemberAccessPolicy = memberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
+            ValueConverter = setup.ValueConverter ?? new DefaultValueConverter();
+            DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter );
+            DelegateInvoker = setup.DelegateInvoker ?? new DelegateInvoker(ValueConverter);
+            MemberAccessPolicy = setup.MemberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
         }
 
         public void ExecuteScript(string code, CancellationToken token = default)
