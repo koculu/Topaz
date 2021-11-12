@@ -9,20 +9,29 @@ namespace Tenray.Topaz.Interop
     public class InvokerUsingReflection : IInvokable
     {
         public readonly string Name;
+
         readonly object instance;
+
         readonly MethodInfo[] methodInfos;
+
         readonly ProxyOptions options;
+
+        public IValueConverter ValueConverter { get; }
+
         private readonly MethodAndParameterInfo extMethodParameterInfo;
+
         readonly ParameterInfo[][] allParameters;
 
         public InvokerUsingReflection(
             string name,
             MethodInfo[] methodInfos,
             object instance,
-            ProxyOptions options,
+            ProxyOptions options, 
+            IValueConverter valueConverter,
             MethodAndParameterInfo extMethodParameterInfo = null)
         {
             Name = name;
+            ValueConverter = valueConverter;
             this.methodInfos = methodInfos;
             var len = methodInfos.Length;
             for (var i = 0; i < len; ++i)
@@ -46,11 +55,10 @@ namespace Tenray.Topaz.Interop
 
         public object Invoke(IReadOnlyList<object> args)
         {
-            var convertStringsToEnum =
-                options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
             if (!options.HasFlag(ProxyOptions.AutomaticTypeConversion))
             {
                 if (ArgumentMatcher.TryFindBestMatch(
+                    ValueConverter,
                    args,
                    allParameters,
                    out var index))
@@ -64,9 +72,9 @@ namespace Tenray.Topaz.Interop
             }
 
             if (ArgumentMatcher.TryFindBestMatchWithTypeConversion(
+                ValueConverter,
                 args,
                 allParameters,
-                convertStringsToEnum,
                 out var index2,
                 out var convertedArgs2))
             {
@@ -86,8 +94,6 @@ namespace Tenray.Topaz.Interop
 
         private object TryInvokeExtensionMethod(IReadOnlyList<object> args)
         {
-            var convertStringsToEnum =
-                   options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
             var mpinfo = extMethodParameterInfo;
             if (!mpinfo.HasAny)
             {
@@ -107,6 +113,7 @@ namespace Tenray.Topaz.Interop
             if (!options.HasFlag(ProxyOptions.AutomaticTypeConversion))
             {
                 if (ArgumentMatcher.TryFindBestMatch(
+                   ValueConverter,
                    args,
                    extAllParameters,
                    out var index))
@@ -120,9 +127,9 @@ namespace Tenray.Topaz.Interop
             }
 
             if (ArgumentMatcher.TryFindBestMatchWithTypeConversion(
+                ValueConverter,
                 args,
                 extAllParameters,
-                convertStringsToEnum,
                 out var index2,
                 out var convertedArgs2))
             {

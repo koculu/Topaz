@@ -172,5 +172,10 @@ namespace Tenray.Topaz.ErrorHandling
         {
             throw new TopazException("TypeError: Reduce of empty array with no initial value");
         }
+
+        internal static void CannotConvertValueToTargetType(object value, Type propertyType)
+        {
+            throw new TopazException($"TypeError: Cannot convert value {GetArgumentString(value)} to target type '{propertyType}'.");
+        }
     }
 }

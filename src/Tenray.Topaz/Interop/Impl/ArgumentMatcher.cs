@@ -9,6 +9,7 @@ namespace Tenray.Topaz.Interop
     public static class ArgumentMatcher
     {
         public static bool TryFindBestMatch(
+            IValueConverter valueConverter,
             IReadOnlyList<object> args,
             ParameterInfo[][] allParameters,
             out int index)
@@ -27,17 +28,7 @@ namespace Tenray.Topaz.Interop
                     var arg = args[j];
                     var p = parameters[j];
                     var ptype = p.ParameterType;
-                    if (arg == null)
-                    {
-                        if (ptype.IsClass)
-                            continue;
-                        failed = true;
-                        break;
-                    }
-                    var argType = arg.GetType();
-                    if (ptype == typeof(object) ||
-                        ptype == argType ||
-                        ptype.IsAssignableFrom(argType))
+                    if (valueConverter.IsValueAssignableTo(arg, ptype))
                         continue;
                     failed = true;
                     break;
@@ -52,9 +43,9 @@ namespace Tenray.Topaz.Interop
         }
 
         public static bool TryFindBestMatchWithTypeConversion(
+            IValueConverter valueConverter,
             IReadOnlyList<object> args,
             ParameterInfo[] parameters,
-            bool convertStringsToEnum,
             out object[] convertedArgs)
         {
             var argsLen = args.Count;
@@ -114,40 +105,14 @@ namespace Tenray.Topaz.Interop
                 var ptype = useParamArrayInnerType ??
                     parameters[parametersIndex].ParameterType;
                 var arg = argsCopy[j];
-                if (arg == Undefined.Value)
+
+                if (valueConverter.TryConvertValue(arg, ptype, out var convertedArg))
                 {
-                    argsCopy[j] = null;
-                    arg = null;
-                }
-                if (arg == null)
-                {
-                    if (ptype.IsClass)
-                        continue;
-                    convertedArgs = null;
-                    return false;
-                }
-                var argType = arg.GetType();
-                if (ptype == typeof(object) ||
-                    ptype == argType ||
-                    ptype.IsAssignableFrom(argType))
+                    argsCopy[j] = convertedArg;
                     continue;
-                try
-                {
-                    if (convertStringsToEnum &&
-                        ptype.IsEnum &&
-                        arg is string s &&
-                        Enum.TryParse(ptype, s, true, out var enumValue))
-                    {
-                        argsCopy[j] = enumValue;
-                        continue;
-                    }
-                    argsCopy[j] = Convert.ChangeType(arg, ptype);
                 }
-                catch (Exception)
-                {
-                    convertedArgs = null;
-                    return false;
-                }
+                convertedArgs = null;
+                return false;
             }
 
             if (argsLen < paramLen && hasDefaultValue)
@@ -177,13 +142,13 @@ namespace Tenray.Topaz.Interop
         }
 
         public static bool TryFindBestMatchWithTypeConversion(
+            IValueConverter valueConverter,
             IReadOnlyList<object> args,
             ParameterInfo[][] allParameters,
-            bool convertStringsToEnum,
             out int index,
             out object[] convertedArgs)
         {
-            if (TryFindBestMatch(args, allParameters, out index))
+            if (TryFindBestMatch(valueConverter, args, allParameters, out index))
             {
                 convertedArgs = args as object[] ?? args.ToArray();
                 return true;
@@ -193,7 +158,7 @@ namespace Tenray.Topaz.Interop
             {
 
                 var parameters = allParameters[i]; 
-                if (TryFindBestMatchWithTypeConversion(args, parameters, convertStringsToEnum, out convertedArgs))
+                if (TryFindBestMatchWithTypeConversion(valueConverter, args, parameters, out convertedArgs))
                 {
                     index = i;
                     return true;

@@ -17,6 +17,8 @@ namespace Tenray.Topaz.Interop
         
         public ExtensionMethodRegistry ExtensionMethodRegistry { get; }
         
+        public IValueConverter ValueConverter { get; }
+
         public ProxyOptions ProxyOptions { get; }
 
         readonly PropertyInfo[] _indexedProperties;
@@ -30,10 +32,12 @@ namespace Tenray.Topaz.Interop
         public ObjectProxyUsingReflection(
             Type proxiedType,
             ExtensionMethodRegistry extensionMethodRegistry,
+            IValueConverter valueConverter,
             ProxyOptions proxyOptions = ProxyOptions.Default)
         {
             ProxiedType = proxiedType;
             ExtensionMethodRegistry = extensionMethodRegistry;
+            ValueConverter = valueConverter;
             ProxyOptions = proxyOptions;
 
             if (proxiedType != null &&
@@ -149,13 +153,11 @@ namespace Tenray.Topaz.Interop
                             BindingFlags.Public | BindingFlags.Instance);
                 }
 
-                var convertStringsToEnum =
-                    options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
+                    ValueConverter,
                     new[] { member },
                     indexedPropertyParameters,
-                    convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
@@ -196,7 +198,7 @@ namespace Tenray.Topaz.Interop
                 var methodGetter2 = new Func<object, object>((instance) =>
                 {
                     return new InvokerUsingReflection(
-                        memberName, Array.Empty<MethodInfo>(), instance, options, extMethodParameterInfo);
+                        memberName, Array.Empty<MethodInfo>(), instance, options, ValueConverter, extMethodParameterInfo);
                 });
                 _cachedGetters.TryAdd(cacheKey, methodGetter2);
                 value = methodGetter2(instance);
@@ -248,7 +250,7 @@ namespace Tenray.Topaz.Interop
             }
             var methodGetter = new Func<object, object>((instance) =>
             {
-                return new InvokerUsingReflection(memberName, methods, instance, options, extMethodParameterInfo2);
+                return new InvokerUsingReflection(memberName, methods, instance, options, ValueConverter, extMethodParameterInfo2);
             });
             _cachedGetters.TryAdd(cacheKey, methodGetter); 
             value = methodGetter(instance);
@@ -364,13 +366,11 @@ namespace Tenray.Topaz.Interop
                             BindingFlags.Public | BindingFlags.Instance);
                 }
 
-                var convertStringsToEnum =
-                    options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
+                    ValueConverter,
                     new[] { member },
                     indexedPropertyParameters,
-                    convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
@@ -414,12 +414,11 @@ namespace Tenray.Topaz.Interop
                     return false;
                 var action = new Action<object, object>((instance, value) =>
                 {
-                    if (value != null && property.PropertyType != value.GetType())
-                    {
-                        property.SetValue(instance, Convert.ChangeType(value, property.PropertyType));
-                        return;
-                    }
-                    property.SetValue(instance, value);
+                    if (ValueConverter
+                        .TryConvertValue(value, property.PropertyType, out var convertedValue))
+                        property.SetValue(instance, convertedValue);
+                    else
+                        Exceptions.CannotConvertValueToTargetType(value, property.PropertyType);
                 });
                 _cachedSetters.TryAdd(cacheKey, action);
                 action(instance, value);
@@ -434,12 +433,11 @@ namespace Tenray.Topaz.Interop
 
                 var action = new Action<object, object>((instance, value) =>
                 {
-                    if (value != null && field.FieldType != value.GetType())
-                    {
-                        field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
-                        return;
-                    }
-                    field.SetValue(instance, value);
+                    if (ValueConverter
+                        .TryConvertValue(value, field.FieldType, out var convertedValue))
+                        field.SetValue(instance, convertedValue);
+                    else
+                        Exceptions.CannotConvertValueToTargetType(value, field.FieldType);
                 });
                 _cachedSetters.TryAdd(cacheKey, action);
                 action(instance, value);

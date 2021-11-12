@@ -16,17 +16,18 @@ namespace Tenray.Topaz.Interop
                 MethodInfo
                 > methods = new();
 
+        public IValueConverter ValueConverter { get; }
+
         public bool AutomaticArgumentConversion { get; set; }
 
-        public bool ConvertStringsToEnum { get; set; }
-
         public DelegateInvoker(
-            bool automaticArgumentConversion = true,
-            bool convertStringsToEnum = true)
+            IValueConverter valueConverter,
+            bool automaticArgumentConversion = true)
         {
+            ValueConverter = valueConverter;
             AutomaticArgumentConversion = automaticArgumentConversion;
-            ConvertStringsToEnum = convertStringsToEnum;
         }
+
         public object Invoke(
             object value,
             IReadOnlyList<object> args)
@@ -57,9 +58,9 @@ namespace Tenray.Topaz.Interop
             {
                 if (ArgumentMatcher.
                     TryFindBestMatchWithTypeConversion(
+                        ValueConverter,
                         args,
                         parameters,
-                        ConvertStringsToEnum,
                         out var convertedArgs))
                     argsArray = convertedArgs;
             }

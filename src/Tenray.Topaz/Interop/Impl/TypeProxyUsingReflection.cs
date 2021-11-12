@@ -9,6 +9,8 @@ namespace Tenray.Topaz.Interop
 {
     public class TypeProxyUsingReflection : ITypeProxy
     {
+        public IValueConverter ValueConverter { get; }
+
         public string Name { get; }
 
         public Type ProxiedType { get; }
@@ -29,10 +31,12 @@ namespace Tenray.Topaz.Interop
 
         public TypeProxyUsingReflection(
             Type proxiedType,
+            IValueConverter valueConverter,
             string name = null,
             ProxyOptions proxyOptions = ProxyOptions.Default)
         {
             Name = name ?? proxiedType.FullName;
+            ValueConverter = valueConverter;
             ProxiedType = proxiedType;
             ProxyOptions = proxyOptions;
             if (proxyOptions.HasFlag(ProxyOptions.AllowConstructor) &&
@@ -88,12 +92,10 @@ namespace Tenray.Topaz.Interop
                     .Select(x => x.GetParameters())
                     .ToArray();
             }
-            var convertStringsToEnum =
-                options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
             if (ArgumentMatcher.TryFindBestMatchWithTypeConversion(
+                ValueConverter,
                 args,
                 constructorParameters,
-                convertStringsToEnum,
                 out var index,
                 out var convertedArgs))
             {
@@ -141,13 +143,11 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowProperty)
                     return false;
-                var convertStringsToEnum =
-                    options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
+                    ValueConverter,
                     new[] { member },
                     _indexedPropertyParameters,
-                    convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
@@ -221,7 +221,7 @@ namespace Tenray.Topaz.Interop
 
             var methodGetter = new Func<object>(() =>
             {
-                return new InvokerUsingReflection(Name + "." + memberName, methods, null, options);
+                return new InvokerUsingReflection(Name + "." + memberName, methods, null, options, ValueConverter);
             });
             _cachedGetters.TryAdd(member, methodGetter);
             value = methodGetter();
@@ -245,13 +245,11 @@ namespace Tenray.Topaz.Interop
             {
                 if (!allowProperty)
                     return false;
-                var convertStringsToEnum =
-                    options.HasFlag(ProxyOptions.ConvertStringArgumentsToEnum);
                 if (ArgumentMatcher
                     .TryFindBestMatchWithTypeConversion(
+                    ValueConverter,
                     new[] { member },
                     _indexedPropertyParameters,
-                    convertStringsToEnum,
                     out var index,
                     out var convertedArgs))
                 {
@@ -293,12 +291,11 @@ namespace Tenray.Topaz.Interop
 
                 var action = new Action<object>((value) =>
                 {
-                    if (value != null && property.PropertyType != value.GetType())
-                    {
-                        property.SetValue(null, Convert.ChangeType(value, property.PropertyType));
-                        return;
-                    }
-                    property.SetValue(null, value);
+                    if (ValueConverter
+                           .TryConvertValue(value, property.PropertyType, out var convertedValue))
+                        property.SetValue(null, convertedValue);
+                    else
+                        Exceptions.CannotConvertValueToTargetType(value, property.PropertyType);
                 });
                 _cachedSetters.TryAdd(member, action);
                 action(value);
@@ -313,12 +310,11 @@ namespace Tenray.Topaz.Interop
 
                 var action = new Action<object>((value) =>
                 {
-                    if (value != null && field.FieldType != value.GetType())
-                    {
-                        field.SetValue(null, Convert.ChangeType(value, field.FieldType));
-                        return;
-                    }
-                    field.SetValue(null, value);
+                    if (ValueConverter
+                        .TryConvertValue(value, field.FieldType, out var convertedValue))
+                        field.SetValue(null, convertedValue);
+                    else
+                        Exceptions.CannotConvertValueToTargetType(value, field.FieldType);
                 });
                 _cachedSetters.TryAdd(member, action);
                 action(value);

@@ -32,6 +32,8 @@ namespace Tenray.Topaz
 
         public IMemberAccessPolicy MemberAccessPolicy { get; }
 
+        public IValueConverter ValueConverter { get; }
+
         internal ScriptExecutorPool ScriptExecutorPool = new();
 
         public TopazEngine(bool isThreadSafeEngine = true,
@@ -39,7 +41,8 @@ namespace Tenray.Topaz
             IObjectProxyRegistry objectProxyRegistry = null,
             IObjectProxy defaultObjectProxy = null,
             IDelegateInvoker delegateInvoker = null,
-            IMemberAccessPolicy memberAccessPolicy = null)
+            IMemberAccessPolicy memberAccessPolicy = null,
+            IValueConverter valueConverter = null)
         {
             Id = Interlocked.Increment(ref lastTopazEngineId);
             globalScope = new ScriptExecutor(this, isThreadSafeEngine);
@@ -49,8 +52,9 @@ namespace Tenray.Topaz
                 Options.UseThreadSafeJsObjects = isThreadSafeEngine;
             ObjectProxyRegistry = objectProxyRegistry ?? new DictionaryObjectProxyRegistry();
             extensionMethodRegistry = new();
-            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry);
-            DelegateInvoker = delegateInvoker ?? new DelegateInvoker();
+            ValueConverter = valueConverter ?? new DefaultValueConverter();
+            DefaultObjectProxy = defaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter );
+            DelegateInvoker = delegateInvoker ?? new DelegateInvoker(ValueConverter);
             MemberAccessPolicy = memberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
         }
 
@@ -83,7 +87,7 @@ namespace Tenray.Topaz
         {
             GlobalScope.SetValueAndKind(
                 name ?? type.FullName,
-                typeProxy ?? new TypeProxyUsingReflection(type, name),
+                typeProxy ?? new TypeProxyUsingReflection(type, ValueConverter, name),
                 VariableKind.Const);
         }
 

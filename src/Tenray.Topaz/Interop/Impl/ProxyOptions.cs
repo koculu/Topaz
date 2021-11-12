@@ -11,13 +11,11 @@ namespace Tenray.Topaz.Interop
         AllowField,
         AllowProperty,
         AutomaticTypeConversion,
-        ConvertStringArgumentsToEnum,
         Default = 
             AllowMethod |
             AllowField |
             AllowProperty |
             AllowConstructor |
-            AutomaticTypeConversion |
-            ConvertStringArgumentsToEnum
+            AutomaticTypeConversion
     }
 }
