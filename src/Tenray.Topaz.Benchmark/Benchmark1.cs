@@ -1,4 +1,5 @@
-﻿using Jint;
+﻿using BenchmarkDotNet.Attributes;
+using Jint;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,12 @@ namespace Tenray.Topaz.Benchmark
     public class Benchmark1
     {
         public string CodeParallel = @"
-Parallel.For(0, 10000000 , (i) => i + i)
+Parallel.For(0, 1000000 , (i) => i + i)
 ";
         public string Code = @"
 f1 = (i) => i * i
 
-for (var i = 0.0 ; i < 10000000; ++i) {
+for (var i = 0.0 ; i < 1000000; ++i) {
     f1(i)
 }
 ";
@@ -27,7 +28,8 @@ for (var i = 0.0 ; i < 10000000; ++i) {
             return i * i;
         }
 
-        internal void RunV8Engine()
+        [Benchmark]
+        public void RunV8Engine()
         {
             var v8Engine = new V8ScriptEngine();
             v8Engine.Execute(Code);
@@ -42,18 +44,19 @@ for (var i = 0.0 ; i < 10000000; ++i) {
             }
         }
 
+        [Benchmark]
         public bool RunParallelTopaz()
         {
             var topazEngine = new TopazEngine(new TopazEngineSetup
             {
                 IsThreadSafe = true
             });
-            topazEngine.SetValue("double", new Func<object, double>(x => Convert.ToDouble(x)));
             topazEngine.AddType(typeof(Parallel), "Parallel");
             topazEngine.ExecuteScript(CodeParallel);
             return true;
         }
 
+        [Benchmark]
         public bool RunTopaz()
         {
             var topazEngine = new TopazEngine(new TopazEngineSetup
@@ -64,6 +67,7 @@ for (var i = 0.0 ; i < 10000000; ++i) {
             return true;
         }
 
+        [Benchmark]
         public void RunJint()
         {
             var jintEngine = new Engine();
