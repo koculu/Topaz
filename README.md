@@ -81,15 +81,15 @@ for (var i = 0.0 ; i < 1000000; ++i) {
 ```
 Result:
 ``` ini
-|   Method     |     Mean    |   Error   |  StdDev   |
-|------------- |------------:|----------:|----------:|
-| RunTopaz     | 792.0 ms    | 9.74 ms   | 9.11 ms   |
-| RunJint      | 896.6 ms    | 7.78 ms   | 7.28 ms   |
-| RunV8Engine  | 30,598.6 ms |    NA     |    NA     |
+|      Method |        Mean |   Error |  StdDev |
+|------------ |------------:|--------:|--------:|
+|    RunTopaz |    792.0 ms | 9.74 ms | 9.11 ms |
+|     RunJint |    896.6 ms | 7.78 ms | 7.28 ms |
+| RunV8Engine | 30,598.6 ms |    NA   |    NA   |
 ```
 
 Comments: 
-v8 engine is extremely slow because the script code interacts with host object. Due to this slowness we will not list v8 engine in other benchmarks.
+v8 engine is extremely slow because the script code interacts with host object.
 Topaz is slightly faster than Jint with manipulations on arbitrary .NET object.
 
 ### Benchmark 3 (1M manipulation on Dictionary<,>)
@@ -101,10 +101,11 @@ for (var i = 0.0 ; i < 1000000; ++i) {
 ```
 Result:
 ``` ini
-|   Method |       Mean |    Error |   StdDev |
-|--------- |-----------:|---------:|---------:|
-| RunTopaz |   784.4 ms | 15.06 ms | 14.79 ms |
-|  RunJint | 1,449.0 ms |  6.01 ms |  4.69 ms |
+|      Method |       Mean |    Error |   StdDev |
+|------------ |-----------:|---------:|---------:|
+|    RunTopaz |   784.4 ms | 15.06 ms | 14.79 ms |
+|     RunJint | 1,449.0 ms |  6.01 ms |  4.69 ms |
+| RunV8Engine |   Error    |    NA    |    NA    |
 ```
 
 Comments: 
@@ -119,10 +120,11 @@ for (var i = 0.0 ; i < 1000000; ++i) {
 ```
 Result:
 ``` ini
-|   Method |     Mean |    Error |   StdDev |
-|--------- |---------:|---------:|---------:|
-| RunTopaz | 640.4 ms |  3.93 ms |  3.68 ms |
-|  RunJint | 878.7 ms | 12.15 ms | 11.37 ms |
+|      Method |     Mean   |    Error |   StdDev |
+|------------ |-----------:|---------:|---------:|
+|    RunTopaz |   640.4 ms |  3.93 ms |  3.68 ms |
+|     RunJint |   878.7 ms | 12.15 ms | 11.37 ms |
+| RunV8Engine | 8180.00 ms | 4.691 ms | 4.388 ms |
 ```
 
 Comments: 
@@ -147,10 +149,11 @@ model.List = list
 ```
 Result:
 ``` ini
-|   Method |    Mean |    Error |   StdDev |
-|--------- |--------:|---------:|---------:|
-| RunTopaz | 1.212 s | 0.0088 s | 0.0082 s |
-|  RunJint | 1.494 s | 0.0254 s | 0.0225 s |
+|      Method |      Mean |    Error |   StdDev |
+|------------ |----------:|---------:|---------:|
+|    RunTopaz |   1.212 s | 0.0088 s | 0.0082 s |
+|     RunJint |   1.494 s | 0.0254 s | 0.0225 s |
+| RunV8Engine | 33,3009 s |  0.173 s |  0.512 s |
 ```
 
 Comments: 
