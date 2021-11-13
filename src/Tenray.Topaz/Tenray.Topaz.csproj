@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <RepositoryUrl>https://github.com/koculu/topaz</RepositoryUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+	<LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -12,6 +14,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+	<None Include="..\..\LICENSE">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+	  </None>
+	<None Include="Esprima\LICENSE.txt">
+		  <Pack>True</Pack>
+		  <PackagePath>\3rdParty\</PackagePath>
+	 </None>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 </Project>

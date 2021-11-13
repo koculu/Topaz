@@ -102,6 +102,16 @@ namespace Tenray.Topaz.ErrorHandling
             throw new TopazException($"Can not retrieve member '{GetArgumentString(member)}' of type {name}.");
         }
 
+        internal static void ThrowCannotRetrieveMemberOfNamespace(string name, object member)
+        {
+            throw new TopazException($"Can not retrieve member '{GetArgumentString(member)}' of namespace {name}.");
+        }
+
+        internal static void ThrowCannotAssignAValueToANameSpaceMember(string name, object member)
+        {
+            throw new TopazException($"Can not assign a value to a namespace member {name}.{GetArgumentString(member)}.");
+        }
+
         internal static void ThrowVariableIsNotDefined(string name)
         {
             throw new TopazException($"ReferenceError: {name} is not defined");

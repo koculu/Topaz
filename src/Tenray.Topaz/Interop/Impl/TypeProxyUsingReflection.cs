@@ -60,6 +60,7 @@ namespace Tenray.Topaz.Interop
                 }
             }
         }
+
         public object CallConstructor(IReadOnlyList<object> args)
         {
             var type = ProxiedType;

@@ -8,6 +8,9 @@ namespace Tenray.Topaz.API
         public JsonSerializerOptions Options { get; set; } = new()
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+#if NET6_0_OR_GREATER
+            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+#endif
             AllowTrailingCommas = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             ReadCommentHandling = JsonCommentHandling.Skip,
@@ -18,6 +21,9 @@ namespace Tenray.Topaz.API
         public JsonSerializerOptions OptionsIndented { get; set; } = new()
         {
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+#if NET6_0_OR_GREATER
+            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles,
+#endif
             AllowTrailingCommas = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             ReadCommentHandling = JsonCommentHandling.Skip,
