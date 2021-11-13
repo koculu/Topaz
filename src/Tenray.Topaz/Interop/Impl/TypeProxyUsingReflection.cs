@@ -29,6 +29,8 @@ namespace Tenray.Topaz.Interop
 
         readonly ConcurrentDictionary<object, Action<object>> _cachedSetters = new();
 
+        static readonly ConcurrentDictionary<Type, TypeProxyUsingReflection> CreatedTypeProxies = new();
+
         public TypeProxyUsingReflection(
             Type proxiedType,
             IValueConverter valueConverter,
@@ -59,6 +61,8 @@ namespace Tenray.Topaz.Interop
                             BindingFlags.Public | BindingFlags.Static);
                 }
             }
+            if (proxiedType != null)
+                CreatedTypeProxies.TryAdd(proxiedType, this);
         }
 
         public object CallConstructor(IReadOnlyList<object> args)
@@ -332,6 +336,12 @@ namespace Tenray.Topaz.Interop
                 return true;
             }
             return false;
+        }
+        
+        public static object GetTypeProxy(Type type)
+        {
+            CreatedTypeProxies.TryGetValue(type, out var proxy);
+            return proxy;
         }
     }
 }

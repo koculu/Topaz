@@ -64,7 +64,6 @@ namespace Tenray.Topaz.Interop
                         convertedValue = null;
                         return false;
                     }
-
                 }
 
                 if (ConvertStringsToEnum &&

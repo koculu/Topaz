@@ -84,7 +84,9 @@ namespace Tenray.Topaz
         {
             GlobalScope.SetValueAndKind(
                 name ?? type.FullName,
-                typeProxy ?? new TypeProxyUsingReflection(type, ValueConverter, name),
+                typeProxy ?? 
+                TypeProxyUsingReflection.GetTypeProxy(type) ??
+                new TypeProxyUsingReflection(type, ValueConverter, name),
                 VariableKind.Const);
         }
 

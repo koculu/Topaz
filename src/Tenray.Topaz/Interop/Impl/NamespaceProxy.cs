@@ -109,7 +109,9 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
-            value = new TypeProxyUsingReflection(type, ValueConverter, fullname, ProxyOptions);
+            value = TypeProxyUsingReflection.GetTypeProxy(type);
+            if (value == null)
+                value = new TypeProxyUsingReflection(type, ValueConverter, fullname, ProxyOptions);
             return true;
         }
 
