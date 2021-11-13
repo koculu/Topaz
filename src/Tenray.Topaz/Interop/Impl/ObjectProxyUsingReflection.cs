@@ -307,14 +307,22 @@ namespace Tenray.Topaz.Interop
             {
                 if (instance is IDictionary dic)
                 {
+                    var convertedValue = value;
+                    var dicType = dic.GetType();
+                    if (dicType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                    {
+                        var valueType = dicType.GenericTypeArguments[1];
+                        if (!ValueConverter.TryConvertValue(value, valueType, out convertedValue))
+                            Exceptions.CannotConvertValueToTargetType(value, valueType);
+                    }
                     if (dic.Contains(member))
                     {
-                        dic[member] = value;
+                        dic[member] = convertedValue;
                         return true;
                     }
                     else
                     {
-                        dic.Add(member, value);
+                        dic.Add(member, convertedValue);
                         return true;
                     }
                 }
@@ -322,23 +330,32 @@ namespace Tenray.Topaz.Interop
                 {
                     if (isIndexedProperty)
                     {
+                        var convertedValue = value;
+                        var listType = list.GetType();
+                        if (listType.GetGenericTypeDefinition() == typeof(List<>))
+                        {
+                            var valueType = listType.GenericTypeArguments[0];
+                            if (!ValueConverter.TryConvertValue(value, valueType, out convertedValue))
+                                Exceptions.CannotConvertValueToTargetType(value, valueType);
+                        }
+
                         if (member is double d)
                         {
                             var converted = Convert.ToInt32(d);
                             if (converted == d)
                             {
-                                list[converted] = value;
+                                list[converted] = convertedValue;
                                 return true;
                             }
                         }
                         else if (member is long l)
                         {
-                            list[(int)l] = value;
+                            list[(int)l] = convertedValue;
                             return true;
                         }
                         else if (member is int i)
                         {
-                            list[i] = value;
+                            list[i] = convertedValue;
                             return true;
                         }
                     }
