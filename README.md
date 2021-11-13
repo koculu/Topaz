@@ -110,7 +110,7 @@ Result:
 Comments: 
 Topaz is significantly faster than Jint in this benchmark. The model object is a Dictionary<string, int>.
 
-### Benchmark 4 (1M arbitary .NET object method call)
+### Benchmark 4 (1M arbitrary .NET object method call)
 Code:
 ``` javascript
 for (var i = 0.0 ; i < 1000000; ++i) {
@@ -128,7 +128,7 @@ Result:
 Comments: 
 Topaz is significantly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates .NET function calls from script.
 
-### Benchmark 5 (100K arbitary .NET object manipulated and added into array)
+### Benchmark 5 (100K arbitrary .NET objects manipulation and addition into an array)
 Code:
 ``` javascript
 var list = []
@@ -154,7 +154,7 @@ Result:
 ```
 
 Comments: 
-Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject instead of an arbitary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare those with other engines.
+Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject instead of an arbitrary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare those with other engines.
 
 ## Story of Topaz
 I have developed a server-side HTML page rendering application using Razor. After a while, I have realized Razor was not flexible for my microservice architecture and business needs.
