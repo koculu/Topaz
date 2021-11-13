@@ -45,7 +45,7 @@ for (var i = 0.0 ; i < 1000000; ++i) {
         }
 
         [Benchmark]
-        public bool RunParallelTopaz()
+        public void RunParallelTopaz()
         {
             var topazEngine = new TopazEngine(new TopazEngineSetup
             {
@@ -53,18 +53,16 @@ for (var i = 0.0 ; i < 1000000; ++i) {
             });
             topazEngine.AddType(typeof(Parallel), "Parallel");
             topazEngine.ExecuteScript(CodeParallel);
-            return true;
         }
 
         [Benchmark]
-        public bool RunTopaz()
+        public void RunTopaz()
         {
             var topazEngine = new TopazEngine(new TopazEngineSetup
             {
                 IsThreadSafe = false
             });
             topazEngine.ExecuteScript(Code);
-            return true;
         }
 
         [Benchmark]
