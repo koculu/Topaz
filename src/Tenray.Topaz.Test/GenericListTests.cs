@@ -26,11 +26,11 @@ list.Add(9)
 model.a4 = list[5]
 model.a5 = list.Count
 ");
-            Assert.AreEqual(model.a1, 1);
-            Assert.AreEqual(model.a2, 1);
-            Assert.AreEqual(model.a3, 8);
-            Assert.AreEqual(model.a4, 9);
-            Assert.AreEqual(model.a5, 6);
+            Assert.AreEqual(1, model.a1);
+            Assert.AreEqual(1, model.a2);
+            Assert.AreEqual(8, model.a3);
+            Assert.AreEqual(9, model.a4);
+            Assert.AreEqual(6, model.a5);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
@@ -90,6 +91,14 @@ namespace Tenray.Topaz
         public void AddExtensionMethods(Type type)
         {
             extensionMethodRegistry.AddType(type);
+        }
+
+        public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist = null, bool allowSubNamespaces = false, string name = null)
+        {
+            GlobalScope.SetValueAndKind(
+                name ?? @namespace,
+                new NamespaceProxy(@namespace, whitelist, allowSubNamespaces, ValueConverter),
+                VariableKind.Const);
         }
 
         public object GetValue(string name)

@@ -355,6 +355,29 @@ var parsedArray = globalThis.JSON.parse(json);
 ");
 ```
 
+### Exposing namespaces to the script:
+Exposing namespaces is supported with secure options.
+It is strongly recommended to provide a whitelist to the AddNamespace method.
+If you pass null whitelist, every type in the given namespace will be available.
+This is dangerous for System namespaces and many other. For example System.Type, System.AppDomain and much more.
+The only secure way to allow namespaces is to give a whitelist.
+You can omit whitelist for your custom namespaces with caution.
+You can allow sub namespaces with the 3rd parameter. See the method comments for further information.
+
+```c#
+var engine = new TopazEngine();
+var whitelist = new HashSet<string> {
+    "System.Int32",
+    "System.String",
+    "System.Collections.Generic.Dictionary"
+};
+engine.AddNamespace("System", whitelist, true);
+engine.ExecuteScript(@"
+var dictionary = new System.Collections.Generic.Dictionary(System.String, System.Int32)
+dictionary.Add('key1', 13)
+");
+```
+
 ### Fully Customizable Type Conversions:
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.

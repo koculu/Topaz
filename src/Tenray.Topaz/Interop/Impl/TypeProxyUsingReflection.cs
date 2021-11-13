@@ -126,7 +126,17 @@ namespace Tenray.Topaz.Interop
         private object CallGenericConstructor(Type type, IReadOnlyList<object> args)
         {
             var len = type.GetTypeInfo().GenericTypeParameters.Length;
-            var genericType = type.MakeGenericType(args.Take(len).Cast<Type>().ToArray());
+            var genericType = type.MakeGenericType(
+                args.Take(len)
+                .Select(x =>
+                {
+                    if (x is Type type)
+                        return type;
+                    if (x is ITypeProxy typeProxy && typeProxy != null)
+                        return typeProxy.ProxiedType;
+                    Exceptions.ThrowCanNotCallConstructor(this);
+                    return null;
+                }).ToArray());
             args = args.Skip(len).ToArray();
             return CallNonGenericConstructor(genericType, args);
         }

@@ -1,5 +1,6 @@
 ﻿using Esprima;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Interop;
@@ -145,6 +146,20 @@ namespace Tenray.Topaz
         /// </summary>
         /// <param name="type">The type that defines extension methods.</param>
         public void AddExtensionMethods(Type type);
+
+        /// <summary>
+        /// Adds given namespace to the script. It is dangerous to enable entire namespace in the script environment.
+        /// There might be types like System.AppDomain, System.Type which gives exclusive access to your process.
+        /// To overcome the security leak, AddNamespace function accepts a whitelist.
+        /// If you omit the whitelist, script will get access to everything in given namespace.
+        /// Use it with caution !
+        /// </summary>
+        /// <param name="namespace">The full name of the namespace.</param>
+        /// <param name="whitelist">The whitelist contains the types that are allowed.</param>
+        /// <param name="allowSubNamespaces">If true, subnamespaces will be accessible.</param>
+        /// <param name="name">The name that will be used in script to access given namespace.
+        /// If this is not provided the script name will be equal to the namespace.</param>
+        public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist, bool allowSubNamespaces = false, string name = null);
 
         /// <summary>
         /// Gets the value of the variable that is defined in the global scope.

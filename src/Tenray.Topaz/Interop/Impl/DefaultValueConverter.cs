@@ -52,6 +52,21 @@ namespace Tenray.Topaz.Interop
 
             try
             {
+                if (value is ITypeProxy typeProxy && typeProxy.ProxiedType != null)
+                {
+                    if (targetType == typeof(Type))
+                    {
+                        convertedValue = typeProxy.ProxiedType;
+                        return true;
+                    }
+                    else
+                    {
+                        convertedValue = null;
+                        return false;
+                    }
+
+                }
+
                 if (ConvertStringsToEnum &&
                     targetType.IsEnum &&
                     value is string s &&
@@ -60,6 +75,7 @@ namespace Tenray.Topaz.Interop
                     convertedValue = enumValue;
                     return true;
                 }
+
                 IConvertible convertible = value as IConvertible;
                 if (convertible == null)
                 {
