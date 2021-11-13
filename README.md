@@ -151,7 +151,7 @@ Result:
 |--------- |--------:|---------:|---------:|
 | RunTopaz | 1.212 s | 0.0088 s | 0.0082 s |
 |  RunJint | 1.494 s | 0.0254 s | 0.0225 s |
-``` ini
+```
 
 Comments: 
 Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject instead of an arbitary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare those with other engines.
