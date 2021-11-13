@@ -162,7 +162,7 @@ Result:
 
 Comments:
 
-Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject instead of an arbitrary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare those with other engines.
+Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject or an object that implements IDictionary instead of an arbitrary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare that with other engines.
 
 ### Benchmark 6 (1M Javascript parallel function call from Host)
 Code:
@@ -189,7 +189,7 @@ Result:
 
 Comments:
 
-Topaz is significantly faster than Jint on this benchmark. Jint functions are not thread-safe even they do not manipulate any shared object.
+Topaz is significantly faster than Jint on this benchmark. Jint functions are not thread-safe even when they do not manipulate any shared object.
 Topaz functions can be safely called from multiple threads in parallel.
 
 ## Story of Topaz

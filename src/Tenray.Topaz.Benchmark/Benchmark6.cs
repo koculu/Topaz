@@ -46,7 +46,7 @@ function square(x) {
         {
             var jintEngine = new Engine();
             jintEngine.Execute(Code);
-            var squareFunction = (Jint.Native.JsValue)jintEngine.GetValue("square");
+            var squareFunction = jintEngine.GetValue("square");
             var syncObject = new object();
             Parallel.For(0, LoopLength, (x) =>
             {

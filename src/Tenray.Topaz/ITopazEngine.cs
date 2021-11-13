@@ -54,6 +54,11 @@ namespace Tenray.Topaz
         IMemberAccessPolicy MemberAccessPolicy { get; }
 
         /// <summary>
+        /// Value Converter is an interface that does value conversions in assignments.
+        /// </summary>
+        IValueConverter ValueConverter { get; }
+
+        /// <summary>
         /// Executes the script in the global scope.
         /// </summary>
         /// <param name="code"></param>
