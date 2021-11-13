@@ -322,7 +322,7 @@ namespace Tenray.Topaz
                 )
                 throw new NotSupportedException();
             return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
-                (args) => Execute(args, default));
+                (args) => Execute(args, default), ScriptExecutor.TopazEngine.ValueConverter);
         }
     }
 }

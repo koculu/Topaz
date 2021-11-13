@@ -29,6 +29,17 @@ namespace Tenray.Topaz.Interop
 
         readonly ConcurrentDictionary<Tuple<Type, object>, Action<object, object>> _cachedSetters = new();
 
+        private const string GENERIC_ARGUMENTS_METHOD = "GenericArguments";
+
+        readonly static MethodAndParameterInfo genericMethodSelectorParameterInfo = new MethodAndParameterInfo(
+                            new MethodInfo[1]
+                            {
+                                typeof(GenericMethodSelector).GetMethod(GENERIC_ARGUMENTS_METHOD)
+                            },
+                            new ParameterInfo[1][] {
+                                typeof(GenericMethodSelector).GetMethod(GENERIC_ARGUMENTS_METHOD).GetParameters()
+                            });
+
         public ObjectProxyUsingReflection(
             Type proxiedType,
             ExtensionMethodRegistry extensionMethodRegistry,
@@ -179,6 +190,7 @@ namespace Tenray.Topaz.Interop
                 Exceptions.ThrowCannotRetrieveMemberOfType(instance.ToString(), member);
                 return false;
             }
+
             var cacheKey = Tuple.Create(instanceType, member);
             if (_cachedGetters.TryGetValue(cacheKey, out var cachedGetter))
             {
@@ -189,10 +201,25 @@ namespace Tenray.Topaz.Interop
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
             if (members.Length == 0)
             {
+                if (!options.HasFlag(ProxyOptions.AllowMethod))
+                    return false;
                 var extMethodParameterInfo = ExtensionMethodRegistry
                     .GetMethodAndParameterInfo(memberName);
                 if (!extMethodParameterInfo.HasAny)
                 {
+                    if (memberName == GENERIC_ARGUMENTS_METHOD)
+                    {
+                        value = new InvokerUsingReflection(memberName,
+                                                           Array.Empty<MethodInfo>(),
+                                                           this,
+                                                           options,
+                                                           ValueConverter,
+                                                           genericMethodSelectorParameterInfo)
+                        {
+                            AttachedParameter = instance
+                        };
+                        return true;
+                    }
                     return false;
                 }
                 var methodGetter2 = new Func<object, object>((instance) =>
@@ -246,6 +273,19 @@ namespace Tenray.Topaz.Interop
             var extMethodParameterInfo2 = ExtensionMethodRegistry.GetMethodAndParameterInfo(memberName);
             if (methods.Length == 0 && !extMethodParameterInfo2.HasAny)
             {
+                if (memberName == GENERIC_ARGUMENTS_METHOD)
+                {
+                    value = new InvokerUsingReflection(memberName,
+                                                       Array.Empty<MethodInfo>(),
+                                                       this,
+                                                       options,
+                                                       ValueConverter,
+                                                       genericMethodSelectorParameterInfo)
+                    {
+                        AttachedParameter = instance
+                    };
+                    return true;
+                }
                 return false;
             }
             var methodGetter = new Func<object, object>((instance) =>

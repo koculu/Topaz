@@ -31,6 +31,19 @@ namespace Tenray.Topaz.Interop
 
         static readonly ConcurrentDictionary<Type, TypeProxyUsingReflection> CreatedTypeProxies = new();
 
+        private const string GENERIC_ARGUMENTS_METHOD = "GenericArguments";
+        
+        private const string STATIC_GENERIC_ARGUMENTS_METHOD = "StaticGenericArguments";
+
+        readonly static MethodAndParameterInfo genericMethodSelectorParameterInfo = new MethodAndParameterInfo(
+                            new MethodInfo[1]
+                            {
+                                typeof(GenericMethodSelector).GetMethod(STATIC_GENERIC_ARGUMENTS_METHOD)
+                            },
+                            new ParameterInfo[1][] {
+                                typeof(GenericMethodSelector).GetMethod(STATIC_GENERIC_ARGUMENTS_METHOD).GetParameters()
+                            });
+
         public TypeProxyUsingReflection(
             Type proxiedType,
             IValueConverter valueConverter,
@@ -124,7 +137,7 @@ namespace Tenray.Topaz.Interop
                 throw new TopazException("Delegate constructor requires Javascript function.");
 
             return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
-                (x) => topazFunction.Execute(x, default));
+                (x) => topazFunction.Execute(x, default), ValueConverter);
         }
 
         private object CallGenericConstructor(Type type, IReadOnlyList<object> args)
@@ -192,7 +205,19 @@ namespace Tenray.Topaz.Interop
             var members = ProxiedType
                 .GetMember(memberName, BindingFlags.Public | BindingFlags.Static);
             if (members.Length == 0)
+            {
+                if (memberName == GENERIC_ARGUMENTS_METHOD)
+                {
+                    value = new InvokerUsingReflection(memberName,
+                                                       Array.Empty<MethodInfo>(),
+                                                       this,
+                                                       options,
+                                                       ValueConverter,
+                                                       genericMethodSelectorParameterInfo);
+                    return true;
+                }
                 return false;
+            }
             var firstMember = members[0];
             if (firstMember is PropertyInfo property)
             {
@@ -232,7 +257,19 @@ namespace Tenray.Topaz.Interop
                 .Cast<MethodInfo>()
                 .ToArray();
             if (methods.Length == 0)
+            {
+                if (memberName == GENERIC_ARGUMENTS_METHOD)
+                {
+                    value = new InvokerUsingReflection(memberName,
+                                                       Array.Empty<MethodInfo>(),
+                                                       this,
+                                                       options,
+                                                       ValueConverter,
+                                                       genericMethodSelectorParameterInfo);
+                    return true;
+                }
                 return false;
+            }
 
             var methodGetter = new Func<object>(() =>
             {

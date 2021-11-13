@@ -152,6 +152,13 @@ namespace Tenray.Topaz
 
             ProcessObjectMemberSecurityPolicy(instance, member);
 
+            if (instance is IObjectProxy objectProxy)
+            {
+                var result2 = objectProxy.TryGetObjectMember(instance, member, out value, isIndexedProperty);
+                FinalizeValue(ref value);
+                return result2;
+            }
+
             if (ObjectProxyRegistry
                     .TryGetObjectProxy(instance.GetType(), out var proxy) &&
                 proxy

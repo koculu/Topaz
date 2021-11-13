@@ -5,14 +5,27 @@ namespace Tenray.Topaz.Interop
     public class DynamicDelagateProxy
     {
         readonly Func<object[], object> ActualFunction;
-        public DynamicDelagateProxy(Func<object[], object> actualFunction)
+        
+        readonly Type ReturnType;
+        
+        readonly IValueConverter ValueConverter;
+
+        public DynamicDelagateProxy(
+            Func<object[], object> actualFunction,
+            Type returnType,
+            IValueConverter valueConverter)
         {
             ActualFunction = actualFunction;
+            ReturnType = returnType;
+            ValueConverter = valueConverter;
         }
         
         private object ExecuteByParams(params object[] args)
         {
-            return ActualFunction(args);
+            var result = ActualFunction(args);
+            if (ValueConverter.TryConvertValue(result, ReturnType, out var convertedValue))
+                return convertedValue;
+            return result;
         }
 
         private void CallAction()

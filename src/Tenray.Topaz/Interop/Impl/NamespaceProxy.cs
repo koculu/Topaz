@@ -135,8 +135,7 @@ namespace Tenray.Topaz.Interop
             object value,
             bool isIndexedProperty = false)
         {
-            Exceptions.ThrowCannotAssignAValueToANameSpaceMember(Name, member);
-            value = null;
+            Exceptions.ThrowCannotAssignAValueToANamespaceMember(Name, member);
             return false;
         }
 

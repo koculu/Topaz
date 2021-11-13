@@ -378,6 +378,37 @@ dictionary.Add('key1', 13)
 ");
 ```
 
+
+### Generic method arguments selection:
+In C# you can select which types should be used in generic method execution.
+Javascript does not have generic methods. To overcome this problem, there is a special method defined in Topaz called `GenericArguments`.
+This method accepts type parameters. You can use the method when you want to call a generic method with explicit type information.
+If you don't provide generic type arguments by calling `GenericArguments`, all generic arguments are selected as `object` by default.
+`GenericArguments` only affects subsequent method call.
+
+``` c#
+var engine = new TopazEngine();
+engine.AddNamespace("System");
+engine.AddExtensionMethods(typeof(Enumerable));
+var items = Enumerable.Range(1, 100).Select(x => new
+{
+    Name = "item " + x,
+    Index = x
+}).ToArray();
+engine.SetValue("items", items);
+engine.ExecuteScript(@"
+var a = items.ToDictionary(x => x.Index, y => y.Name) // produces Dictionary<object, object>
+
+var b = items
+    .GenericArguments(System.Object, System.Int32, System.String)
+    .ToDictionary(x => x.Index, y => y.Name) // produces Dictionary<int, string>
+
+var c = items
+    .GenericArguments(items[0].GetType(), System.Double, System.String)
+    .ToDictionary(x => x.Index, y => y.Name) // produces Dictionary<double, string>
+");
+```
+
 ### Fully Customizable Type Conversions:
 Topaz provides great interop capabilities with automatic type conversions. If you need something special for specific types or you want a full replacement, you can use following interfaces.
 Every type conversion operation is customizable.

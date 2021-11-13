@@ -21,8 +21,9 @@ namespace Tenray.Topaz.Interop
         public static object CreateDynamicDelegate(
             Type[] args,
             Type returnType,
-            Func<object[], object> actualFunction
-            )
+            Func<object[], object> actualFunction,
+            IValueConverter valueConverter
+            )            
         {
             var isVoid = returnType == typeof(void);
             if (!isVoid)
@@ -45,7 +46,7 @@ namespace Tenray.Topaz.Interop
                 convertedParameters[i] = Expression.Convert(p, typeof(object));
             }
 
-            var proxy = new DynamicDelagateProxy(actualFunction);
+            var proxy = new DynamicDelagateProxy(actualFunction, returnType, valueConverter);
             var instanceVar = Expression.Constant(proxy);
             var body = Expression
                 .Call(instanceVar, targetMethod, convertedParameters);
