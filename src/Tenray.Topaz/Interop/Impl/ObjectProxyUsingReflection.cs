@@ -349,7 +349,7 @@ namespace Tenray.Topaz.Interop
                 {
                     var convertedValue = value;
                     var dicType = dic.GetType();
-                    if (dicType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+                    if (dicType.IsGenericType && dicType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                     {
                         var valueType = dicType.GenericTypeArguments[1];
                         if (!ValueConverter.TryConvertValue(value, valueType, out convertedValue))
@@ -372,7 +372,7 @@ namespace Tenray.Topaz.Interop
                     {
                         var convertedValue = value;
                         var listType = list.GetType();
-                        if (listType.GetGenericTypeDefinition() == typeof(List<>))
+                        if (listType.IsGenericType && listType.GetGenericTypeDefinition() == typeof(List<>))
                         {
                             var valueType = listType.GenericTypeArguments[0];
                             if (!ValueConverter.TryConvertValue(value, valueType, out convertedValue))
