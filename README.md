@@ -155,14 +155,14 @@ Result:
 ``` ini
 |      Method |      Mean |    Error |   StdDev |
 |------------ |----------:|---------:|---------:|
-|    RunTopaz |   1.212 s | 0.0088 s | 0.0082 s |
-|     RunJint |   1.494 s | 0.0254 s | 0.0225 s |
+|    RunTopaz |  1.038 s  | 0.0141 s | 0.0125 s |
+|     RunJint |  1.465 s  | 0.0194 s | 0.0182 s |
 | RunV8Engine | 33,3009 s |  0.173 s |  0.512 s |
 ```
 
 Comments:
 
-Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject or an object that implements IDictionary instead of an arbitrary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare that with other engines.
+Topaz is significantly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates 100K object iteration and creation with several properties. Please note that using Topaz JsObject or an object that implements IDictionary instead of an arbitrary class would avoid reflection and boost the performance of your script. This is not added as a separate benchmark as it would not be fair to compare that with other engines.
 
 ### Benchmark 6 (1M Javascript parallel function call from Host)
 Code:
