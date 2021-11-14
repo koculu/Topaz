@@ -116,10 +116,7 @@ namespace Tenray.Topaz.Interop
         private object TryInvokeExtensionMethod(IReadOnlyList<object> args)
         {
             var extMethodParameterInfo = this.extMethodParameterInfo;
-            if (GenericMethodArguments != null)
-            {
-                GetGenericExtensionMethodParameters(ref extMethodParameterInfo);
-            }
+            GetGenericExtensionMethodParameters(ref extMethodParameterInfo);
 
             var mpinfo = extMethodParameterInfo;
             if (!mpinfo.HasAny)
@@ -194,10 +191,75 @@ namespace Tenray.Topaz.Interop
             methodInfos = list.ToArray();
         }
 
+        private void GetGenericExtensionMethodParameters(out ParameterInfo[][] allParameters, ref MethodInfo[] methodInfos)
+        {
+            var len = methodInfos.Length;
+            var list = new List<MethodInfo>(len);
+            for (var i = 0; i < len; ++i)
+            {
+                var methodInfo = methodInfos[i];
+                if (methodInfo.IsGenericMethodDefinition)
+                {
+                    var genericParamCount =
+                        methodInfo.GetGenericArguments().Length;
+                    if (GenericMethodArguments == null)
+                    {
+                        var defaultGenericMethodArguments = new Type[genericParamCount];
+                        var thisParameterType = methodInfo.GetParameters()[0].ParameterType;
+                        defaultGenericMethodArguments[0] = 
+                            DecideGenericArgumentFromThisParameter(thisParameterType, instance);
+                        Array.Fill(defaultGenericMethodArguments, typeof(object), 1, genericParamCount - 1);
+                        list.Add(methodInfo.MakeGenericMethod(defaultGenericMethodArguments));
+                    }
+                    else
+                    {
+                        if (genericParamCount != GenericMethodArguments.Length)
+                            continue;
+                        list.Add(methodInfo.MakeGenericMethod(GenericMethodArguments));
+                    }
+                }
+                else
+                {
+                    list.Add(methodInfo);
+                }
+            }
+
+            allParameters = list
+                     .Select(x => x.GetParameters())
+                     .ToArray();
+            methodInfos = list.ToArray();
+        }
+
+        private Type DecideGenericArgumentFromThisParameter(Type thisParameterType, object instance)
+        {
+            var instanceType = instance.GetType();
+            if (!thisParameterType.ContainsGenericParameters)
+            {
+                return typeof(object);
+            }
+
+            if (thisParameterType.IsArray && instanceType.IsArray)
+            {
+                return instanceType.GetElementType();
+            }
+
+            // Why GUID equality? Because thisParameter runtime type is never equal to one generated in code.
+            if (typeof(IEnumerable<>).GUID != thisParameterType.GUID)
+            {
+                return typeof(object);
+            }
+            var enumerable1= instanceType.GetInterface("System.Collections.Generic.IEnumerable`1");
+            if (enumerable1 == null)
+            {
+                return typeof(object);
+            }
+            return enumerable1.GenericTypeArguments[0];
+        }
+
         private void GetGenericExtensionMethodParameters(ref MethodAndParameterInfo mpInfo)
         {
             MethodInfo[] methodInfos = mpInfo.MethodInfos.ToArray();
-            GetGenericMethodParameters(out var allParameters, ref methodInfos);
+            GetGenericExtensionMethodParameters(out var allParameters, ref methodInfos);
             mpInfo = new MethodAndParameterInfo(methodInfos, allParameters);
         }
     }

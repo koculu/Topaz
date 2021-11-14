@@ -383,7 +383,10 @@ dictionary.Add('key1', 13)
 In C# you can select which types should be used in generic method execution.
 Javascript does not have generic methods. To overcome this problem, there is a special method defined in Topaz called `GenericArguments`.
 This method accepts type parameters. You can use the method when you want to call a generic method with explicit type information.
+
 If you don't provide generic type arguments by calling `GenericArguments`, all generic arguments are selected as `object` by default.
+For extension methods, the first generic argument type can be deducted from this parameter when `GenericArguments` is not used.
+
 `GenericArguments` only affects subsequent method call.
 
 ``` c#
@@ -406,6 +409,8 @@ var b = items
 var c = items
     .GenericArguments(items[0].GetType(), System.Double, System.String)
     .ToDictionary(x => x.Index, y => y.Name) // produces Dictionary<double, string>
+    
+var d = items.ToDictionary(x => x.Index) // produces Dictionary<object, AnonymousType> (type deduction from this parameter)
 ");
 ```
 

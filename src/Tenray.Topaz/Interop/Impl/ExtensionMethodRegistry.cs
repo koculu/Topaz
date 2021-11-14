@@ -49,12 +49,6 @@ namespace Tenray.Topaz.Interop
                 var m = methods[i];
                 if (!m.IsDefined(typeof(ExtensionAttribute), true))
                     continue;
-                if (m.ContainsGenericParameters)
-                {
-                    var genericParamCount = m.GetGenericArguments().Length;
-                    var genericArgs = Enumerable.Range(0, genericParamCount).Select(x => typeof(object)).ToArray();
-                    m = m.MakeGenericMethod(genericArgs);
-                }
                 registeredMethods.Add(m);
             }
         }
