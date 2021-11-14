@@ -7,7 +7,9 @@ namespace Tenray.Topaz.Interop
         readonly Func<object[], object> ActualFunction;
         
         readonly Type ReturnType;
-        
+
+        public bool HasReturnType { get; }
+
         readonly IValueConverter ValueConverter;
 
         public DynamicDelagateProxy(
@@ -17,13 +19,15 @@ namespace Tenray.Topaz.Interop
         {
             ActualFunction = actualFunction;
             ReturnType = returnType;
+            HasReturnType = returnType != typeof(void);
             ValueConverter = valueConverter;
         }
         
         private object ExecuteByParams(params object[] args)
         {
             var result = ActualFunction(args);
-            if (ValueConverter.TryConvertValue(result, ReturnType, out var convertedValue))
+            if (HasReturnType &&
+                ValueConverter.TryConvertValue(result, ReturnType, out var convertedValue))
                 return convertedValue;
             return result;
         }
