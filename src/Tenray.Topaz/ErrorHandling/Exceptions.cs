@@ -187,5 +187,10 @@ namespace Tenray.Topaz.ErrorHandling
         {
             throw new TopazException($"TypeError: Cannot convert value {GetArgumentString(value)} to target type '{propertyType}'.");
         }
+
+        internal static object ThrowBinaryOperatorIsNotSupportedOn(BinaryOperator binaryOperator, object d1, object d2)
+        {
+            throw new TopazException($"TypeError: Binary operator {GetArgumentString(binaryOperator)} is not supported on values '{GetArgumentString(d1)}' and '{GetArgumentString(d2)}'.");
+        }
     }
 }

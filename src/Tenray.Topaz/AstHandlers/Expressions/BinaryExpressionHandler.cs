@@ -155,6 +155,80 @@ namespace Tenray.Topaz.Expressions
             }
         }
 
+        private static object ExecuteBinaryOperatorString(BinaryOperator binaryOperator, object d1, string d2)
+        {
+            return binaryOperator switch
+            {
+                BinaryOperator.Plus => d1 + d2,
+                BinaryOperator.Minus => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1,d2),
+                BinaryOperator.Times => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Divide => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Modulo => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Equal => string.CompareOrdinal(d1?.ToString(), d2) == 0,
+                BinaryOperator.NotEqual => string.CompareOrdinal(d1?.ToString(), d2) != 0,
+                BinaryOperator.Greater => string.CompareOrdinal(d1?.ToString(), d2) > 0,
+                BinaryOperator.GreaterOrEqual => string.CompareOrdinal(d1?.ToString(), d2) >= 0,
+                BinaryOperator.Less => string.CompareOrdinal(d1?.ToString(), d2) < 0,
+                BinaryOperator.LessOrEqual => string.CompareOrdinal(d1?.ToString(), d2) <= 0,
+                BinaryOperator.StrictlyEqual => Equals(d1, d2),
+                BinaryOperator.StricltyNotEqual => !Equals(d1, d2),
+                BinaryOperator.BitwiseAnd => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.BitwiseOr => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.BitwiseXOr => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.LeftShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.RightShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.UnsignedRightShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.InstanceOf => d1?.GetType().FullName == d2,
+                BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
+                BinaryOperator.LogicalAnd =>
+                    JavascriptTypeUtility.IsObjectTrue(d1)
+                    &&
+                    JavascriptTypeUtility.IsObjectTrue(d2) ? d2 : d1,
+                BinaryOperator.LogicalOr =>
+                    JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
+                BinaryOperator.Exponentiation => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.NullishCoalescing => d1 ?? d2,
+                _ => null
+            };
+        }
+
+        private static object ExecuteBinaryOperatorString(BinaryOperator binaryOperator, string d1, object d2)
+        {
+            return binaryOperator switch
+            {
+                BinaryOperator.Plus => d1 + d2,
+                BinaryOperator.Minus => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Times => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Divide => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Modulo => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.Equal => string.CompareOrdinal(d1, d2?.ToString()) == 0,
+                BinaryOperator.NotEqual => string.CompareOrdinal(d1, d2?.ToString()) != 0,
+                BinaryOperator.Greater => string.CompareOrdinal(d1, d2?.ToString()) > 0,
+                BinaryOperator.GreaterOrEqual => string.CompareOrdinal(d1, d2?.ToString()) >= 0,
+                BinaryOperator.Less => string.CompareOrdinal(d1, d2?.ToString()) < 0,
+                BinaryOperator.LessOrEqual => string.CompareOrdinal(d1, d2?.ToString()) <= 0,
+                BinaryOperator.StrictlyEqual => Equals(d1, d2),
+                BinaryOperator.StricltyNotEqual => !Equals(d1, d2),
+                BinaryOperator.BitwiseAnd => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.BitwiseOr => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.BitwiseXOr => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.LeftShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.RightShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.UnsignedRightShift => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.InstanceOf => d1?.GetType().FullName == d2?.ToString(),
+                BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
+                BinaryOperator.LogicalAnd =>
+                    JavascriptTypeUtility.IsObjectTrue(d1)
+                    &&
+                    JavascriptTypeUtility.IsObjectTrue(d2) ? d2 : d1,
+                BinaryOperator.LogicalOr =>
+                    JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
+                BinaryOperator.Exponentiation => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
+                BinaryOperator.NullishCoalescing => d1 ?? d2,
+                _ => null
+            };
+        }
+
         internal static object ExecuteBinaryOperator(
             ScriptExecutor scriptExecutor, BinaryOperator @operator,
             object left, object right)
@@ -203,6 +277,14 @@ namespace Tenray.Topaz.Expressions
                         convert ?
                         ExecuteBinaryOperatorDouble(@operator, d3, p3) :
                         ExecuteBinaryOperatorInt(@operator, d3, p3);
+            }
+            else if (left is string str1)
+            {
+                return ExecuteBinaryOperatorString(@operator,  str1, right);
+            }
+            else if (right is string str2)
+            {
+                return ExecuteBinaryOperatorString(@operator, left, str2);
             }
 
             var undefined = Undefined.Value;

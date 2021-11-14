@@ -23,7 +23,7 @@ a[i++] = (3+2) === (3.0 + 2.0)
 a[i++] = (3*2) != (3.0 * 7.0)
 a[i++] = (3*2) !== (3.0 * 7.0)
 a[i++] = '3' !== 3
-a[i++] = '3' != 3 // no string -> number conversion on equality
+a[i++] = '3' == 3
 
 a[i++] = true != false
 a[i++] = true !== false
