@@ -54,5 +54,33 @@ model.a = a
             foreach (var item in (IEnumerable)(model.a))
                 Assert.IsTrue((bool)item);
         }
+
+
+        [Test]
+        public void TestLogicalOperators()
+        {
+
+            var engine = new TopazEngine();
+            engine.Options.LiteralNumbersAreConvertedToDouble = false;
+            engine.Options.NumbersAreConvertedToDoubleInArithmeticOperations = false;
+            dynamic model = new JsObject();
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var x = 7
+var y = 3
+var a = y > x
+var b = y < x
+var c = a && b
+var d = b && a
+model.a = a
+model.b = b
+model.c = c
+model.d = d
+");
+            Assert.IsFalse((bool)model.a);
+            Assert.IsTrue((bool)model.b);
+            Assert.IsFalse((bool)model.c);
+            Assert.IsFalse((bool)model.d);
+        }
     }
 }

@@ -46,9 +46,7 @@ namespace Tenray.Topaz.Expressions
                 BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                 BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                 BinaryOperator.LogicalAnd =>
-                    (JavascriptTypeUtility.IsObjectTrue(d1)
-                    &&
-                    JavascriptTypeUtility.IsObjectTrue(d2)) ? d2 : d1,
+                    JavascriptTypeUtility.AndLogicalOperator(d1, d2),
                 BinaryOperator.LogicalOr =>
                     JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
                 BinaryOperator.Exponentiation => Math.Pow(d1, d2),
@@ -89,9 +87,7 @@ namespace Tenray.Topaz.Expressions
                         BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                         BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                         BinaryOperator.LogicalAnd =>
-                            (JavascriptTypeUtility.IsObjectTrue(d1)
-                            &&
-                            JavascriptTypeUtility.IsObjectTrue(d2)) ? d2 : d1,
+                            JavascriptTypeUtility.AndLogicalOperator(d1, d2),
                         BinaryOperator.LogicalOr =>
                             JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
                         BinaryOperator.Exponentiation => Math.Pow(d1, d2),
@@ -138,9 +134,7 @@ namespace Tenray.Topaz.Expressions
                         BinaryOperator.InstanceOf => Exceptions.ThrowRightHandSideOfInstanceOfIsNotObject(),
                         BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                         BinaryOperator.LogicalAnd =>
-                            (JavascriptTypeUtility.IsObjectTrue(d1)
-                            &&
-                            JavascriptTypeUtility.IsObjectTrue(d2)) ? d2 : d1,
+                            JavascriptTypeUtility.AndLogicalOperator(d1, d2),
                         BinaryOperator.LogicalOr =>
                             JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
                         BinaryOperator.Exponentiation => Math.Pow(d1, d2),
@@ -181,9 +175,7 @@ namespace Tenray.Topaz.Expressions
                 BinaryOperator.InstanceOf => d1?.GetType().FullName == d2,
                 BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                 BinaryOperator.LogicalAnd =>
-                    (JavascriptTypeUtility.IsObjectTrue(d1)
-                    &&
-                    JavascriptTypeUtility.IsObjectTrue(d2)) ? d2 : d1,
+                    JavascriptTypeUtility.AndLogicalOperator(d1, d2),
                 BinaryOperator.LogicalOr =>
                     JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
                 BinaryOperator.Exponentiation => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
@@ -218,9 +210,7 @@ namespace Tenray.Topaz.Expressions
                 BinaryOperator.InstanceOf => d1?.GetType().FullName == d2?.ToString(),
                 BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(d1, d2),
                 BinaryOperator.LogicalAnd =>
-                    (JavascriptTypeUtility.IsObjectTrue(d1)
-                    &&
-                    JavascriptTypeUtility.IsObjectTrue(d2)) ? d2 : d1,
+                   JavascriptTypeUtility.AndLogicalOperator(d1, d2),
                 BinaryOperator.LogicalOr =>
                     JavascriptTypeUtility.IsObjectTrue(d1) ? d1 : d2,
                 BinaryOperator.Exponentiation => Exceptions.ThrowBinaryOperatorIsNotSupportedOn(binaryOperator, d1, d2),
@@ -333,9 +323,7 @@ namespace Tenray.Topaz.Expressions
                         right.Contains(left) :
                         Exceptions.ThrowCannotUseInOperatorToSearchForIn(left, right),
                 BinaryOperator.LogicalAnd =>
-                    (JavascriptTypeUtility.IsObjectTrue(left)
-                    &&
-                    JavascriptTypeUtility.IsObjectTrue(right)) ? right : left,
+                    JavascriptTypeUtility.AndLogicalOperator(left, right),
                 BinaryOperator.LogicalOr =>
                     JavascriptTypeUtility.IsObjectTrue(left) ? left : right,
                 BinaryOperator.Exponentiation => allowNumeric ? Math.Pow(left ?? 0, right ?? 0) : 0,

@@ -5,6 +5,13 @@ namespace Tenray.Topaz
 {
     internal class JavascriptTypeUtility
     {
+        internal static object AndLogicalOperator(object left, object right)
+        {
+            if (IsObjectFalse(left))
+                return left;
+            return right;
+        }
+
         internal static bool IsObjectTrue(object value)
         {
             // https://developer.mozilla.org/en-US/docs/Glossary/Truthy
