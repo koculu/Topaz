@@ -129,5 +129,20 @@ model.d = d
 ");
             Assert.AreEqual(2, model.d.b);
         }
+
+        [Test]
+        public void ArrayExpressionWithRest()
+        {
+            var engine = new TopazEngine();
+            dynamic model = new JsObject();
+            engine.SetValue("JSON", new JSONObject());
+            engine.SetValue("model", model);
+            engine.ExecuteScript(@"
+var a = [1,2,3]
+var b = [5,...a,6,7]
+model.b = JSON.stringify(b)
+");
+            Assert.AreEqual("[5,1,2,3,6,7]", model.b);
+        }
     }
-    }
+}
