@@ -72,21 +72,18 @@ Parallel.For(0, 1000000 , (i) => i + i)
 
 Result:
 ``` ini
-
 |              Method |         Mean |      Error |     StdDev |
 |-------------------- |-------------:|-----------:|-----------:|
 | Topaz Parallel For  |   123.895 ms |  2.4524 ms |  3.3568 ms |
 | Topaz Host For      |   236.638 ms |  4.0474 ms |  4.4987 ms |
 | Topaz Simple For    |   513.773 ms |  3.1686 ms |  2.9640 ms |
-| V8Engine Parallel For | NOT SUPPORTED |
+| V8Engine Parallel   |                          NOT SUPPORTED |
 | V8Engine Simple For |     7.350 ms |  0.1438 ms |  0.1969 ms |
 | V8Engine Host For   |  8235.497 ms | 63.0376 ms | 55.8812 ms |
-| Jint Parallel For | NOT SUPPORTED |
+| Jint Parallel For   |                          NOT SUPPORTED |
 | Jint Host For       |   355.578 ms |  2.9865 ms |  2.6475 ms |
 | Jint Simple For     |   861.403 ms |  9.4439 ms |  8.8338 ms |
-
 ```
-
 Comments:
 
 ClearScript V8 Engine is super optimized for isolated scripts that does not communicate with the host.
