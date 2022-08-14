@@ -86,7 +86,7 @@ Result:
 ```
 Comments:
 
-ClearScript V8 Engine is super optimized for isolated scripts that does not communicate with the host.
+ClearScript V8 Engine is super optimized for isolated scripts that don't communicate with the host.
 However, it is extremely slow (1M Loop in 8 seconds!) if the script code interacts with host.
 Topaz is significantly faster than Jint in simple for loops. Moreover, Topaz can iterate loops in parallel using .NET Task Parallel Library (TPL).
 
