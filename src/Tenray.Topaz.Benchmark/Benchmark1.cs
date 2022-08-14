@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Jint;
+using Jint.Runtime.Interop;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ f1 = (i) => i * i
 for (var i = 0.0 ; i < 1000000; ++i) {
     f1(i)
 }
+"; 
+        public string CodeHostLoop = @"
+Host.For(0, 1000000 , (i) => i + i)
 ";
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         private double f1(double i)
@@ -33,6 +37,34 @@ for (var i = 0.0 ; i < 1000000; ++i) {
         {
             var v8Engine = new V8ScriptEngine();
             v8Engine.Execute(Code);
+        }
+
+        public static class Host
+        {
+            public static void For(int fromInclusive, int toExclusive, Action<int> action)
+            {
+                for(var i = fromInclusive; i < toExclusive; ++i)
+                    action(i);
+            }
+        }
+        public class HostObj
+        {
+            public void For(
+                double fromInclusive, 
+                double toExclusive,
+                dynamic action)
+            {
+                for (var i = fromInclusive; i < toExclusive; ++i)
+                    action(i);
+            }
+        }
+
+        [Benchmark]
+        public void RunV8EngineHostLoop()
+        {
+            var v8Engine = new V8ScriptEngine();
+            v8Engine.AddHostObject("Host", new HostObj());            
+            v8Engine.Execute(CodeHostLoop);
         }
 
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
@@ -56,6 +88,17 @@ for (var i = 0.0 ; i < 1000000; ++i) {
         }
 
         [Benchmark]
+        public void RunTopazHostLoop()
+        {
+            var topazEngine = new TopazEngine(new TopazEngineSetup
+            {
+                IsThreadSafe = true
+            });
+            topazEngine.AddType(typeof(Host), "Host");
+            topazEngine.ExecuteScript(CodeHostLoop);
+        }
+
+        [Benchmark]
         public void RunTopaz()
         {
             var topazEngine = new TopazEngine(new TopazEngineSetup
@@ -70,6 +113,15 @@ for (var i = 0.0 ; i < 1000000; ++i) {
         {
             var jintEngine = new Engine();
             jintEngine.Execute(Code);
+        }
+
+        [Benchmark]
+        public void RunJintHostLoop()
+        {
+            var jintEngine = new Engine();
+            jintEngine.SetValue("Host", 
+                TypeReference.CreateTypeReference(jintEngine, typeof(Host)));
+            jintEngine.Execute(CodeHostLoop);
         }
 
         public void Playground()

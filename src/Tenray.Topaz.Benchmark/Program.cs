@@ -16,14 +16,14 @@ namespace Tenray.Topaz.Benchmark
             else
             {
                 BenchmarkRunner.Run<Benchmark1>();
-                // RunSingleJob();
+                //RunSingleJob();
             }
         }
 
         private static void RunSingleJob()
         {
             var sw = new Stopwatch();
-            var b = new Benchmark3();
+            var b = new Benchmark1();
             var engine = Engines.Topaz;
             sw.Start();
             switch (engine)
