@@ -15,7 +15,7 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz
 {
-    internal class TopazFunction : IConvertible
+    internal sealed class TopazFunction : IConvertible
     {
         internal ScriptExecutor ScriptExecutor { get; }
 

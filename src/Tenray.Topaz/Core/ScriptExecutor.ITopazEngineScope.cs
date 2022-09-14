@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor : ITopazEngineScope
+    internal sealed partial class ScriptExecutor : ITopazEngineScope
     {
         bool ITopazEngineScope.IsThreadSafe => IsThreadSafeScope;
 

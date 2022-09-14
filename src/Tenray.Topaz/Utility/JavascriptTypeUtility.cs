@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Tenray.Topaz
 {
-    internal class JavascriptTypeUtility
+    internal sealed class JavascriptTypeUtility
     {
         internal static object AndLogicalOperator(object left, object right)
         {

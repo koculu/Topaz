@@ -11,7 +11,7 @@ using Tenray.Topaz.Statements;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor
+    internal sealed partial class ScriptExecutor
     {
         private static int lastScriptExecutorId = 0;
 

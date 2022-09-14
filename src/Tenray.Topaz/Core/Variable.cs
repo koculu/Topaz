@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz.Core
 {
-    internal class Variable
+    internal sealed class Variable
     {
         internal object Value;
 

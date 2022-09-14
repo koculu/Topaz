@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Tenray.Topaz.Core
 {
-    internal class ScriptExecutorPool
+    internal sealed class ScriptExecutorPool
     {
         ScriptExecutor First;
         readonly ScriptExecutor[] Items;

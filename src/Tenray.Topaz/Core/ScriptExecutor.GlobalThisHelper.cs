@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor
+    internal sealed partial class ScriptExecutor
     {
         internal IDictionaryEnumerator GetScopeEnumerator()
         {

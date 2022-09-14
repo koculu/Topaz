@@ -43,7 +43,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
     /// Rationale: 
     ///    If there is no intent for reusing the object, do not use pool - just use "new". 
     /// </summary>
-    internal class ObjectPool<T> where T : class
+    internal sealed class ObjectPool<T> where T : class
     {
         [DebuggerDisplay("{Value,nq}")]
         private struct Element
@@ -70,7 +70,7 @@ namespace Microsoft.CodeAnalysis.PooledObjects
 #if DETECT_LEAKS
         private static readonly ConditionalWeakTable<T, LeakTracker> leakTrackers = new ConditionalWeakTable<T, LeakTracker>();
 
-        private class LeakTracker : IDisposable
+        private sealed class LeakTracker : IDisposable
         {
             private volatile bool disposed;
 

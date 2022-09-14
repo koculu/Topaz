@@ -4,9 +4,9 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz
 {
-    internal class TopazIdentifier
+    internal sealed class TopazIdentifier
     {
-        private class CacheEntry
+        private sealed class CacheEntry
         {
             public static CacheEntry EmptyEntry = new CacheEntry(null, -1);
             

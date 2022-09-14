@@ -4993,7 +4993,7 @@ namespace Esprima
             }
         }
 
-        private class ParsedParameters
+        private sealed class ParsedParameters
         {
             private HashSet<string?>? paramSet;
             public Token? FirstRestricted;

@@ -3,7 +3,7 @@ using Esprima.Utils;
 
 namespace Tenray.Topaz
 {
-    internal class ValueWrapper : Expression
+    internal sealed class ValueWrapper : Expression
     {
         public override NodeCollection ChildNodes => NodeCollection.Empty;
 

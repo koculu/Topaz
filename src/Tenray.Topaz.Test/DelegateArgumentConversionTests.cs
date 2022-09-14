@@ -7,7 +7,7 @@ namespace Tenray.Topaz.Test
 {
     public sealed class DelegateArgumentConversionTests
     {
-        private class DelegateTester
+        private sealed class DelegateTester
         {
             public delegate void DelegateNoArgument();
             public delegate int Delegate1(int x);

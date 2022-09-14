@@ -10,7 +10,7 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor
+    internal sealed partial class ScriptExecutor
     {
         internal object CallFunction(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
         {

@@ -74,15 +74,15 @@ Result:
 ``` ini
 |              Method |         Mean |      Error |     StdDev |
 |-------------------- |-------------:|-----------:|-----------:|
-| Topaz Parallel For  |   123.895 ms |  2.4524 ms |  3.3568 ms |
-| Topaz Host For      |   236.638 ms |  4.0474 ms |  4.4987 ms |
-| Topaz Simple For    |   513.773 ms |  3.1686 ms |  2.9640 ms |
+| Topaz Parallel For  |   128.361 ms |  1.5664 ms |  1.4652 ms |
+| Topaz Host For      |   225.279 ms |  1.2184 ms |  0.9513 ms |
+| Topaz Simple For    |   465.666 ms |  3.4883 ms |  3.2630 ms |
 | V8Engine Parallel   |                          NOT SUPPORTED |
-| V8Engine Simple For |     7.350 ms |  0.1438 ms |  0.1969 ms |
-| V8Engine Host For   |  8235.497 ms | 63.0376 ms | 55.8812 ms |
+| V8Engine Simple For |     6.006 ms |  0.1129 ms |  0.1108 ms |
+| V8Engine Host For   | 2,647.886 ms | 32.2750 ms | 30.1901 ms |
 | Jint Parallel For   |                          NOT SUPPORTED |
-| Jint Host For       |   355.578 ms |  2.9865 ms |  2.6475 ms |
-| Jint Simple For     |   861.403 ms |  9.4439 ms |  8.8338 ms |
+| Jint Host For       |   339.026 ms |  3.6222 ms |  3.2110 ms |
+| Jint Simple For     |   627.941 ms | 11.4362 ms | 10.1379 ms |
 ```
 Comments:
 

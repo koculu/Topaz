@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz
 {
-    internal class ReturnWrapper
+    internal sealed class ReturnWrapper
     {
         internal object Result { get; }
 

@@ -6,7 +6,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
 {
-    public partial class JsArray : JsObject, IJsArray, IList<object>
+    public sealed partial class JsArray : JsObject, IJsArray, IList<object>
     {
         readonly List<object> arraylist = new();
         
@@ -75,7 +75,7 @@ namespace Tenray.Topaz.API
             }
         }
 
-        private void SetMinimumArraySize(List<object> list, int minSize)
+        private static void SetMinimumArraySize(List<object> list, int minSize)
         {
             while (list.Count < minSize)
             {
@@ -83,7 +83,7 @@ namespace Tenray.Topaz.API
             }
         }
 
-        private void SetMaximumArraySize(List<object> list, int maxSize)
+        private static void SetMaximumArraySize(List<object> list, int maxSize)
         {
             while (list.Count > maxSize)
             {

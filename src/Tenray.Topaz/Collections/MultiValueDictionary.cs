@@ -882,7 +882,7 @@ namespace Microsoft.Collections.Extensions
         /// that iterates over <typeparamref name="TKey"/>-<see cref="IReadOnlyCollection{TValue}"/>
         /// pairs.
         /// </summary>
-        private class Enumerator :
+        private sealed class Enumerator :
             IEnumerator<KeyValuePair<TKey, IReadOnlyCollection<TValue>>>
         {
             private readonly MultiValueDictionary<TKey, TValue> _multiValueDictionary;
@@ -909,15 +909,12 @@ namespace Microsoft.Collections.Extensions
             {
                 get
                 {
-                    switch (_state)
+                    return _state switch
                     {
-                        case EnumerationState.BeforeFirst:
-                            throw new InvalidOperationException((Strings.InvalidOperation_EnumNotStarted));
-                        case EnumerationState.AfterLast:
-                            throw new InvalidOperationException((Strings.InvalidOperation_EnumEnded));
-                        default:
-                            return Current;
-                    }
+                        EnumerationState.BeforeFirst => throw new InvalidOperationException((Strings.InvalidOperation_EnumNotStarted)),
+                        EnumerationState.AfterLast => throw new InvalidOperationException((Strings.InvalidOperation_EnumEnded)),
+                        _ => (object)Current,
+                    };
                 }
             }
 
@@ -975,7 +972,7 @@ namespace Microsoft.Collections.Extensions
         /// <summary>
         /// An inner class that functions as a view of an ICollection within a MultiValueDictionary
         /// </summary>
-        private class InnerCollectionView :
+        private sealed class InnerCollectionView :
             ICollection<TValue>,
             IReadOnlyCollection<TValue>
         {

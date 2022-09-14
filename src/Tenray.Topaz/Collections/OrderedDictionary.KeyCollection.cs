@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace Microsoft.Collections.Extensions
 {
-    public partial class OrderedDictionary<TKey, TValue>
+    public sealed partial class OrderedDictionary<TKey, TValue>
     {
         /// <summary>
         /// Represents the collection of keys in a <see cref="OrderedDictionary{TKey, TValue}" />. This class cannot be inherited.

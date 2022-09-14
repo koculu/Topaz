@@ -3,7 +3,7 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor
+    internal sealed partial class ScriptExecutor
     {
         internal bool TryGetVariableInTheScope(string name, out Variable variable)
         {

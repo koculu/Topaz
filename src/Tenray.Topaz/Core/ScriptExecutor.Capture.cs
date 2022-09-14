@@ -9,7 +9,7 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Core
 {
-    internal partial class ScriptExecutor
+    internal sealed partial class ScriptExecutor
     {
         private void CaptureVariables()
         {

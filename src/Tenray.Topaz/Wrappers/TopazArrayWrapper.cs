@@ -5,7 +5,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz
 {
-    internal class TopazArrayWrapper
+    internal sealed class TopazArrayWrapper
     {
         internal ScriptExecutor ScriptExecutor { get; }
 

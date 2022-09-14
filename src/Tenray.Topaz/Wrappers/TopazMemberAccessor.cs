@@ -3,7 +3,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz
 {
-    internal class TopazMemberAccessor
+    internal sealed class TopazMemberAccessor
     {
         internal object Instance { get; }
 

@@ -9,7 +9,7 @@ using Tenray.Topaz.ErrorHandling;
 namespace Tenray.Topaz.API
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "This is a JS prototype.")]
-    public partial class JsArray
+    public sealed partial class JsArray
     {   
         public object at(int index)
         {
