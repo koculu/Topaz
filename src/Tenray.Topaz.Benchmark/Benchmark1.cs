@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Tenray.Topaz.Benchmark
 {
-    public sealed class Benchmark1
+    public class Benchmark1
     {
         public string CodeParallel = @"
 Parallel.For(0, 1000000 , (i) => i + i)
@@ -47,7 +47,7 @@ Host.For(0, 1000000 , (i) => i + i)
                     action(i);
             }
         }
-        public sealed class HostObj
+        public class HostObj
         {
             public void For(
                 double fromInclusive, 

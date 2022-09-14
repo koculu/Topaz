@@ -6,7 +6,7 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Benchmark
 {
-    public sealed class Benchmark2
+    public class Benchmark2
     {
         public string Code = @"
 for (var i = 0.0 ; i < 1000000; ++i) {
@@ -14,7 +14,7 @@ for (var i = 0.0 ; i < 1000000; ++i) {
 }
 ";
 
-        public sealed class Model
+        public class Model
         {
             public int Value;
         }

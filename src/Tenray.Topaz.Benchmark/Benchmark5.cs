@@ -8,7 +8,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Benchmark
 {
-    public sealed class Benchmark5
+    public class Benchmark5
     {
         public string Code = @"
 var list = []
@@ -60,7 +60,7 @@ model.List = list
         }
 
 
-        public sealed class UserProfile
+        public class UserProfile
         {
             public string Name { get; set; }
 
@@ -79,7 +79,7 @@ model.List = list
             public string Phone { get; set; }
         }
 
-        public sealed class Model
+        public class Model
         {
             public List<UserProfile> Profiles;
 

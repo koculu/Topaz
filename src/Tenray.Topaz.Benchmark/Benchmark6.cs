@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Tenray.Topaz.Benchmark
 {
-    public sealed class Benchmark6
+    public class Benchmark6
     {
         public string Code = @"
 function square(x) {
