@@ -42,8 +42,53 @@ namespace Tenray.Topaz.Interop
             }
 
             var argType = value.GetType();
+            if (argType == targetType)
+            {
+                convertedValue = value;
+                return true;
+            }
+
+            if (argType == typeof(double))
+            {
+                if (targetType == typeof(int))
+                {
+                    convertedValue = (int)(double)value;
+                    return true;
+                }
+                if (targetType == typeof(long))
+                {
+                    convertedValue = (long)(double)value;
+                    return true;
+                }
+            } 
+            else if (argType == typeof(int))
+            {
+                if (targetType == typeof(long))
+                {
+                    convertedValue = (long)(int)value;
+                    return true;
+                }
+                if (targetType == typeof(double))
+                {
+                    convertedValue = (double)(int)value;
+                    return true;
+                }
+            }
+            else if (argType == typeof(long))
+            {
+                if (targetType == typeof(int))
+                {
+                    convertedValue = (int)(long)value;
+                    return true;
+                }
+                if (targetType == typeof(double))
+                {
+                    convertedValue = (double)(long)value;
+                    return true;
+                }
+            }
+
             if (targetType == typeof(object) ||
-                targetType == argType ||
                 targetType.IsAssignableFrom(argType))
             {
                 convertedValue = value;
@@ -75,8 +120,7 @@ namespace Tenray.Topaz.Interop
                     return true;
                 }
 
-                IConvertible convertible = value as IConvertible;
-                if (convertible == null)
+                if (value is not IConvertible convertible)
                 {
                     convertedValue = null;
                     return false;
