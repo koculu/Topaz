@@ -11,6 +11,31 @@ namespace Tenray.Topaz.Interop
 {
     public sealed class ObjectProxyUsingReflection : IObjectProxy
     {
+        private sealed class CacheKey
+        {
+            public Type Type;
+
+            public object Value;
+
+            public CacheKey(Type type, object value)
+            {
+                Type = type;
+                Value = value;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is CacheKey key &&
+                       Type == key.Type &&
+                       Value == key.Value;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Type, Value);
+            }
+        }
+
         public object Instance { get; }
 
         public Type ProxiedType { get; }
@@ -25,9 +50,9 @@ namespace Tenray.Topaz.Interop
 
         readonly ParameterInfo[][] _indexedPropertyParameters;
 
-        readonly ConcurrentDictionary<Tuple<Type, object>, Func<object, object>> _cachedGetters = new();
+        readonly ConcurrentDictionary<CacheKey, Func<object, object>> _cachedGetters = new();
 
-        readonly ConcurrentDictionary<Tuple<Type, object>, Action<object, object>> _cachedSetters = new();
+        readonly ConcurrentDictionary<CacheKey, Action<object, object>> _cachedSetters = new();
 
         private const string GENERIC_ARGUMENTS_METHOD = "GenericArguments";
 
@@ -191,7 +216,7 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
-            var cacheKey = Tuple.Create(instanceType, member);
+            var cacheKey = new CacheKey(instanceType, member);
             if (_cachedGetters.TryGetValue(cacheKey, out var cachedGetter))
             {
                 value = cachedGetter(instance);
@@ -209,23 +234,23 @@ namespace Tenray.Topaz.Interop
                 {
                     if (memberName == GENERIC_ARGUMENTS_METHOD)
                     {
-                        value = new InvokerUsingReflection(memberName,
+                        var invContext = new InvokerUsingReflectionContext(memberName,
                                                            Array.Empty<MethodInfo>(),
-                                                           this,
                                                            options,
                                                            ValueConverter,
-                                                           genericMethodSelectorParameterInfo)
-                        {
-                            AttachedParameter = instance
-                        };
+                                                           genericMethodSelectorParameterInfo).ToInvoker(this);
+                        invContext.AttachedParameter = instance;
+                        value = invContext;
                         return true;
                     }
                     return false;
                 }
+
+                var invokerContext2 = new InvokerUsingReflectionContext(
+                        memberName, Array.Empty<MethodInfo>(), options, ValueConverter, extMethodParameterInfo);
                 var methodGetter2 = new Func<object, object>((instance) =>
                 {
-                    return new InvokerUsingReflection(
-                        memberName, Array.Empty<MethodInfo>(), instance, options, ValueConverter, extMethodParameterInfo);
+                    return invokerContext2.ToInvoker(instance);
                 });
                 _cachedGetters.TryAdd(cacheKey, methodGetter2);
                 value = methodGetter2(instance);
@@ -275,22 +300,23 @@ namespace Tenray.Topaz.Interop
             {
                 if (memberName == GENERIC_ARGUMENTS_METHOD)
                 {
-                    value = new InvokerUsingReflection(memberName,
+                    var invContext = new InvokerUsingReflectionContext(memberName,
                                                        Array.Empty<MethodInfo>(),
-                                                       this,
                                                        options,
                                                        ValueConverter,
                                                        genericMethodSelectorParameterInfo)
-                    {
-                        AttachedParameter = instance
-                    };
+                        .ToInvoker(this);
+                    invContext.AttachedParameter = instance;
+                    value = invContext;
                     return true;
                 }
                 return false;
             }
+
+            var invokerContext = new InvokerUsingReflectionContext(memberName, methods, options, ValueConverter, extMethodParameterInfo2);
             var methodGetter = new Func<object, object>((instance) =>
             {
-                return new InvokerUsingReflection(memberName, methods, instance, options, ValueConverter, extMethodParameterInfo2);
+                return invokerContext.ToInvoker(instance);
             });
             _cachedGetters.TryAdd(cacheKey, methodGetter); 
             value = methodGetter(instance);
@@ -450,7 +476,7 @@ namespace Tenray.Topaz.Interop
                 return false;
             }
 
-            var cacheKey = Tuple.Create(instanceType, member);
+            var cacheKey = new CacheKey(instanceType, member);
             if (_cachedSetters.TryGetValue(cacheKey, out var cachedSetter))
             {
                 cachedSetter(instance, value);

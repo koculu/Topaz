@@ -208,12 +208,11 @@ namespace Tenray.Topaz.Interop
             {
                 if (memberName == GENERIC_ARGUMENTS_METHOD)
                 {
-                    value = new InvokerUsingReflection(memberName,
+                    value = new InvokerUsingReflectionContext(memberName,
                                                        Array.Empty<MethodInfo>(),
-                                                       this,
                                                        options,
                                                        ValueConverter,
-                                                       genericMethodSelectorParameterInfo);
+                                                       genericMethodSelectorParameterInfo).ToInvoker(this);
                     return true;
                 }
                 return false;
@@ -260,20 +259,21 @@ namespace Tenray.Topaz.Interop
             {
                 if (memberName == GENERIC_ARGUMENTS_METHOD)
                 {
-                    value = new InvokerUsingReflection(memberName,
+                    value = new InvokerUsingReflectionContext(memberName,
                                                        Array.Empty<MethodInfo>(),
-                                                       this,
                                                        options,
                                                        ValueConverter,
-                                                       genericMethodSelectorParameterInfo);
+                                                       genericMethodSelectorParameterInfo).ToInvoker(this);
                     return true;
                 }
                 return false;
             }
 
+            var invokerContext = 
+                new InvokerUsingReflectionContext(Name + "." + memberName, methods, options, ValueConverter);
             var methodGetter = new Func<object>(() =>
             {
-                return new InvokerUsingReflection(Name + "." + memberName, methods, null, options, ValueConverter);
+                return invokerContext.ToInvoker(null);
             });
             _cachedGetters.TryAdd(member, methodGetter);
             value = methodGetter();

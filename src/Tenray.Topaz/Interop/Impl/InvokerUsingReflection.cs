@@ -29,35 +29,15 @@ namespace Tenray.Topaz.Interop
 
         readonly ParameterInfo[][] allParameters;
 
-        public InvokerUsingReflection(
-            string name,
-            MethodInfo[] methodInfos,
-            object instance,
-            ProxyOptions options, 
-            IValueConverter valueConverter,
-            MethodAndParameterInfo extMethodParameterInfo = null)
+        public InvokerUsingReflection(InvokerUsingReflectionContext context, object instance)
         {
-            Name = name;
-            ValueConverter = valueConverter;
-            this.methodInfos = methodInfos;
-            var len = methodInfos.Length;
-            for (var i = 0; i < len; ++i)
-            {
-                var methodInfo = methodInfos[i];
-                if (methodInfo.ContainsGenericParameters)
-                {
-                    var genericParamCount = 
-                        methodInfo.GetGenericArguments().Length;
-                    var genericArgs = Enumerable.Range(0, genericParamCount).Select(x => typeof(object)).ToArray();
-                    methodInfos[i] = methodInfo.MakeGenericMethod(genericArgs);
-                }
-            }
+            Name = context.Name;
             this.instance = instance;
-            this.options = options;
-            this.extMethodParameterInfo = extMethodParameterInfo;
-            allParameters = methodInfos
-                     .Select(x => x.GetParameters())
-                     .ToArray();
+            ValueConverter = context.ValueConverter;
+            methodInfos = context.MethodInfos;
+            options = context.Options;
+            extMethodParameterInfo = context.ExtMethodParameterInfo;
+            allParameters = context.AllParameters;
         }
 
         public object Invoke(IReadOnlyList<object> args)
@@ -206,7 +186,7 @@ namespace Tenray.Topaz.Interop
                     {
                         var defaultGenericMethodArguments = new Type[genericParamCount];
                         var thisParameterType = methodInfo.GetParameters()[0].ParameterType;
-                        defaultGenericMethodArguments[0] = 
+                        defaultGenericMethodArguments[0] =
                             DecideGenericArgumentFromThisParameter(thisParameterType, instance);
                         Array.Fill(defaultGenericMethodArguments, typeof(object), 1, genericParamCount - 1);
                         list.Add(methodInfo.MakeGenericMethod(defaultGenericMethodArguments));
@@ -230,7 +210,7 @@ namespace Tenray.Topaz.Interop
             methodInfos = list.ToArray();
         }
 
-        private Type DecideGenericArgumentFromThisParameter(Type thisParameterType, object instance)
+        private static Type DecideGenericArgumentFromThisParameter(Type thisParameterType, object instance)
         {
             var instanceType = instance.GetType();
             if (!thisParameterType.ContainsGenericParameters)
