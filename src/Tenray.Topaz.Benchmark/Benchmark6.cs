@@ -12,9 +12,9 @@ function square(x) {
     return x*x;
 }
 ";
-        public int LoopLength = 100000;
+        public int LoopLength = 1000000;
 
-        [Benchmark]
+        //[Benchmark]
         public void RunV8Engine()
         {
             var v8Engine = new V8ScriptEngine();

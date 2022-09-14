@@ -101,8 +101,8 @@ Result:
 ``` ini
 |      Method |        Mean |   Error |  StdDev |
 |------------ |------------:|--------:|--------:|
-|    RunTopaz |    792.0 ms | 9.74 ms | 9.11 ms |
-|     RunJint |    896.6 ms | 7.78 ms | 7.28 ms |
+|    RunTopaz |   623.9 ms | 12.12 ms | 14.42 ms |
+|     RunJint | 1,030.0 ms | 12.90 ms | 12.06 ms |
 | RunV8Engine | 30,598.6 ms |    NA   |    NA   |
 ```
 
@@ -122,8 +122,8 @@ Result:
 ``` ini
 |      Method |       Mean |    Error |   StdDev |
 |------------ |-----------:|---------:|---------:|
-|    RunTopaz |   784.4 ms | 15.06 ms | 14.79 ms |
-|     RunJint | 1,449.0 ms |  6.01 ms |  4.69 ms |
+|    RunTopaz |   684.3 ms | 11.37 ms | 10.63 ms |
+|     RunJint | 1,329.2 ms | 16.20 ms | 15.16 ms |
 | RunV8Engine |   Error    |    NA    |    NA    |
 ```
 
@@ -142,14 +142,14 @@ Result:
 ``` ini
 |      Method |     Mean   |    Error |   StdDev |
 |------------ |-----------:|---------:|---------:|
-|    RunTopaz |   640.4 ms |  3.93 ms |  3.68 ms |
-|     RunJint |   878.7 ms | 12.15 ms | 11.37 ms |
+|    RunTopaz |  478.7 ms |   9.31 ms |  9.96 ms |
+|     RunJint |  514.6 ms |   8.19 ms |  6.84 ms |
 | RunV8Engine | 8180.00 ms | 4.691 ms | 4.388 ms |
 ```
 
 Comments:
 
-Topaz is significantly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates .NET function calls from script.
+Topaz is slightly faster than Jint in this benchmark. The model object is a .NET class. This benchmark demonstrates .NET function calls from script.
 
 ### Benchmark 5 (100K arbitrary .NET objects manipulation and addition into an array)
 Code:
@@ -172,8 +172,8 @@ Result:
 ``` ini
 |      Method |      Mean |    Error |   StdDev |
 |------------ |----------:|---------:|---------:|
-|    RunTopaz |  1.038 s  | 0.0141 s | 0.0125 s |
-|     RunJint |  1.465 s  | 0.0194 s | 0.0182 s |
+|    RunTopaz |   1.035 s | 0.1807 s | 0.1195 s |
+|     RunJint |   3.000 s | 0.6805 s | 0.4501 s |
 | RunV8Engine | 33,3009 s |  0.173 s |  0.512 s |
 ```
 
@@ -199,8 +199,8 @@ Result:
 ``` ini
 |      Method |        Mean |      Error |    StdDev |
 |------------ |------------:|-----------:|----------:|
-|    RunTopaz |     237.9 ms |   4.87 ms |  14.35 ms |
-|     RunJint |     745.7 ms |   3.52 ms |   3.30 ms |
+|    RunTopaz |    225.9 ms |    4.51 ms |   6.88 ms |
+|     RunJint |    682.3 ms |   12.23 ms |  13.09 ms |
 | RunV8Engine | 13,630.36 ms | 14.993 ms | 14.025 ms |
 ```
 

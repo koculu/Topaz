@@ -1,13 +1,14 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
 using Bogus;
 using Jint;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;
-using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Benchmark
 {
+    [SimpleJob(RunStrategy.ColdStart, targetCount: 10)]
     public class Benchmark5
     {
         public string Code = @"
@@ -115,7 +116,7 @@ model.List = list
         [Benchmark]
         public void RunJint()
         {
-            var jintEngine = new Engine();
+            var jintEngine = new Jint.Engine();
             var model = new Model(FakeUserProfiles);
             jintEngine.SetValue("model", model);
             jintEngine.Execute(Code);
