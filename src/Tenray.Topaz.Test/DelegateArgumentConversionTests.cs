@@ -5,7 +5,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class DelegateArgumentConversionTests
+    public sealed class DelegateArgumentConversionTests
     {
         private class DelegateTester
         {

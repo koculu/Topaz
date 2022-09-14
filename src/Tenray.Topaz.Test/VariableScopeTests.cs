@@ -4,7 +4,7 @@ using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz.Test
 {
-    public class VariableScopeTests
+    public sealed class VariableScopeTests
     {
         [Test]
         public void VarScopeLoop()

@@ -4,7 +4,7 @@ using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API
 {
-    public class GlobalThis : IDictionary
+    public sealed class GlobalThis : IDictionary
     {
         private const string NullString = "null";
 

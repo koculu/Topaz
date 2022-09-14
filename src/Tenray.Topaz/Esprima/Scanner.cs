@@ -8,7 +8,7 @@ using Esprima.Ast;
 
 namespace Esprima
 {
-    public class SourceLocation
+    public sealed class SourceLocation
     {
         public Position? Start;
         public Position? End;
@@ -30,7 +30,7 @@ namespace Esprima
         }
     }
 
-    public class Scanner
+    public sealed class Scanner
     {
         private readonly IErrorHandler _errorHandler;
         private readonly bool _trackComment;

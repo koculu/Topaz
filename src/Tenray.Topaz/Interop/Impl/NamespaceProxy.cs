@@ -7,7 +7,7 @@ namespace Tenray.Topaz.Interop
     /// <summary>
     /// Proxy object that enables access to namespaces.
     /// </summary>
-    public class NamespaceProxy : ITypeProxy
+    public sealed class NamespaceProxy : ITypeProxy
     {
         /// <summary>
         /// Namespace name. 

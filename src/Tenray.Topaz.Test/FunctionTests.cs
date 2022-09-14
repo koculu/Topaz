@@ -4,7 +4,7 @@ using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz.Test
 {
-    public class FunctionTests
+    public sealed class FunctionTests
     {
         [Test]
         public void VariableCapturing()

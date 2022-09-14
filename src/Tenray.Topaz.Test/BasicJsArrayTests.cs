@@ -5,7 +5,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class BasicJsArrayTests
+    public sealed class BasicJsArrayTests
     {
         [TestCase(false)]
         [TestCase(true)]

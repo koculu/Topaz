@@ -6,7 +6,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Interop
 {
-    public class InvokerUsingReflection : IInvokable
+    public sealed class InvokerUsingReflection : IInvokable
     {
         public readonly string Name;
 

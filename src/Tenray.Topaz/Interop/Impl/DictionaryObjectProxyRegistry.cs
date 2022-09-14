@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Tenray.Topaz.Interop
 {
-    public class DictionaryObjectProxyRegistry : IObjectProxyRegistry
+    public sealed class DictionaryObjectProxyRegistry : IObjectProxyRegistry
     {
         Dictionary<Type, IObjectProxy> proxyRegistryMap = new();
 

@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class GlobalThisTests
+    public sealed class GlobalThisTests
     {
         [Test]
         public void TestGlobalThis1()

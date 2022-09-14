@@ -12,7 +12,7 @@ namespace Esprima
     /// <remarks>
     /// Use the <see cref="ParseScript" />, <see cref="ParseModule" /> or <see cref="ParseExpression" /> methods to parse the JavaScript code.
     /// </remarks>
-    public class JavaScriptParser
+    public sealed class JavaScriptParser
     {
         private static readonly HashSet<string> AssignmentOperators = new()
         {

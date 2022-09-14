@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz.Interop
 {
-    public class GenericMethodSelector : IObjectProxy
+    public sealed class GenericMethodSelector : IObjectProxy
     {
         public ITypeProxy TypeProxy { get; }
 

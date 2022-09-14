@@ -24,7 +24,7 @@ namespace Microsoft.Collections.Extensions
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
-    public class MultiValueDictionary<TKey, TValue> :
+    public sealed class MultiValueDictionary<TKey, TValue> :
         IReadOnlyDictionary<TKey, IReadOnlyCollection<TValue>>
     {
         #region Variables

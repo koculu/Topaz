@@ -4,7 +4,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class NamespaceTests
+    public sealed class NamespaceTests
     {
         [Test]
         public void TestSingleLevelNamespace()

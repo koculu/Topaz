@@ -9,7 +9,7 @@ using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz
 {
-    public class TopazEngine : ITopazEngine
+    public sealed class TopazEngine : ITopazEngine
     {
         private static int lastTopazEngineId = 0;
 

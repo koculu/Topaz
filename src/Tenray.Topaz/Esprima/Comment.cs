@@ -8,7 +8,7 @@ namespace Esprima
         Line
     }
 
-    public class Comment
+    public sealed class Comment
     {
         public CommentType Type;
         public string? Value;

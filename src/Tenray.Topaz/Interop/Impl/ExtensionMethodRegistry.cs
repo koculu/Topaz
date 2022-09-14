@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace Tenray.Topaz.Interop
 {
-    public class ExtensionMethodRegistry
+    public sealed class ExtensionMethodRegistry
     {
         List<MethodInfo> registeredMethods = new();
 

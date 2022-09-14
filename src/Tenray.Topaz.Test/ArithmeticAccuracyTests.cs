@@ -4,7 +4,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class ArithmeticAccuracyTests
+    public sealed class ArithmeticAccuracyTests
     {
         [Test]
         public void TestArithmeticComparison()

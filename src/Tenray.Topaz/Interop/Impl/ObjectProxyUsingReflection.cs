@@ -9,7 +9,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Interop
 {
-    public class ObjectProxyUsingReflection : IObjectProxy
+    public sealed class ObjectProxyUsingReflection : IObjectProxy
     {
         public object Instance { get; }
 

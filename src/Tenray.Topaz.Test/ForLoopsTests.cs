@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class ForLoopsTests
+    public sealed class ForLoopsTests
     {
         [Test]
         public void ForInLoop()

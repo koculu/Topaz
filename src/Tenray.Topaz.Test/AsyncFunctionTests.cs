@@ -5,7 +5,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class AsyncFunctionTests
+    public sealed class AsyncFunctionTests
     {
         [Test]
         public void HttpGetAsync()

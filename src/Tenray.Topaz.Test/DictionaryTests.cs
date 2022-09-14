@@ -4,7 +4,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class DictionaryTests
+    public sealed class DictionaryTests
     {
         [Test]
         public void TestDictionary1()

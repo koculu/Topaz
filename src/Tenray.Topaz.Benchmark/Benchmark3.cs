@@ -6,14 +6,14 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Benchmark
 {
-    public class Benchmark3
+    public sealed class Benchmark3
     {
         public string Code = @"
 for (var i = 0.0 ; i < 1000000; ++i) {
     model.Value++;
 }
 ";
-        public class Model
+        public sealed class Model
         {
             public int Value;
         }

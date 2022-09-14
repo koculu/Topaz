@@ -6,7 +6,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class LinqTests
+    public sealed class LinqTests
     {
         [Test]
         public void TestStaticLinq()
@@ -201,7 +201,7 @@ model.c = items
             Assert.AreEqual(typeof(Dictionary<double, string>), model.c.GetType());
         }
 
-        public class TestThisType
+        public sealed class TestThisType
         {
             public string Name { get; set; }
 

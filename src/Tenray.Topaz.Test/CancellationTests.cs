@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Tenray.Topaz.Test
 {
-    public class CancellationTests
+    public sealed class CancellationTests
     {
         [Test]
         public void CancelInfiniteWhileLoop()

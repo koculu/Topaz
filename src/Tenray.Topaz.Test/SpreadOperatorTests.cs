@@ -4,7 +4,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class SpreadOperatorTests
+    public sealed class SpreadOperatorTests
     {
         [Test]
         public void SpreadOperator()

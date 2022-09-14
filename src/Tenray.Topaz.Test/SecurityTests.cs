@@ -6,7 +6,7 @@ using Tenray.Topaz.Options;
 
 namespace Tenray.Topaz.Test
 {
-    public class SecurityTests
+    public sealed class SecurityTests
     {
         [Test]
         public void TryToUseReflectionAPI()

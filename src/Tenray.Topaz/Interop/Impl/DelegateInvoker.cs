@@ -8,7 +8,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Interop
 {
-    public class DelegateInvoker : IDelegateInvoker
+    public sealed class DelegateInvoker : IDelegateInvoker
     {
         static readonly
             ConcurrentDictionary<

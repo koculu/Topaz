@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz.Options
 {
-    public class TopazEngineOptions
+    public sealed class TopazEngineOptions
     {
         public SecurityPolicy SecurityPolicy { get; set; } = SecurityPolicy.Default;
 

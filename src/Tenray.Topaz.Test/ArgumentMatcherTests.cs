@@ -6,7 +6,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class ArgumentMatcherTests
+    public sealed class ArgumentMatcherTests
     {
         [Test]
         public void TestArgumentMatch1()
@@ -35,7 +35,7 @@ model.a = test.Method('3.5', 6, 2, 9, 10);
             Assert.AreEqual(21, model.a);
         }
 
-        public class TestClass
+        public sealed class TestClass
         {
             public int LastCall = 0;
             public int B = 0;

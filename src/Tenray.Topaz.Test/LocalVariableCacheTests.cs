@@ -5,7 +5,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class LocalVariableCacheTests
+    public sealed class LocalVariableCacheTests
     {
         [Test]
         public void TestIdentifierSharing()
@@ -59,7 +59,7 @@ f2(5)
             Assert.AreEqual(5, model.b);
         }
 
-        public class TestModel
+        public sealed class TestModel
         {
             public int Value = 0;
         }

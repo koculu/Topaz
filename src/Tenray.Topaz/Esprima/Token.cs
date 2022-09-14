@@ -16,7 +16,7 @@ namespace Esprima
         Template
     };
 
-    public class Token
+    public sealed class Token
     {
         public TokenType Type;
         public string? Literal;

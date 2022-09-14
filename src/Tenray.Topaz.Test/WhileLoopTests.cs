@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class WhileLoopTests
+    public sealed class WhileLoopTests
     {
         [Test]
         public void WhileLoop()

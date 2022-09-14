@@ -4,7 +4,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class SwitchCaseTests
+    public sealed class SwitchCaseTests
     {
         [Test]
         public void TestSwitchCase1()

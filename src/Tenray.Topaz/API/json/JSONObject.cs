@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace Tenray.Topaz.API
 {
-    public class JSONObject : JsObject
+    public sealed class JSONObject : JsObject
     {
         public JsonSerializerOptions Options { get; set; } = new()
         {

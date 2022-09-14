@@ -5,7 +5,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class ConstructorTests
+    public sealed class ConstructorTests
     {
         [Test]
         public void DateTimeConstruction()

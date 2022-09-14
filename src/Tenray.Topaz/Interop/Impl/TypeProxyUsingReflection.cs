@@ -7,7 +7,7 @@ using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Interop
 {
-    public class TypeProxyUsingReflection : ITypeProxy
+    public sealed class TypeProxyUsingReflection : ITypeProxy
     {
         public IValueConverter ValueConverter { get; }
 

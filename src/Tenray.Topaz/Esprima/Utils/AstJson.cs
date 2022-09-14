@@ -70,11 +70,9 @@ namespace Esprima.Utils
 
         public static string ToJsonString(this Node node, Options options, string? indent)
         {
-            using (var writer = new StringWriter())
-            {
-                WriteJson(node, writer, options, indent);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            WriteJson(node, writer, options, indent);
+            return writer.ToString();
         }
 
         public static void WriteJson(this Node node, TextWriter writer)

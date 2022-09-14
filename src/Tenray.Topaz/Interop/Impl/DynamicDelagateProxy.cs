@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz.Interop
 {
-    public class DynamicDelagateProxy
+    public sealed class DynamicDelagateProxy
     {
         readonly Func<object[], object> ActualFunction;
         

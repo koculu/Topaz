@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Tenray.Topaz.Interop
 {
-    public class DefaultMemberAccessPolicy : IMemberAccessPolicy
+    public sealed class DefaultMemberAccessPolicy : IMemberAccessPolicy
     {
-        TopazEngine TopazEngine;
+        readonly TopazEngine TopazEngine;
 
-        static HashSet<string> TypeMemberWhiteList = new ()
+        static readonly HashSet<string> TypeMemberWhiteList = new ()
         {
             "IsClass",
             "FullName",

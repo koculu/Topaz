@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class ObjectDestructringTests
+    public sealed class ObjectDestructringTests
     {
         [Test]
         public void DefineObjectWithVariables()

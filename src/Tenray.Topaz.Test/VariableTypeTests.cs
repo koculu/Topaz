@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public class VariableTypeTests
+    public sealed class VariableTypeTests
     {
         [Test]
         public void TestVariableTypes()

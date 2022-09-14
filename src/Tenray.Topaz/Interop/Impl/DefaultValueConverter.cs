@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz.Interop
 {
-    public class DefaultValueConverter : IValueConverter
+    public sealed class DefaultValueConverter : IValueConverter
     {
         public bool ConvertStringsToEnum { get; }
 

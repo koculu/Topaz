@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Tenray.Topaz.Interop
 {
-    public class MethodAndParameterInfo
+    public sealed class MethodAndParameterInfo
     {
         public readonly IReadOnlyList<MethodInfo> MethodInfos;
 

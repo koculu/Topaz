@@ -7,7 +7,7 @@ namespace Tenray.Topaz
     /// Initialization properties for TopazEngine constructor.
     /// If you don't set some property in the setup, TopazEngine will use default implementation.
     /// </summary>
-    public class TopazEngineSetup
+    public sealed class TopazEngineSetup
     {
         public bool IsThreadSafe { get; set; } = true;
 
