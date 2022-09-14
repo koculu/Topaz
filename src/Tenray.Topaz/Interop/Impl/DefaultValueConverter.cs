@@ -52,12 +52,12 @@ namespace Tenray.Topaz.Interop
             {
                 if (targetType == typeof(int))
                 {
-                    convertedValue = (int)(double)value;
+                    convertedValue = (int)Math.Round((double)value);
                     return true;
                 }
                 if (targetType == typeof(long))
                 {
-                    convertedValue = (long)(double)value;
+                    convertedValue = (long)Math.Round((double)value);
                     return true;
                 }
             } 
