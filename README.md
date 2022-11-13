@@ -1,7 +1,7 @@
 # Topaz
 Multithreaded Javascript Engine for .NET
 
-[![Download](https://img.shields.io/badge/download-Topaz-blue)](https://www.nuget.org/packages/Topaz/)
+[![Downloads](https://img.shields.io/nuget/dt/Topaz)](https://www.nuget.org/packages/Topaz/)
 
 ## Why another Javascript Engine?
 
@@ -99,11 +99,11 @@ for (var i = 0.0 ; i < 1000000; ++i) {
 ```
 Result:
 ``` ini
-|      Method |        Mean |   Error |  StdDev |
-|------------ |------------:|--------:|--------:|
-|    RunTopaz |   623.9 ms | 12.12 ms | 14.42 ms |
-|     RunJint | 1,030.0 ms | 12.90 ms | 12.06 ms |
-| RunV8Engine | 30,598.6 ms |    NA   |    NA   |
+|      Method |        Mean |   Error  |  StdDev |
+|------------ |------------:|---------:|--------:|
+|    RunTopaz | 548.9 ms    | 10.42 ms | 9.23 ms |
+|     RunJint | 616.7 ms    |  4.62 ms | 4.10 ms |
+| RunV8Engine | 30,598.6 ms |    NA    |    NA   |
 ```
 
 Comments:
@@ -122,8 +122,8 @@ Result:
 ``` ini
 |      Method |       Mean |    Error |   StdDev |
 |------------ |-----------:|---------:|---------:|
-|    RunTopaz |   684.3 ms | 11.37 ms | 10.63 ms |
-|     RunJint | 1,329.2 ms | 16.20 ms | 15.16 ms |
+|    RunTopaz | 620.6 ms   | 11.61 ms | 10.86 ms |
+|     RunJint | 730.9 ms   |  4.31 ms |  4.03 ms |
 | RunV8Engine |   Error    |    NA    |    NA    |
 ```
 
@@ -142,8 +142,8 @@ Result:
 ``` ini
 |      Method |     Mean   |    Error |   StdDev |
 |------------ |-----------:|---------:|---------:|
-|    RunTopaz |  478.7 ms |   9.31 ms |  9.96 ms |
-|     RunJint |  514.6 ms |   8.19 ms |  6.84 ms |
+|    RunTopaz |   401.4 ms | 2.35 ms  |  1.83 ms |
+|     RunJint |   448.6 ms | 1.07 ms  |  0.90 ms |
 | RunV8Engine | 8180.00 ms | 4.691 ms | 4.388 ms |
 ```
 
@@ -170,11 +170,11 @@ model.List = list
 ```
 Result:
 ``` ini
-|      Method |      Mean |    Error |   StdDev |
-|------------ |----------:|---------:|---------:|
-|    RunTopaz |   1.035 s | 0.1807 s | 0.1195 s |
-|     RunJint |   3.000 s | 0.6805 s | 0.4501 s |
-| RunV8Engine | 33,3009 s |  0.173 s |  0.512 s |
+|      Method |      Mean  |    Error |   StdDev |
+|------------ |-----------:|---------:|---------:|
+|    RunTopaz |  866.2 ms  | 200.4 ms | 132.6 ms |
+|     RunJint | 2,708.2 ms | 692.0 ms | 457.7 ms |
+| RunV8Engine | 33,3009 s  |  0.173 s |  0.512 s |
 ```
 
 Comments:
@@ -199,8 +199,8 @@ Result:
 ``` ini
 |      Method |        Mean |      Error |    StdDev |
 |------------ |------------:|-----------:|----------:|
-|    RunTopaz |    225.9 ms |    4.51 ms |   6.88 ms |
-|     RunJint |    682.3 ms |   12.23 ms |  13.09 ms |
+|    RunTopaz |   224.1 ms  |    4.39 ms |   4.70 ms |
+|     RunJint |   653.1 ms  |    4.64 ms |   4.12 ms |
 | RunV8Engine | 13,630.36 ms | 14.993 ms | 14.025 ms |
 ```
 

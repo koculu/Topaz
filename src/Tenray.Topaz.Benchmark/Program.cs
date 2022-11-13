@@ -15,7 +15,7 @@ namespace Tenray.Topaz.Benchmark
             }
             else
             {
-                BenchmarkRunner.Run<Benchmark4>();
+                BenchmarkRunner.Run<Benchmark1>();
                 //RunSingleJob();
             }
         }
