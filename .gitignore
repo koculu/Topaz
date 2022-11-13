@@ -2,3 +2,6 @@
 bin
 obj
 src/Tenray.Topaz/Tenray.Topaz.xml
+src/Tenray.Topaz/Tenray.Topaz.csproj.user
+src/Tenray.Topaz/Properties/PublishProfiles/FolderProfile.pubxml
+src/Tenray.Topaz/Properties/PublishProfiles/FolderProfile.pubxml.user
