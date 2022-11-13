@@ -1,3 +1,5 @@
+![img](https://raw.githubusercontent.com/koculu/ZoneTree/main/src/Topaz/docs/Topaz/images/logo1.png)
+
 # Topaz
 Multithreaded Javascript Engine for .NET
 
