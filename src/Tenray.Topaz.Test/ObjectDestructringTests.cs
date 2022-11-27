@@ -3,7 +3,7 @@ using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test
 {
-    public sealed class ObjectDestructringTests
+    public sealed class ObjectDestructuringTests
     {
         [Test]
         public void DefineObjectWithVariables()
@@ -55,7 +55,7 @@ model.c = c
         }
 
         [Test]
-        public void DefineVariablesWithObjectDestructring()
+        public void DefineVariablesWithObjectDestructuring()
         {
             var engine = new TopazEngine();
             dynamic model = new JsObject();
@@ -85,7 +85,7 @@ model.bar = bar
         }
 
         [Test]
-        public void NestedObjectDestructring()
+        public void NestedObjectDestructuring()
         {
             var engine = new TopazEngine();
             engine.Options.NoUndefined = false;
@@ -114,5 +114,5 @@ model.cool = cool
             Assert.AreEqual(Undefined.Value, model.arrayProp);
             Assert.AreEqual("deeper", model.cool);
         }
-    }    
+    }
 }

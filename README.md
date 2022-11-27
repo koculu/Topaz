@@ -550,8 +550,8 @@ Otherwise you may not get benefit of covered security leaks by Topaz.
 * switch case statement
 * functions
 * arrow functions
-* object destructring
-* array destructring
+* object destructuring
+* array destructuring
 * await
 * if else statements
 * while, do while statements
