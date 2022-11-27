@@ -1,29 +1,28 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class IfStatement : Statement
 {
-    public sealed class IfStatement : Statement
+    public readonly Expression Test;
+    public readonly Statement Consequent;
+    public readonly Statement? Alternate;
+
+    public IfStatement(
+        Expression test,
+        Statement consequent,
+        Statement? alternate)
+        : base(Nodes.IfStatement)
     {
-        public readonly Expression Test;
-        public readonly Statement Consequent;
-        public readonly Statement? Alternate;
+        Test = test;
+        Consequent = consequent;
+        Alternate = alternate;
+    }
 
-        public IfStatement(
-            Expression test,
-            Statement consequent,
-            Statement? alternate)
-            : base(Nodes.IfStatement)
-        {
-            Test = test;
-            Consequent = consequent;
-            Alternate = alternate;
-        }
+    public override NodeCollection ChildNodes => new(Test, Consequent, Alternate);
 
-        public override NodeCollection ChildNodes => new(Test, Consequent, Alternate);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitIfStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitIfStatement(this);
     }
 }

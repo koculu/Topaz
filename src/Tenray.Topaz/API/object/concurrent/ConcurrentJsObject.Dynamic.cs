@@ -9,33 +9,32 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
-namespace Tenray.Topaz.API
+namespace Tenray.Topaz.API;
+
+public partial class ConcurrentJsObject : DynamicObject
 {
-    public partial class ConcurrentJsObject : DynamicObject
+    public override bool TrySetMember(SetMemberBinder binder, object value)
     {
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            SetValue(binder.Name, value);
-            return true;
-        }
+        SetValue(binder.Name, value);
+        return true;
+    }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            return TryGetValue(binder.Name, out result);
-        }
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+        return TryGetValue(binder.Name, out result);
+    }
 
-        public override IEnumerable<string> GetDynamicMemberNames()
-        {
-            return dictionary.Keys.ToArray();
-        }
+    public override IEnumerable<string> GetDynamicMemberNames()
+    {
+        return dictionary.Keys.ToArray();
+    }
 
-        protected static object ConvertJsonElementToConcurrentJsObject(object value)
-        {
-            if (value == null)
-                return null;
-            if (value is JsonElement jsonElement)
-                return jsonElement.ConvertToConcurrentJsObject();
-            return value;
-        }
+    protected static object ConvertJsonElementToConcurrentJsObject(object value)
+    {
+        if (value == null)
+            return null;
+        if (value is JsonElement jsonElement)
+            return jsonElement.ConvertToConcurrentJsObject();
+        return value;
     }
 }

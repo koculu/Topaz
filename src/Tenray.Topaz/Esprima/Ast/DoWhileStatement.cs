@@ -1,23 +1,22 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class DoWhileStatement : Statement
 {
-    public sealed class DoWhileStatement : Statement
+    public readonly Statement Body;
+    public readonly Expression Test;
+
+    public DoWhileStatement(Statement body, Expression test) : base(Nodes.DoWhileStatement)
     {
-        public readonly Statement Body;
-        public readonly Expression Test;
+        Body = body;
+        Test = test;
+    }
 
-        public DoWhileStatement(Statement body, Expression test) : base(Nodes.DoWhileStatement)
-        {
-            Body = body;
-            Test = test;
-        }
+    public override NodeCollection ChildNodes => new(Body, Test);
 
-        public override NodeCollection ChildNodes => new(Body, Test);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitDoWhileStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitDoWhileStatement(this);
     }
 }

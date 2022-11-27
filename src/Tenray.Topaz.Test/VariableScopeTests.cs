@@ -2,38 +2,38 @@
 using Tenray.Topaz.API;
 using Tenray.Topaz.Options;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class VariableScopeTests
 {
-    public sealed class VariableScopeTests
+    [Test]
+    public void VarScopeLoop()
     {
-        [Test]
-        public void VarScopeLoop()
-        {
-            var engine = new TopazEngine();
-            engine.Options.NoUndefined = true;
-            engine.Options.VarScopeBehavior = VarScopeBehavior.FunctionScope;
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        engine.Options.NoUndefined = true;
+        engine.Options.VarScopeBehavior = VarScopeBehavior.FunctionScope;
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 function equals(a,b) { if (a !== b) throw `${a ?? 'null'} != ${b ?? 'null'}` }
 function f1() { { { { d = 9; equals(d,9) } equals(d,9) } } model.d = d } f1()
 function f1() { { { { var g = 9; equals(g,9) } equals(g,9) } } model.g = g } f1()
 function f2() { { { { let m = 9; equals(m,9) } equals(m,null) } } model.m = m } f2()
 function f3() { { { { const u = 9; equals(u,9) } equals(u,null) } } model.u = u } f3()
 ");
-            Assert.AreEqual(9, model.d);
-            Assert.AreEqual(9, model.g);
-            Assert.AreEqual(null, model.m);
-            Assert.AreEqual(null, model.u);
-        }
+        Assert.AreEqual(9, model.d);
+        Assert.AreEqual(9, model.g);
+        Assert.AreEqual(null, model.m);
+        Assert.AreEqual(null, model.u);
+    }
 
-        [Test]
-        public void ClosureTest()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ClosureTest()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 function makeFunc() {
     var name = 'Mozilla';
     function displayName()
@@ -57,18 +57,18 @@ var add10 = makeAdder(10)
 model.a = add5(2)
 model.b = add10(2)
 ");
-            Assert.AreEqual("Mozilla", model.name);
-            Assert.AreEqual(7, model.a);
-            Assert.AreEqual(12, model.b);
-        }
+        Assert.AreEqual("Mozilla", model.name);
+        Assert.AreEqual(7, model.a);
+        Assert.AreEqual(12, model.b);
+    }
 
-        [Test]
-        public void ClosurePrivateMethods()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ClosurePrivateMethods()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var counter = (function() {
   var privateCounter = 0;
   function changeBy(val) {
@@ -98,18 +98,18 @@ model.b = counter.value()
 counter.decrement();
 model.c = counter.value()
 ");
-            Assert.AreEqual(0, model.a);
-            Assert.AreEqual(2, model.b);
-            Assert.AreEqual(1, model.c);
-        }
+        Assert.AreEqual(0, model.a);
+        Assert.AreEqual(2, model.b);
+        Assert.AreEqual(1, model.c);
+    }
 
-        [Test]
-        public void ClosureScopeChain()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ClosureScopeChain()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var e = 10;
 function sum(a){
   return function(b){
@@ -124,16 +124,16 @@ function sum(a){
 }
 model.a = sum(1)(2)(3)(4)
 ");
-            Assert.AreEqual(20, model.a);
-        }
+        Assert.AreEqual(20, model.a);
+    }
 
-        [Test]
-        public void ClosureScopeChain2()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ClosureScopeChain2()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var e = 10;
 function sum(a){
   return function sum2(b){
@@ -155,16 +155,16 @@ var sum4 = sum3(3);
 var result = sum4(4);
 model.a = result
 ");
-            Assert.AreEqual(20, model.a);
-        }
+        Assert.AreEqual(20, model.a);
+    }
 
-        [Test]
-        public void InvalidateLocalCache1()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void InvalidateLocalCache1()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var a = 1
 {
     model.a1 = a
@@ -172,17 +172,17 @@ var a = 1
     model.a2 = a
 }
 ");
-            Assert.AreEqual(1, model.a1);
-            Assert.AreEqual(2, model.a2);
-        }
+        Assert.AreEqual(1, model.a1);
+        Assert.AreEqual(2, model.a2);
+    }
 
-        [Test]
-        public void InvalidateLocalCache2()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void InvalidateLocalCache2()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var a = 1
 model.a1 = a
 {
@@ -190,17 +190,17 @@ model.a1 = a
     model.a2 = a
 }
 ");
-            Assert.AreEqual(1, model.a1);
-            Assert.AreEqual(2, model.a2);
-        }
+        Assert.AreEqual(1, model.a1);
+        Assert.AreEqual(2, model.a2);
+    }
 
-        [Test]
-        public void InvalidateLocalCache3()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void InvalidateLocalCache3()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 function f1(key) {
     var a = key
     {
@@ -212,19 +212,19 @@ function f1(key) {
 f1(1)
 f1(2)
 ");
-            Assert.AreEqual(1, model.a1);
-            Assert.AreEqual(2, model.b1);
-            Assert.AreEqual(2, model.a2);
-            Assert.AreEqual(3, model.b2);
-        }
+        Assert.AreEqual(1, model.a1);
+        Assert.AreEqual(2, model.b1);
+        Assert.AreEqual(2, model.a2);
+        Assert.AreEqual(3, model.b2);
+    }
 
-        [Test]
-        public void InvalidateLocalCache4()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void InvalidateLocalCache4()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 function f1(key) {
     var a = key
     {
@@ -241,15 +241,14 @@ function f1(key) {
 f1(1)
 f1(2)
 ");
-            Assert.AreEqual(1, model.a1);
-            Assert.AreEqual(2, model.b1);
-            Assert.AreEqual(2, model.a2);
-            Assert.AreEqual(3, model.b2);
+        Assert.AreEqual(1, model.a1);
+        Assert.AreEqual(2, model.b1);
+        Assert.AreEqual(2, model.a2);
+        Assert.AreEqual(3, model.b2);
 
-            Assert.AreEqual(2, model.c1);
-            Assert.AreEqual(2, model.d1);
-            Assert.AreEqual(3, model.c2);
-            Assert.AreEqual(3, model.d2);
-        }
+        Assert.AreEqual(2, model.c1);
+        Assert.AreEqual(2, model.d1);
+        Assert.AreEqual(3, model.c2);
+        Assert.AreEqual(3, model.d2);
     }
 }

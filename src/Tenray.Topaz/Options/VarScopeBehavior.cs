@@ -1,8 +1,7 @@
-﻿namespace Tenray.Topaz.Options
+﻿namespace Tenray.Topaz.Options;
+
+public enum VarScopeBehavior
 {
-    public enum VarScopeBehavior
-    {
-        FunctionScope,
-        DeclarationScope
-    }
+    FunctionScope,
+    DeclarationScope
 }

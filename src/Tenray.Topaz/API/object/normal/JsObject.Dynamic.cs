@@ -9,33 +9,32 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
-namespace Tenray.Topaz.API
+namespace Tenray.Topaz.API;
+
+public partial class JsObject : DynamicObject
 {
-    public partial class JsObject : DynamicObject
+    public override bool TrySetMember(SetMemberBinder binder, object value)
     {
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            SetValue(binder.Name, value);
-            return true;
-        }
+        SetValue(binder.Name, value);
+        return true;
+    }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            return TryGetValue(binder.Name, out result);
-        }
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
+    {
+        return TryGetValue(binder.Name, out result);
+    }
 
-        public override IEnumerable<string> GetDynamicMemberNames()
-        {
-            return GetObjectKeys().Cast<string>();
-        }
+    public override IEnumerable<string> GetDynamicMemberNames()
+    {
+        return GetObjectKeys().Cast<string>();
+    }
 
-        protected static object ConvertJsonElementToJsObject(object value)
-        {
-            if (value == null)
-                return null;
-            if (value is JsonElement jsonElement)
-                return jsonElement.ConvertToJsObject();
-            return value;
-        }
+    protected static object ConvertJsonElementToJsObject(object value)
+    {
+        if (value == null)
+            return null;
+        if (value is JsonElement jsonElement)
+            return jsonElement.ConvertToJsObject();
+        return value;
     }
 }

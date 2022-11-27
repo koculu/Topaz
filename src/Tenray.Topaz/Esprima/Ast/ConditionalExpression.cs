@@ -1,28 +1,27 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ConditionalExpression : Expression
 {
-    public sealed class ConditionalExpression : Expression
+    public readonly Expression Test;
+    public readonly Expression Consequent;
+    public readonly Expression Alternate;
+
+    public ConditionalExpression(
+        Expression test,
+        Expression consequent,
+        Expression alternate) : base(Nodes.ConditionalExpression)
     {
-        public readonly Expression Test;
-        public readonly Expression Consequent;
-        public readonly Expression Alternate;
+        Test = test;
+        Consequent = consequent;
+        Alternate = alternate;
+    }
 
-        public ConditionalExpression(
-            Expression test,
-            Expression consequent,
-            Expression alternate) : base(Nodes.ConditionalExpression)
-        {
-            Test = test;
-            Consequent = consequent;
-            Alternate = alternate;
-        }
+    public override NodeCollection ChildNodes => new(Test, Consequent, Alternate);
 
-        public override NodeCollection ChildNodes => new(Test, Consequent, Alternate);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitConditionalExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitConditionalExpression(this);
     }
 }

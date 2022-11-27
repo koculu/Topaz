@@ -1,20 +1,19 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public abstract class Node
 {
-    public abstract class Node
+    protected Node(Nodes type)
     {
-        protected Node(Nodes type)
-        {
-            Type = type;
-        }
-
-        public readonly Nodes Type;
-        public Range Range;
-        public Location Location;
-
-        public abstract NodeCollection ChildNodes { get; }
-
-        protected internal abstract void Accept(AstVisitor visitor);
+        Type = type;
     }
+
+    public readonly Nodes Type;
+    public Range Range;
+    public Location Location;
+
+    public abstract NodeCollection ChildNodes { get; }
+
+    protected internal abstract void Accept(AstVisitor visitor);
 }

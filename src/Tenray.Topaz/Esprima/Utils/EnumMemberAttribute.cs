@@ -26,27 +26,26 @@
 
 using System;
 
-namespace Esprima.Utils
-{
-    // System.Runtime.Serialization;
+namespace Esprima.Utils;
+
+// System.Runtime.Serialization;
 
 // https://github.com/dotnet/corefx/blob/795957f4e18238ae7688ccab729f1ef8e825ab3a/src/System.Runtime.Serialization.Primitives/src/System/Runtime/Serialization/EnumMemberAttribute.cs
 
-    [AttributeUsage(AttributeTargets.Field)]
-    internal sealed class EnumMemberAttribute : Attribute
+[AttributeUsage(AttributeTargets.Field)]
+internal sealed class EnumMemberAttribute : Attribute
+{
+    private string _value = "";
+
+    public string Value
     {
-        private string _value = "";
-
-        public string Value
+        get => _value;
+        set
         {
-            get => _value;
-            set
-            {
-                _value = value;
-                IsValueSetExplicitly = true;
-            }
+            _value = value;
+            IsValueSetExplicitly = true;
         }
-
-        public bool IsValueSetExplicitly { get; set; }
     }
+
+    public bool IsValueSetExplicitly { get; set; }
 }

@@ -1,18 +1,17 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class Import : Expression
 {
-    public sealed class Import : Expression
+    public Import() : base(Nodes.Import)
     {
-        public Import() : base(Nodes.Import)
-        {
-        }
+    }
 
-        public override NodeCollection ChildNodes => NodeCollection.Empty;
+    public override NodeCollection ChildNodes => NodeCollection.Empty;
 
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitImport(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitImport(this);
     }
 }

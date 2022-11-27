@@ -1,23 +1,22 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class AssignmentPattern : Expression
 {
-    public sealed class AssignmentPattern : Expression
+    public readonly Expression Left;
+    public Expression Right;
+
+    public AssignmentPattern(Expression left, Expression right) : base(Nodes.AssignmentPattern)
     {
-        public readonly Expression Left;
-        public Expression Right;
+        Left = left;
+        Right = right;
+    }
 
-        public AssignmentPattern(Expression left, Expression right) : base(Nodes.AssignmentPattern)
-        {
-            Left = left;
-            Right = right;
-        }
+    public override NodeCollection ChildNodes => new(Left, Right);
 
-        public override NodeCollection ChildNodes => new(Left, Right);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitAssignmentPattern(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitAssignmentPattern(this);
     }
 }

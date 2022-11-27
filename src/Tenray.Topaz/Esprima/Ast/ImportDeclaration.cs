@@ -1,29 +1,28 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ImportDeclaration : Declaration
 {
-    public sealed class ImportDeclaration : Declaration
+    private readonly NodeList<ImportDeclarationSpecifier> _specifiers;
+
+    public readonly Literal Source;
+
+    public ImportDeclaration(
+        in NodeList<ImportDeclarationSpecifier> specifiers,
+        Literal source)
+        : base(Nodes.ImportDeclaration)
     {
-        private readonly NodeList<ImportDeclarationSpecifier> _specifiers;
+        _specifiers = specifiers;
+        Source = source;
+    }
 
-        public readonly Literal Source;
+    public ref readonly NodeList<ImportDeclarationSpecifier> Specifiers => ref _specifiers;
 
-        public ImportDeclaration(
-            in NodeList<ImportDeclarationSpecifier> specifiers,
-            Literal source)
-            : base(Nodes.ImportDeclaration)
-        {
-            _specifiers = specifiers;
-            Source = source;
-        }
+    public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(_specifiers, Source);
 
-        public ref readonly NodeList<ImportDeclarationSpecifier> Specifiers => ref _specifiers;
-
-        public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(_specifiers, Source);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitImportDeclaration(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitImportDeclaration(this);
     }
 }

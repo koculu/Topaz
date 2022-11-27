@@ -1,31 +1,30 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class CallExpression : Expression
 {
-    public sealed class CallExpression : Expression
+    private readonly NodeList<Expression> _arguments;
+
+    public readonly Expression Callee;
+    public readonly bool Optional;
+
+    public CallExpression(
+        Expression callee,
+        in NodeList<Expression> args,
+        bool optional) : base(Nodes.CallExpression)
     {
-        private readonly NodeList<Expression> _arguments;
+        Callee = callee;
+        _arguments = args;
+        Optional = optional;
+    }
 
-        public readonly Expression Callee;
-        public readonly bool Optional;
+    public ref readonly NodeList<Expression> Arguments => ref _arguments;
 
-        public CallExpression(
-            Expression callee,
-            in NodeList<Expression> args,
-            bool optional) : base(Nodes.CallExpression)
-        {
-            Callee = callee;
-            _arguments = args;
-            Optional = optional;
-        }
+    public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Callee, _arguments);
 
-        public ref readonly NodeList<Expression> Arguments => ref _arguments;
-
-        public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Callee, _arguments);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitCallExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitCallExpression(this);
     }
 }

@@ -1,23 +1,22 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class YieldExpression : Expression
 {
-    public sealed class YieldExpression : Expression
+    public readonly Expression? Argument;
+    public readonly bool Delegate;
+
+    public YieldExpression(Expression? argument, bool delgate) : base(Nodes.YieldExpression)
     {
-        public readonly Expression? Argument;
-        public readonly bool Delegate;
+        Argument = argument;
+        Delegate = delgate;
+    }
 
-        public YieldExpression(Expression? argument, bool delgate) : base(Nodes.YieldExpression)
-        {
-            Argument = argument;
-            Delegate = delgate;
-        }
+    public override NodeCollection ChildNodes => new(Argument);
 
-        public override NodeCollection ChildNodes => new(Argument);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitYieldExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitYieldExpression(this);
     }
 }

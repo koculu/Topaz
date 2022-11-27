@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+public sealed class DefaultMemberAccessPolicy : IMemberAccessPolicy
 {
-    public sealed class DefaultMemberAccessPolicy : IMemberAccessPolicy
+    readonly TopazEngine TopazEngine;
+
+    static readonly HashSet<string> TypeMemberWhiteList = new ()
     {
-        readonly TopazEngine TopazEngine;
+        "IsClass",
+        "FullName",
+        "Namespace",
+        "ToString",
+        "IsEnum",
+        "IsValueType",
+        "IsPrimitive",
+        "GetTypeCode",
+        "GetEnumName",
+        "GetEnumNames",
+        "GetEnumValues",
+        "IsAssignableFrom",
+        "IsAssignableTo",
+        "IsSubclassOf"
+    };
 
-        static readonly HashSet<string> TypeMemberWhiteList = new ()
-        {
-            "IsClass",
-            "FullName",
-            "Namespace",
-            "ToString",
-            "IsEnum",
-            "IsValueType",
-            "IsPrimitive",
-            "GetTypeCode",
-            "GetEnumName",
-            "GetEnumNames",
-            "GetEnumValues",
-            "IsAssignableFrom",
-            "IsAssignableTo",
-            "IsSubclassOf"
-        };
+    public DefaultMemberAccessPolicy(TopazEngine topazEngine)
+    {
+        TopazEngine = topazEngine;
+    }
 
-        public DefaultMemberAccessPolicy(TopazEngine topazEngine)
-        {
-            TopazEngine = topazEngine;
-        }
-
-        public bool IsObjectMemberAccessAllowed(object obj, string memberName)
-        {
-            if (obj == null || memberName == null)
-                return true;
-            var enableReflection = TopazEngine.Options.SecurityPolicy
-                .HasFlag(Options.SecurityPolicy.EnableReflection);
-            if (enableReflection)
-                return true;
-            if (obj is Type)
-            {
-                return TypeMemberWhiteList.Contains(memberName);
-            }
+    public bool IsObjectMemberAccessAllowed(object obj, string memberName)
+    {
+        if (obj == null || memberName == null)
             return true;
+        var enableReflection = TopazEngine.Options.SecurityPolicy
+            .HasFlag(Options.SecurityPolicy.EnableReflection);
+        if (enableReflection)
+            return true;
+        if (obj is Type)
+        {
+            return TypeMemberWhiteList.Contains(memberName);
         }
+        return true;
     }
 }

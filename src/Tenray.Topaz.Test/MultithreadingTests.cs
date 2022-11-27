@@ -3,19 +3,19 @@ using System;
 using System.Threading.Tasks;
 using Tenray.Topaz.API;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class MultithreadingTests
 {
-    public sealed class MultithreadingTests
+    [Test]
+    public void TestParallelLoop()
     {
-        [Test]
-        public void TestParallelLoop()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new ConcurrentJsObject();
-            engine.AddType(typeof(Parallel), "Parallel");
-            engine.AddType(typeof(Action), "Action");
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        dynamic model = new ConcurrentJsObject();
+        engine.AddType(typeof(Parallel), "Parallel");
+        engine.AddType(typeof(Action), "Action");
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 var g = 0;
 function f1(i) {
 ++g;
@@ -28,8 +28,7 @@ Parallel.For(0, 10000, (x) => q = x)
 model.g = g
 model.q = q
 ");
-            Assert.IsTrue(100 < model.g);
-            Assert.IsTrue(100 < model.q);
-        }
+        Assert.IsTrue(100 < model.g);
+        Assert.IsTrue(100 < model.q);
     }
 }

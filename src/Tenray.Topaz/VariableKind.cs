@@ -1,9 +1,8 @@
-﻿namespace Tenray.Topaz
+﻿namespace Tenray.Topaz;
+
+public enum VariableKind
 {
-    public enum VariableKind
-    {
-        Var = 0,
-        Let = 1,
-        Const = 2
-    }
+    Var = 0,
+    Let = 1,
+    Const = 2
 }

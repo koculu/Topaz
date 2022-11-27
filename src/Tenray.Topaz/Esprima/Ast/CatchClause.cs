@@ -1,24 +1,23 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class CatchClause : Statement
 {
-    public sealed class CatchClause : Statement
+    public readonly Expression? Param; // BindingIdentifier | BindingPattern | null;
+    public readonly BlockStatement Body;
+
+    public CatchClause(Expression? param, BlockStatement body) :
+        base(Nodes.CatchClause)
     {
-        public readonly Expression? Param; // BindingIdentifier | BindingPattern | null;
-        public readonly BlockStatement Body;
+        Param = param;
+        Body = body;
+    }
 
-        public CatchClause(Expression? param, BlockStatement body) :
-            base(Nodes.CatchClause)
-        {
-            Param = param;
-            Body = body;
-        }
+    public override NodeCollection ChildNodes => new(Param, Body);
 
-        public override NodeCollection ChildNodes => new(Param, Body);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitCatchClause(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitCatchClause(this);
     }
 }

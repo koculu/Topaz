@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
-namespace Tenray.Topaz.Expressions
+namespace Tenray.Topaz.Expressions;
+
+internal static partial class UpdateExpressionHandler
 {
-    internal static partial class UpdateExpressionHandler
+    internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
-        {
-            return await UnaryExpressionHandler.ExecuteAsync(scriptExecutor, expression, token);
-        }
+        return await UnaryExpressionHandler.ExecuteAsync(scriptExecutor, expression, token);
     }
 }

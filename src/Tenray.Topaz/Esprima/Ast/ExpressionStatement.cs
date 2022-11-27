@@ -1,21 +1,20 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public class ExpressionStatement : Statement
 {
-    public class ExpressionStatement : Statement
+    public readonly Expression Expression;
+
+    public ExpressionStatement(Expression expression) : base(Nodes.ExpressionStatement)
     {
-        public readonly Expression Expression;
+        Expression = expression;
+    }
 
-        public ExpressionStatement(Expression expression) : base(Nodes.ExpressionStatement)
-        {
-            Expression = expression;
-        }
+    public override NodeCollection ChildNodes => new(Expression);
 
-        public override NodeCollection ChildNodes => new(Expression);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitExpressionStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitExpressionStatement(this);
     }
 }

@@ -1,21 +1,20 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ThrowStatement : Statement
 {
-    public sealed class ThrowStatement : Statement
+    public readonly Expression Argument;
+
+    public ThrowStatement(Expression argument) : base(Nodes.ThrowStatement)
     {
-        public readonly Expression Argument;
+        Argument = argument;
+    }
 
-        public ThrowStatement(Expression argument) : base(Nodes.ThrowStatement)
-        {
-            Argument = argument;
-        }
+    public override NodeCollection ChildNodes => new(Argument);
 
-        public override NodeCollection ChildNodes => new(Argument);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitThrowStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitThrowStatement(this);
     }
 }

@@ -1,23 +1,22 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class TaggedTemplateExpression : Expression
 {
-    public sealed class TaggedTemplateExpression : Expression
+    public readonly Expression Tag;
+    public readonly TemplateLiteral Quasi;
+
+    public TaggedTemplateExpression(Expression tag, TemplateLiteral quasi) : base(Nodes.TaggedTemplateExpression)
     {
-        public readonly Expression Tag;
-        public readonly TemplateLiteral Quasi;
+        Tag = tag;
+        Quasi = quasi;
+    }
 
-        public TaggedTemplateExpression(Expression tag, TemplateLiteral quasi) : base(Nodes.TaggedTemplateExpression)
-        {
-            Tag = tag;
-            Quasi = quasi;
-        }
+    public override NodeCollection ChildNodes => new(Tag, Quasi);
 
-        public override NodeCollection ChildNodes => new(Tag, Quasi);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitTaggedTemplateExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitTaggedTemplateExpression(this);
     }
 }

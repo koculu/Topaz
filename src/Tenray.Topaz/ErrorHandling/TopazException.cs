@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Tenray.Topaz
+namespace Tenray.Topaz;
+
+public sealed class TopazException : Exception
 {
-    public sealed class TopazException : Exception
+    public TopazException(string message) : base(message)
     {
-        public TopazException(string message) : base(message)
-        {
-        }
     }
 }

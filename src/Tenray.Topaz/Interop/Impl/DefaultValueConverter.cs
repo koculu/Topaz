@@ -1,139 +1,138 @@
 ﻿using System;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+public sealed class DefaultValueConverter : IValueConverter
 {
-    public sealed class DefaultValueConverter : IValueConverter
+    public bool ConvertStringsToEnum { get; }
+
+    public DefaultValueConverter(bool convertStringsToEnum = true)
     {
-        public bool ConvertStringsToEnum { get; }
+        ConvertStringsToEnum = convertStringsToEnum;
+    }
 
-        public DefaultValueConverter(bool convertStringsToEnum = true)
+    public bool IsValueAssignableTo(object value, Type targetType)
+    {
+        if (value == null)
         {
-            ConvertStringsToEnum = convertStringsToEnum;
+            return targetType.IsClass;
         }
 
-        public bool IsValueAssignableTo(object value, Type targetType)
+        var argType = value.GetType();
+        if (targetType == typeof(object) ||
+            targetType == argType ||
+            targetType.IsAssignableFrom(argType))
         {
-            if (value == null)
-            {
-                return targetType.IsClass;
-            }
+            return true;
+        }
+        return false;
+    }
 
-            var argType = value.GetType();
-            if (targetType == typeof(object) ||
-                targetType == argType ||
-                targetType.IsAssignableFrom(argType))
-            {
-                return true;
-            }
-            return false;
+    public bool TryConvertValue(object value, Type targetType, out object convertedValue)
+    {
+        if (value == Undefined.Value)
+        {
+            value = null;
         }
 
-        public bool TryConvertValue(object value, Type targetType, out object convertedValue)
+        if (value == null)
         {
-            if (value == Undefined.Value)
-            {
-                value = null;
-            }
+            convertedValue = null;
+            return targetType.IsClass;
+        }
 
-            if (value == null)
-            {
-                convertedValue = null;
-                return targetType.IsClass;
-            }
+        var argType = value.GetType();
+        if (argType == targetType)
+        {
+            convertedValue = value;
+            return true;
+        }
 
-            var argType = value.GetType();
-            if (argType == targetType)
+        if (argType == typeof(double))
+        {
+            if (targetType == typeof(int))
             {
-                convertedValue = value;
+                convertedValue = (int)Math.Round((double)value);
                 return true;
             }
-
-            if (argType == typeof(double))
+            if (targetType == typeof(long))
             {
-                if (targetType == typeof(int))
-                {
-                    convertedValue = (int)Math.Round((double)value);
-                    return true;
-                }
-                if (targetType == typeof(long))
-                {
-                    convertedValue = (long)Math.Round((double)value);
-                    return true;
-                }
-            } 
-            else if (argType == typeof(int))
-            {
-                if (targetType == typeof(long))
-                {
-                    convertedValue = (long)(int)value;
-                    return true;
-                }
-                if (targetType == typeof(double))
-                {
-                    convertedValue = (double)(int)value;
-                    return true;
-                }
-            }
-            else if (argType == typeof(long))
-            {
-                if (targetType == typeof(int))
-                {
-                    convertedValue = (int)(long)value;
-                    return true;
-                }
-                if (targetType == typeof(double))
-                {
-                    convertedValue = (double)(long)value;
-                    return true;
-                }
-            }
-
-            if (targetType == typeof(object) ||
-                targetType.IsAssignableFrom(argType))
-            {
-                convertedValue = value;
+                convertedValue = (long)Math.Round((double)value);
                 return true;
             }
-
-            try
+        } 
+        else if (argType == typeof(int))
+        {
+            if (targetType == typeof(long))
             {
-                if (value is ITypeProxy typeProxy && typeProxy.ProxiedType != null)
-                {
-                    if (targetType == typeof(Type))
-                    {
-                        convertedValue = typeProxy.ProxiedType;
-                        return true;
-                    }
-                    else
-                    {
-                        convertedValue = null;
-                        return false;
-                    }
-                }
+                convertedValue = (long)(int)value;
+                return true;
+            }
+            if (targetType == typeof(double))
+            {
+                convertedValue = (double)(int)value;
+                return true;
+            }
+        }
+        else if (argType == typeof(long))
+        {
+            if (targetType == typeof(int))
+            {
+                convertedValue = (int)(long)value;
+                return true;
+            }
+            if (targetType == typeof(double))
+            {
+                convertedValue = (double)(long)value;
+                return true;
+            }
+        }
 
-                if (ConvertStringsToEnum &&
-                    targetType.IsEnum &&
-                    value is string s &&
-                    Enum.TryParse(targetType, s, true, out var enumValue))
+        if (targetType == typeof(object) ||
+            targetType.IsAssignableFrom(argType))
+        {
+            convertedValue = value;
+            return true;
+        }
+
+        try
+        {
+            if (value is ITypeProxy typeProxy && typeProxy.ProxiedType != null)
+            {
+                if (targetType == typeof(Type))
                 {
-                    convertedValue = enumValue;
+                    convertedValue = typeProxy.ProxiedType;
                     return true;
                 }
-
-                if (value is not IConvertible convertible)
+                else
                 {
                     convertedValue = null;
                     return false;
                 }
-                convertedValue = Convert.ChangeType(value, targetType);
+            }
+
+            if (ConvertStringsToEnum &&
+                targetType.IsEnum &&
+                value is string s &&
+                Enum.TryParse(targetType, s, true, out var enumValue))
+            {
+                convertedValue = enumValue;
                 return true;
             }
-            catch (Exception)
+
+            if (value is not IConvertible convertible)
             {
-                // Do nothing
+                convertedValue = null;
+                return false;
             }
-            convertedValue = null;
-            return false;
+            convertedValue = Convert.ChangeType(value, targetType);
+            return true;
         }
+        catch (Exception)
+        {
+            // Do nothing
+        }
+        convertedValue = null;
+        return false;
     }
 }

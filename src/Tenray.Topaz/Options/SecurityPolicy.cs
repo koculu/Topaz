@@ -1,24 +1,23 @@
 ﻿using System;
 
-namespace Tenray.Topaz.Options
+namespace Tenray.Topaz.Options;
+
+/// <summary>
+/// Security Flags.
+/// </summary>
+[Flags]
+public enum SecurityPolicy
 {
     /// <summary>
-    /// Security Flags.
+    /// Default and secure. Script cannot process
+    /// types in the System.Reflection namespace.
     /// </summary>
-    [Flags]
-    public enum SecurityPolicy
-    {
-        /// <summary>
-        /// Default and secure. Script cannot process
-        /// types in the System.Reflection namespace.
-        /// </summary>
-        Default,
+    Default,
 
-        /// <summary>
-        /// Reflection API is allowed.
-        /// Script can access everything.
-        /// Use it with caution.
-        /// </summary>
-        EnableReflection
-    }
+    /// <summary>
+    /// Reflection API is allowed.
+    /// Script can access everything.
+    /// Use it with caution.
+    /// </summary>
+    EnableReflection
 }

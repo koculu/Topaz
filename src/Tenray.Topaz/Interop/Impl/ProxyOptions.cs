@@ -1,21 +1,20 @@
 ﻿using System;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+[Flags]
+public enum ProxyOptions
 {
-    [Flags]
-    public enum ProxyOptions
-    {
-        None,
-        AllowConstructor,
-        AllowMethod,
-        AllowField,
-        AllowProperty,
-        AutomaticTypeConversion,
-        Default = 
-            AllowMethod |
-            AllowField |
-            AllowProperty |
-            AllowConstructor |
-            AutomaticTypeConversion
-    }
+    None,
+    AllowConstructor,
+    AllowMethod,
+    AllowField,
+    AllowProperty,
+    AutomaticTypeConversion,
+    Default = 
+        AllowMethod |
+        AllowField |
+        AllowProperty |
+        AllowConstructor |
+        AutomaticTypeConversion
 }

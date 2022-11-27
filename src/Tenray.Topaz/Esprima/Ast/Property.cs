@@ -1,32 +1,31 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class Property : ClassProperty
 {
-    public sealed class Property : ClassProperty
+    public readonly bool Method;
+    public readonly bool Shorthand;
+
+    public Property(
+        PropertyKind kind,
+        Expression key,
+        bool computed,
+        Expression value,
+        bool method,
+        bool shorthand)
+        : base(Nodes.Property)
     {
-        public readonly bool Method;
-        public readonly bool Shorthand;
+        Key = key;
+        Computed = computed;
+        Value = value;
+        Kind = kind;
+        Method = method;
+        Shorthand = shorthand;
+    }
 
-        public Property(
-            PropertyKind kind,
-            Expression key,
-            bool computed,
-            Expression value,
-            bool method,
-            bool shorthand)
-            : base(Nodes.Property)
-        {
-            Key = key;
-            Computed = computed;
-            Value = value;
-            Kind = kind;
-            Method = method;
-            Shorthand = shorthand;
-        }
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitProperty(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitProperty(this);
     }
 }

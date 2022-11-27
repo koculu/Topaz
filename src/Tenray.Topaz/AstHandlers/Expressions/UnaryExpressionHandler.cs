@@ -4,166 +4,165 @@ using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.Interop;
 
-namespace Tenray.Topaz.Expressions
+namespace Tenray.Topaz.Expressions;
+
+internal static partial class UnaryExpressionHandler
 {
-    internal static partial class UnaryExpressionHandler
+    internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
     {
-        internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
+        var unaryExpr = (UnaryExpression)expression;
+        var expr = scriptExecutor.ExecuteStatement(unaryExpr.Argument, token);
+        var value = scriptExecutor.GetValue(expr);
+        var unaryOperator = unaryExpr.Operator;
+        if (unaryOperator == UnaryOperator.Delete)
         {
-            var unaryExpr = (UnaryExpression)expression;
-            var expr = scriptExecutor.ExecuteStatement(unaryExpr.Argument, token);
-            var value = scriptExecutor.GetValue(expr);
-            var unaryOperator = unaryExpr.Operator;
-            if (unaryOperator == UnaryOperator.Delete)
-            {
-                scriptExecutor.SetReferenceValue(expr, scriptExecutor.GetNullOrUndefined());
-                return scriptExecutor.GetNullOrUndefined();
-            }
-            var newValue = ExecuteUnaryOperator(scriptExecutor, unaryOperator, value);
-            if (unaryOperator == UnaryOperator.Increment ||
-                unaryOperator == UnaryOperator.Decrement ||
-                unaryOperator == UnaryOperator.Delete)
-                scriptExecutor.SetReferenceValue(expr, newValue);
-            return unaryExpr.Prefix ? newValue : value;
+            scriptExecutor.SetReferenceValue(expr, scriptExecutor.GetNullOrUndefined());
+            return scriptExecutor.GetNullOrUndefined();
+        }
+        var newValue = ExecuteUnaryOperator(scriptExecutor, unaryOperator, value);
+        if (unaryOperator == UnaryOperator.Increment ||
+            unaryOperator == UnaryOperator.Decrement ||
+            unaryOperator == UnaryOperator.Delete)
+            scriptExecutor.SetReferenceValue(expr, newValue);
+        return unaryExpr.Prefix ? newValue : value;
+    }
+
+    private static object ExecuteUnaryOperator(
+        ScriptExecutor scriptExecutor,
+        UnaryOperator unaryOperator,
+        object value)
+    {
+        if (unaryOperator == UnaryOperator.TypeOf)
+        {
+            return ProcessTypeof(value);
+        }
+        if (unaryOperator == UnaryOperator.Void)
+            return scriptExecutor.GetNullOrUndefined();
+        if (unaryOperator == UnaryOperator.LogicalNot)
+        {
+            return !JavascriptTypeUtility.IsObjectTrue(value);
         }
 
-        private static object ExecuteUnaryOperator(
-            ScriptExecutor scriptExecutor,
-            UnaryOperator unaryOperator,
-            object value)
+        // Try to avoid dynamic calls for known types
+        if (value is double d1)
         {
-            if (unaryOperator == UnaryOperator.TypeOf)
-            {
-                return ProcessTypeof(value);
-            }
-            if (unaryOperator == UnaryOperator.Void)
-                return scriptExecutor.GetNullOrUndefined();
-            if (unaryOperator == UnaryOperator.LogicalNot)
-            {
-                return !JavascriptTypeUtility.IsObjectTrue(value);
-            }
+            return ProcessUnaryOpDouble(unaryOperator, d1);
+        }
+        else if (value is long d2)
+        {
+            var convert =
+                scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
+            return convert ?
+                ProcessUnaryOpDouble(unaryOperator, d2) :
+                ProcessUnaryOpLong(unaryOperator, d2);
+        }
+        else if (value is int d3)
+        {
 
-            // Try to avoid dynamic calls for known types
-            if (value is double d1)
-            {
-                return ProcessUnaryOpDouble(unaryOperator, d1);
-            }
-            else if (value is long d2)
-            {
-                var convert =
-                    scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
-                return convert ?
-                    ProcessUnaryOpDouble(unaryOperator, d2) :
-                    ProcessUnaryOpLong(unaryOperator, d2);
-            }
-            else if (value is int d3)
-            {
-
-                var convert =
-                    scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
-                return convert ?
-                    ProcessUnaryOpDouble(unaryOperator, d3) :
-                    ProcessUnaryOpInt(unaryOperator, d3);
-            }
-
-            var isNumeric = JavascriptTypeUtility.IsNumeric(value);
-            if (value is bool b)
-            {
-                value = b ? 1 : 0;
-                isNumeric = true;
-            }
-            if (!isNumeric)
-                return double.NaN;
-
-            dynamic dynValue = value;
-            return unaryOperator switch
-            {
-                UnaryOperator.Plus => dynValue,
-                UnaryOperator.Minus => -dynValue,
-                UnaryOperator.BitwiseNot => ~(long)dynValue,
-                UnaryOperator.Increment => ++dynValue,
-                UnaryOperator.Decrement => --dynValue,
-                _ => null,
-            };
+            var convert =
+                scriptExecutor.Options.NumbersAreConvertedToDoubleInArithmeticOperations;
+            return convert ?
+                ProcessUnaryOpDouble(unaryOperator, d3) :
+                ProcessUnaryOpInt(unaryOperator, d3);
         }
 
-        private static object ProcessTypeof(object value)
+        var isNumeric = JavascriptTypeUtility.IsNumeric(value);
+        if (value is bool b)
         {
-            // https://262.ecma-international.org/5.1/#sec-10.6
-            if (value == null)
-                return "object";
-            if (value is Undefined)
-                return value.ToString();
-            if (value is bool)
-                return "boolean";
-            if (JavascriptTypeUtility.IsNumeric(value))
-                return "number";
-            if (value is string)
-                return "string";
-            if (value is TopazFunction ||
-                value is IInvokable || 
-                value is Delegate)
-                return "function";
+            value = b ? 1 : 0;
+            isNumeric = true;
+        }
+        if (!isNumeric)
+            return double.NaN;
+
+        dynamic dynValue = value;
+        return unaryOperator switch
+        {
+            UnaryOperator.Plus => dynValue,
+            UnaryOperator.Minus => -dynValue,
+            UnaryOperator.BitwiseNot => ~(long)dynValue,
+            UnaryOperator.Increment => ++dynValue,
+            UnaryOperator.Decrement => --dynValue,
+            _ => null,
+        };
+    }
+
+    private static object ProcessTypeof(object value)
+    {
+        // https://262.ecma-international.org/5.1/#sec-10.6
+        if (value == null)
             return "object";
-        }
+        if (value is Undefined)
+            return value.ToString();
+        if (value is bool)
+            return "boolean";
+        if (JavascriptTypeUtility.IsNumeric(value))
+            return "number";
+        if (value is string)
+            return "string";
+        if (value is TopazFunction ||
+            value is IInvokable || 
+            value is Delegate)
+            return "function";
+        return "object";
+    }
 
-        private static object ProcessUnaryOpDouble(UnaryOperator unaryOperator, double d1)
+    private static object ProcessUnaryOpDouble(UnaryOperator unaryOperator, double d1)
+    {
+        return unaryOperator switch
         {
-            return unaryOperator switch
-            {
-                UnaryOperator.Plus => d1,
-                UnaryOperator.Minus => -d1,
-                UnaryOperator.BitwiseNot => ~(long)d1,
-                UnaryOperator.Increment => ++d1,
-                UnaryOperator.Decrement => --d1,
-                _ => null,
-            };
-        }
+            UnaryOperator.Plus => d1,
+            UnaryOperator.Minus => -d1,
+            UnaryOperator.BitwiseNot => ~(long)d1,
+            UnaryOperator.Increment => ++d1,
+            UnaryOperator.Decrement => --d1,
+            _ => null,
+        };
+    }
 
-        private static object ProcessUnaryOpLong(UnaryOperator unaryOperator, long d1)
+    private static object ProcessUnaryOpLong(UnaryOperator unaryOperator, long d1)
+    {
+        try
         {
-            try
+            checked
             {
-                checked
+                return unaryOperator switch
                 {
-                    return unaryOperator switch
-                    {
-                        UnaryOperator.Plus => d1,
-                        UnaryOperator.Minus => -d1,
-                        UnaryOperator.BitwiseNot => ~d1,
-                        UnaryOperator.Increment => ++d1,
-                        UnaryOperator.Decrement => --d1,
-                        _ => null,
-                    };
-                }
-            }
-            catch (OverflowException)
-            {
-                return ProcessUnaryOpDouble(unaryOperator, d1);
+                    UnaryOperator.Plus => d1,
+                    UnaryOperator.Minus => -d1,
+                    UnaryOperator.BitwiseNot => ~d1,
+                    UnaryOperator.Increment => ++d1,
+                    UnaryOperator.Decrement => --d1,
+                    _ => null,
+                };
             }
         }
-
-        private static object ProcessUnaryOpInt(UnaryOperator unaryOperator, int d1)
+        catch (OverflowException)
         {
-            try
+            return ProcessUnaryOpDouble(unaryOperator, d1);
+        }
+    }
+
+    private static object ProcessUnaryOpInt(UnaryOperator unaryOperator, int d1)
+    {
+        try
+        {
+            checked
             {
-                checked
+                return unaryOperator switch
                 {
-                    return unaryOperator switch
-                    {
-                        UnaryOperator.Plus => d1,
-                        UnaryOperator.Minus => -d1,
-                        UnaryOperator.BitwiseNot => ~d1,
-                        UnaryOperator.Increment => ++d1,
-                        UnaryOperator.Decrement => --d1,
-                        _ => null,
-                    };
-                }
+                    UnaryOperator.Plus => d1,
+                    UnaryOperator.Minus => -d1,
+                    UnaryOperator.BitwiseNot => ~d1,
+                    UnaryOperator.Increment => ++d1,
+                    UnaryOperator.Decrement => --d1,
+                    _ => null,
+                };
             }
-            catch (OverflowException)
-            {
-                return ProcessUnaryOpLong(unaryOperator, d1);
-            }
+        }
+        catch (OverflowException)
+        {
+            return ProcessUnaryOpLong(unaryOperator, d1);
         }
     }
 }

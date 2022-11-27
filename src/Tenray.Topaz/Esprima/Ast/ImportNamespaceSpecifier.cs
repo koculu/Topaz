@@ -1,22 +1,21 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ImportNamespaceSpecifier : ImportDeclarationSpecifier
 {
-    public sealed class ImportNamespaceSpecifier : ImportDeclarationSpecifier
+    public new readonly Identifier Local;
+    protected override Identifier LocalId => Local;
+
+    public ImportNamespaceSpecifier(Identifier local) : base(Nodes.ImportNamespaceSpecifier)
     {
-        public new readonly Identifier Local;
-        protected override Identifier LocalId => Local;
+        Local = local;
+    }
 
-        public ImportNamespaceSpecifier(Identifier local) : base(Nodes.ImportNamespaceSpecifier)
-        {
-            Local = local;
-        }
+    public override NodeCollection ChildNodes => new(Local);
 
-        public override NodeCollection ChildNodes => new(Local);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitImportNamespaceSpecifier(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitImportNamespaceSpecifier(this);
     }
 }

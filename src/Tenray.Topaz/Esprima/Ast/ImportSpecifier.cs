@@ -1,25 +1,24 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ImportSpecifier : ImportDeclarationSpecifier
 {
-    public sealed class ImportSpecifier : ImportDeclarationSpecifier
+    public new readonly Identifier Local;
+    protected override Identifier LocalId => Local;
+
+    public readonly Identifier Imported;
+
+    public ImportSpecifier(Identifier local, Identifier imported) : base(Nodes.ImportSpecifier)
     {
-        public new readonly Identifier Local;
-        protected override Identifier LocalId => Local;
+        Local = local;
+        Imported = imported;
+    }
 
-        public readonly Identifier Imported;
+    public override NodeCollection ChildNodes => new(Local, Imported);
 
-        public ImportSpecifier(Identifier local, Identifier imported) : base(Nodes.ImportSpecifier)
-        {
-            Local = local;
-            Imported = imported;
-        }
-
-        public override NodeCollection ChildNodes => new(Local, Imported);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitImportSpecifier(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitImportSpecifier(this);
     }
 }

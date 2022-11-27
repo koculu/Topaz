@@ -1,22 +1,21 @@
 ﻿using System;
 
-namespace Esprima
+namespace Esprima;
+
+public enum CommentType
 {
-    public enum CommentType
-    {
-        Block,
-        Line
-    }
+    Block,
+    Line
+}
 
-    public sealed class Comment
-    {
-        public CommentType Type;
-        public string? Value;
+public sealed class Comment
+{
+    public CommentType Type;
+    public string? Value;
 
-        public bool MultiLine;
-        public int[] Slice = Array.Empty<int>();
-        public int Start;
-        public int End;
-        public SourceLocation? Loc;
-    }
+    public bool MultiLine;
+    public int[] Slice = Array.Empty<int>();
+    public int Start;
+    public int End;
+    public SourceLocation? Loc;
 }

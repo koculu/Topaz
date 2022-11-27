@@ -1,52 +1,52 @@
 ﻿using NUnit.Framework;
 using Tenray.Topaz.API;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class ForLoopsTests
 {
-    public sealed class ForLoopsTests
+    [Test]
+    public void ForInLoop()
     {
-        [Test]
-        public void ForInLoop()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let items = [1, 2, 3]
 let index = 3
 for (const index in items) {
     model[index] = items[index]
 }
 ");
-            Assert.AreEqual(1, model["0"]);
-            Assert.AreEqual(2, model["1"]);
-            Assert.AreEqual(3, model["2"]);
-        }
+        Assert.AreEqual(1, model["0"]);
+        Assert.AreEqual(2, model["1"]);
+        Assert.AreEqual(3, model["2"]);
+    }
 
-        [Test]
-        public void ForOfLoop()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ForOfLoop()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let items = [51, 22, 33]
 for (const item of items) {
     model[item] = item
 }
 ");
-            Assert.AreEqual(51, model["51"]);
-            Assert.AreEqual(22, model["22"]);
-            Assert.AreEqual(33, model["33"]);
-        }
+        Assert.AreEqual(51, model["51"]);
+        Assert.AreEqual(22, model["22"]);
+        Assert.AreEqual(33, model["33"]);
+    }
 
-        [Test]
-        public void ForLoopConstVarDef()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void ForLoopConstVarDef()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let items = [1, 2, 3]
 let index = 3
 for (const index in items) {
@@ -60,9 +60,8 @@ for (var i = 0 ; i < 3; ++i) {
     const a = 3
 }
 ");
-            Assert.AreEqual(1, model["0"]);
-            Assert.AreEqual(2, model["1"]);
-            Assert.AreEqual(3, model["2"]);
-        }
+        Assert.AreEqual(1, model["0"]);
+        Assert.AreEqual(2, model["1"]);
+        Assert.AreEqual(3, model["2"]);
     }
 }

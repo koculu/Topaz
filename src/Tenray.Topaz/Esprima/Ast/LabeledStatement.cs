@@ -1,24 +1,23 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class LabeledStatement : Statement
 {
-    public sealed class LabeledStatement : Statement
+    public readonly Identifier Label;
+    public readonly Statement Body;
+
+    public LabeledStatement(Identifier label, Statement body) : base(Nodes.LabeledStatement)
     {
-        public readonly Identifier Label;
-        public readonly Statement Body;
+        Label = label;
+        Body = body;
+        body.LabelSet = label;
+    }
 
-        public LabeledStatement(Identifier label, Statement body) : base(Nodes.LabeledStatement)
-        {
-            Label = label;
-            Body = body;
-            body.LabelSet = label;
-        }
+    public override NodeCollection ChildNodes => new(Label, Body);
 
-        public override NodeCollection ChildNodes => new(Label, Body);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitLabeledStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitLabeledStatement(this);
     }
 }

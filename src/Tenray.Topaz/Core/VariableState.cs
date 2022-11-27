@@ -1,8 +1,7 @@
-﻿namespace Tenray.Topaz.Core
+﻿namespace Tenray.Topaz.Core;
+
+internal enum VariableState
 {
-    internal enum VariableState
-    {
-        None,
-        Captured
-    }
+    None,
+    Captured
 }

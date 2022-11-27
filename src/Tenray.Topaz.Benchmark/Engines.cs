@@ -1,9 +1,8 @@
-﻿namespace Tenray.Topaz.Benchmark
+﻿namespace Tenray.Topaz.Benchmark;
+
+enum Engines
 {
-    enum Engines
-    {
-        Topaz,
-        V8Engine,
-        Jint
-    }
+    Topaz,
+    V8Engine,
+    Jint
 }

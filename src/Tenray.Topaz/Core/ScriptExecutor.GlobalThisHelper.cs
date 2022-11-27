@@ -3,112 +3,111 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Tenray.Topaz.Core
+namespace Tenray.Topaz.Core;
+
+internal sealed partial class ScriptExecutor
 {
-    internal sealed partial class ScriptExecutor
+    internal IDictionaryEnumerator GetScopeEnumerator()
     {
-        internal IDictionaryEnumerator GetScopeEnumerator()
+        var scope = this;
+        // TODO: create variable value enumerator.
+        if (scope.IsThreadSafeScope)
         {
-            var scope = this;
-            // TODO: create variable value enumerator.
-            if (scope.IsThreadSafeScope)
-            {
-                return ((IDictionary)(scope.SafeVariables)).GetEnumerator();
-            }
-            else
-            {
-                return scope.UnsafeVariables.GetEnumerator();
-            }
+            return ((IDictionary)(scope.SafeVariables)).GetEnumerator();
         }
-
-        internal bool RemoveVariableInTheScope(string name)
+        else
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
-            {
-                return scope.SafeVariables.TryRemove(name, out _);
-            }
-            else
-            {
-                return scope.UnsafeVariables.Remove(name);
-            }
+            return scope.UnsafeVariables.GetEnumerator();
         }
+    }
 
-        internal void ClearScope()
+    internal bool RemoveVariableInTheScope(string name)
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
-            {
-                scope.SafeVariables.Clear();
-            }
-            else
-            {
-                scope.UnsafeVariables.Clear();
-            }
+            return scope.SafeVariables.TryRemove(name, out _);
         }
-
-        internal void CopyScopeVariablesTo(Array array, int index)
+        else
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
-            {
-                ((IDictionary)(scope.SafeVariables)).CopyTo(array, index);
-            }
-            else
-            {
-                throw new NotSupportedException("Unsafe Scope: CopyTo(Array,index) method is not supported.");
-            }
+            return scope.UnsafeVariables.Remove(name);
         }
+    }
 
-        internal int GetVariableCountInTheScope()
+    internal void ClearScope()
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
-            {
-                return scope.SafeVariables.Count;
-            }
-            else
-            {
-                return scope.UnsafeVariables.Count;
-            }
+            scope.SafeVariables.Clear();
         }
-
-        internal ICollection GetKeysInTheScope()
+        else
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
-            {
-                return scope.SafeVariables.Keys.ToArray();
-            }
-            else
-            {
-                var dictionary = scope.UnsafeVariables;
-                var list = new List<string>(dictionary.Count);
-                foreach (var entry in dictionary)
-                {
-                    list.Add(entry.Key);
-                }
-                return list;
-            }
+            scope.UnsafeVariables.Clear();
         }
+    }
 
-        internal ICollection GetValuesInTheScope()
+    internal void CopyScopeVariablesTo(Array array, int index)
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
         {
-            var scope = this;
-            if (scope.IsThreadSafeScope)
+            ((IDictionary)(scope.SafeVariables)).CopyTo(array, index);
+        }
+        else
+        {
+            throw new NotSupportedException("Unsafe Scope: CopyTo(Array,index) method is not supported.");
+        }
+    }
+
+    internal int GetVariableCountInTheScope()
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
+        {
+            return scope.SafeVariables.Count;
+        }
+        else
+        {
+            return scope.UnsafeVariables.Count;
+        }
+    }
+
+    internal ICollection GetKeysInTheScope()
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
+        {
+            return scope.SafeVariables.Keys.ToArray();
+        }
+        else
+        {
+            var dictionary = scope.UnsafeVariables;
+            var list = new List<string>(dictionary.Count);
+            foreach (var entry in dictionary)
             {
-                return scope.SafeVariables.Values.ToArray().Select(x => x.Value).ToArray();
+                list.Add(entry.Key);
             }
-            else
+            return list;
+        }
+    }
+
+    internal ICollection GetValuesInTheScope()
+    {
+        var scope = this;
+        if (scope.IsThreadSafeScope)
+        {
+            return scope.SafeVariables.Values.ToArray().Select(x => x.Value).ToArray();
+        }
+        else
+        {
+            var dictionary = scope.UnsafeVariables;
+            var list = new List<object>(dictionary.Count);
+            foreach (var entry in dictionary)
             {
-                var dictionary = scope.UnsafeVariables;
-                var list = new List<object>(dictionary.Count);
-                foreach (var entry in dictionary)
-                {
-                    list.Add(entry.Value.Value);
-                }
-                return list;
+                list.Add(entry.Value.Value);
             }
+            return list;
         }
     }
 }

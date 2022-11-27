@@ -1,19 +1,18 @@
 #nullable disable
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public abstract class ClassProperty : Expression
 {
-    public abstract class ClassProperty : Expression
+    public PropertyKind Kind;
+
+    public Expression Key; // Identifier, Literal, '[' Expression ']'
+    public bool Computed;
+    public Expression Value;
+
+    protected ClassProperty(Nodes type) : base(type)
     {
-        public PropertyKind Kind;
-
-        public Expression Key; // Identifier, Literal, '[' Expression ']'
-        public bool Computed;
-        public Expression Value;
-
-        protected ClassProperty(Nodes type) : base(type)
-        {
-        }
-
-        public override NodeCollection ChildNodes => new(Key, Value);
     }
+
+    public override NodeCollection ChildNodes => new(Key, Value);
 }

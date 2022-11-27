@@ -2,19 +2,19 @@
 using System.Collections;
 using Tenray.Topaz.API;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class SwitchCaseTests
 {
-    public sealed class SwitchCaseTests
+    [Test]
+    public void TestSwitchCase1()
     {
-        [Test]
-        public void TestSwitchCase1()
-        {
-            var engine = new TopazEngine();
-            engine.Options.LiteralNumbersAreConvertedToDouble = false;
-            engine.Options.NumbersAreConvertedToDoubleInArithmeticOperations = false;
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        engine.Options.LiteralNumbersAreConvertedToDouble = false;
+        engine.Options.NumbersAreConvertedToDoubleInArithmeticOperations = false;
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 function f1(key) {
     var result = 0
     switch (key) {
@@ -51,8 +51,7 @@ a[i++] = f2('1') == 3
 model.a = a
 ");
 
-            foreach (var item in (IEnumerable)(model.a))
-                Assert.IsTrue((bool)item);
-        }
+        foreach (var item in (IEnumerable)(model.a))
+            Assert.IsTrue((bool)item);
     }
 }

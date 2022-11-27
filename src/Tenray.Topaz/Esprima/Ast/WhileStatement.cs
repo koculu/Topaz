@@ -1,23 +1,22 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class WhileStatement : Statement
 {
-    public sealed class WhileStatement : Statement
+    public readonly Expression Test;
+    public readonly Statement Body;
+
+    public WhileStatement(Expression test, Statement body) : base(Nodes.WhileStatement)
     {
-        public readonly Expression Test;
-        public readonly Statement Body;
+        Test = test;
+        Body = body;
+    }
 
-        public WhileStatement(Expression test, Statement body) : base(Nodes.WhileStatement)
-        {
-            Test = test;
-            Body = body;
-        }
+    public override NodeCollection ChildNodes => new(Test, Body);
 
-        public override NodeCollection ChildNodes => new(Test, Body);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitWhileStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitWhileStatement(this);
     }
 }

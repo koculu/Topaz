@@ -8,59 +8,58 @@ using System.Threading.Tasks;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Interop;
 
-namespace Tenray.Topaz.Core
+namespace Tenray.Topaz.Core;
+
+internal sealed partial class ScriptExecutor
 {
-    internal sealed partial class ScriptExecutor
+    internal object CallFunction(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
     {
-        internal object CallFunction(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
+        var value = GetValue(callee);
+        if (value == null)
         {
-            var value = GetValue(callee);
-            if (value == null)
-            {
-                if (optional)
-                    return GetNullOrUndefined();
-                Exceptions.ThrowFunctionIsNotDefined(callee, this);
-            }
-
-            if (value is TopazFunction topazFunction)
-            {
-                return topazFunction.Execute(args, token);
-            }
-
-            if (value is IInvokable invokable)
-            {
-                return invokable.Invoke(args);
-            }
-
-            return TopazEngine.DelegateInvoker.Invoke(value, args);
+            if (optional)
+                return GetNullOrUndefined();
+            Exceptions.ThrowFunctionIsNotDefined(callee, this);
         }
 
-        internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
+        if (value is TopazFunction topazFunction)
         {
-            var value = GetValue(callee);
-            if (value == null)
-            {
-                if (optional)
-                    return GetNullOrUndefined();
-                Exceptions.ThrowFunctionIsNotDefined(callee, this);
-            }
-
-            if (value is TopazFunction topazFunction)
-            {
-                return await topazFunction.ExecuteAsync(args, token);
-            }
-
-            if (value is IInvokable invokable)
-            {
-                return invokable.Invoke(args);
-            }
-
-            return TopazEngine.DelegateInvoker.Invoke(value, args);
+            return topazFunction.Execute(args, token);
         }
 
-        internal object GetNullOrUndefined()
+        if (value is IInvokable invokable)
         {
-            return Options.NoUndefined ? null : Undefined.Value;
+            return invokable.Invoke(args);
         }
+
+        return TopazEngine.DelegateInvoker.Invoke(value, args);
+    }
+
+    internal async ValueTask<object> CallFunctionAsync(object callee, IReadOnlyList<object> args, bool optional, CancellationToken token)
+    {
+        var value = GetValue(callee);
+        if (value == null)
+        {
+            if (optional)
+                return GetNullOrUndefined();
+            Exceptions.ThrowFunctionIsNotDefined(callee, this);
+        }
+
+        if (value is TopazFunction topazFunction)
+        {
+            return await topazFunction.ExecuteAsync(args, token);
+        }
+
+        if (value is IInvokable invokable)
+        {
+            return invokable.Invoke(args);
+        }
+
+        return TopazEngine.DelegateInvoker.Invoke(value, args);
+    }
+
+    internal object GetNullOrUndefined()
+    {
+        return Options.NoUndefined ? null : Undefined.Value;
     }
 }

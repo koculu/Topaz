@@ -1,17 +1,17 @@
 ﻿using NUnit.Framework;
 using Tenray.Topaz.API;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class TemplateLiteralTests
 {
-    public sealed class TemplateLiteralTests
+    [Test]
+    public void TaggedTemplate()
     {
-        [Test]
-        public void TaggedTemplate()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let person = 'Mike';
 let age = 28;
 
@@ -41,20 +41,19 @@ function myTag(strings, personExp, ageExp) {
 model.a = myTag`That ${ person } is a ${ age }.`
 model.b = myTag`That ${ person } is a ${ 157 }.`
 ");
-            Assert.AreEqual("That Mike is a youngster.", model.a);
-            Assert.AreEqual("That Mike is a centenarian.", model.b);
-        }
+        Assert.AreEqual("That Mike is a youngster.", model.a);
+        Assert.AreEqual("That Mike is a centenarian.", model.b);
+    }
 
-        [Test]
-        public void TemplateArithmetic()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void TemplateArithmetic()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 model.a = `2 + 3 = ${2+3}`
 ");
-            Assert.AreEqual("2 + 3 = 5", model.a);;
-        }
+        Assert.AreEqual("2 + 3 = 5", model.a);;
     }
 }

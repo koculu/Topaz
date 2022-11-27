@@ -3,104 +3,103 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Tenray.Topaz.Core
+namespace Tenray.Topaz.Core;
+
+internal sealed class ScriptExecutorPool
 {
-    internal sealed class ScriptExecutorPool
+    ScriptExecutor First;
+    readonly ScriptExecutor[] Items;
+
+    readonly ConcurrentBag<ScriptExecutor> Objects;
+    readonly int FixedLength;
+    readonly bool IsThreadSafe;
+
+    public ScriptExecutorPool(int fixedLength = 16, bool isThreadSafe = true)
     {
-        ScriptExecutor First;
-        readonly ScriptExecutor[] Items;
+        IsThreadSafe = isThreadSafe;
+        FixedLength = fixedLength;
+        Items = new ScriptExecutor[fixedLength];
+        Objects = new ConcurrentBag<ScriptExecutor>();
+    }
 
-        readonly ConcurrentBag<ScriptExecutor> Objects;
-        readonly int FixedLength;
-        readonly bool IsThreadSafe;
-
-        public ScriptExecutorPool(int fixedLength = 16, bool isThreadSafe = true)
+    public ScriptExecutor Get(TopazEngine engine, ScriptExecutor parentScope, ScopeType scopeType)
+    {
+        if (IsThreadSafe)
         {
-            IsThreadSafe = isThreadSafe;
-            FixedLength = fixedLength;
-            Items = new ScriptExecutor[fixedLength];
-            Objects = new ConcurrentBag<ScriptExecutor>();
-        }
-
-        public ScriptExecutor Get(TopazEngine engine, ScriptExecutor parentScope, ScopeType scopeType)
-        {
-            if (IsThreadSafe)
+            var item = First;
+            if (item != null)
             {
-                var item = First;
+                item = Interlocked.Exchange(ref First, null);
                 if (item != null)
                 {
-                    item = Interlocked.Exchange(ref First, null);
-                    if (item != null)
-                    {
-                        item.Reconstruct(engine, parentScope, scopeType);
-                        return item;
-                    }
-                }
-
-                var len = FixedLength;
-                for (var i = 0; i < len; ++i)
-                {
-                    item = Items[i];
-                    if (item != null)
-                    {
-                        item = Interlocked.Exchange(ref Items[i], null);
-                        if (item != null)
-                        {
-                            item.Reconstruct(engine, parentScope, scopeType);
-                            return item;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var item = First;
-                if (item != null)
-                {
-                    First = null;
                     item.Reconstruct(engine, parentScope, scopeType);
                     return item;
                 }
+            }
 
-                var len = FixedLength;
-                for (var i = 0; i < len; ++i)
+            var len = FixedLength;
+            for (var i = 0; i < len; ++i)
+            {
+                item = Items[i];
+                if (item != null)
                 {
-                    item = Items[i];
+                    item = Interlocked.Exchange(ref Items[i], null);
                     if (item != null)
                     {
-                        Items[i] = null;
                         item.Reconstruct(engine, parentScope, scopeType);
                         return item;
                     }
                 }
             }
-            
-            if (Objects.TryTake(out var bagItem))
-            {
-                bagItem.Reconstruct(engine, parentScope, scopeType);
-                return bagItem;
-            }
-            return new ScriptExecutor(engine, parentScope, scopeType);
         }
-
-        public void Return(ScriptExecutor item)
+        else
         {
-            if (First == null)
+            var item = First;
+            if (item != null)
             {
-                First = item;
-                return;
+                First = null;
+                item.Reconstruct(engine, parentScope, scopeType);
+                return item;
             }
+
             var len = FixedLength;
             for (var i = 0; i < len; ++i)
             {
-                var slot = Items[i];
-                if (slot == null)
+                item = Items[i];
+                if (item != null)
                 {
-                    Items[i] = item;
-                    return;
+                    Items[i] = null;
+                    item.Reconstruct(engine, parentScope, scopeType);
+                    return item;
                 }
             }
-            Objects.Add(item);
         }
+        
+        if (Objects.TryTake(out var bagItem))
+        {
+            bagItem.Reconstruct(engine, parentScope, scopeType);
+            return bagItem;
+        }
+        return new ScriptExecutor(engine, parentScope, scopeType);
+    }
+
+    public void Return(ScriptExecutor item)
+    {
+        if (First == null)
+        {
+            First = item;
+            return;
+        }
+        var len = FixedLength;
+        for (var i = 0; i < len; ++i)
+        {
+            var slot = Items[i];
+            if (slot == null)
+            {
+                Items[i] = item;
+                return;
+            }
+        }
+        Objects.Add(item);
     }
 }

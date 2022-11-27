@@ -6,38 +6,37 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
-namespace Tenray.Topaz.Expressions
+namespace Tenray.Topaz.Expressions;
+
+internal static partial class CallExpressionHandler
 {
-    internal static partial class CallExpressionHandler
+    internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
     {
-        internal async static ValueTask<object> ExecuteAsync(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
+        var expr = (CallExpression)expression;
+        var calleeArgs = expr.Arguments;
+        var len = calleeArgs.Count;
+        var args = new List<object>(len);
+        for (var i = 0; i < len; ++i)
         {
-            var expr = (CallExpression)expression;
-            var calleeArgs = expr.Arguments;
-            var len = calleeArgs.Count;
-            var args = new List<object>(len);
-            for (var i = 0; i < len; ++i)
+            var arg = calleeArgs[i];
+            if (arg is SpreadElement spreadElement)
             {
-                var arg = calleeArgs[i];
-                if (arg is SpreadElement spreadElement)
+                var inner = await scriptExecutor.ExecuteExpressionAndGetValueAsync(spreadElement.Argument, token);
+                if (inner is IEnumerable enumerable)
                 {
-                    var inner = await scriptExecutor.ExecuteExpressionAndGetValueAsync(spreadElement.Argument, token);
-                    if (inner is IEnumerable enumerable)
+                    foreach (var item in enumerable)
                     {
-                        foreach (var item in enumerable)
-                        {
-                            token.ThrowIfCancellationRequested();
-                            args.Add(item);
-                        }
+                        token.ThrowIfCancellationRequested();
+                        args.Add(item);
                     }
-                    continue;
                 }
-                args.Add(await scriptExecutor.ExecuteExpressionAndGetValueAsync(arg, token));
+                continue;
             }
-            token.ThrowIfCancellationRequested();
-            var callee = await scriptExecutor.ExecuteStatementAsync(expr.Callee, token);
-            var result = await scriptExecutor.CallFunctionAsync(callee, args, expr.Optional, token);
-            return result;
+            args.Add(await scriptExecutor.ExecuteExpressionAndGetValueAsync(arg, token));
         }
+        token.ThrowIfCancellationRequested();
+        var callee = await scriptExecutor.ExecuteStatementAsync(expr.Callee, token);
+        var result = await scriptExecutor.CallFunctionAsync(callee, args, expr.Optional, token);
+        return result;
     }
 }

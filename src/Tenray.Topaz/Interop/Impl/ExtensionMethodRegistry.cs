@@ -4,59 +4,58 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+public sealed class ExtensionMethodRegistry
 {
-    public sealed class ExtensionMethodRegistry
+    List<MethodInfo> registeredMethods = new();
+
+    Dictionary<string, MethodAndParameterInfo> methodAndParameterInfoMap;
+
+    HashSet<Guid> registeredGuids = new();
+
+    public IReadOnlyList<MethodInfo> ExtensionMethods => registeredMethods;
+    
+    public MethodAndParameterInfo GetMethodAndParameterInfo(string name)
     {
-        List<MethodInfo> registeredMethods = new();
-
-        Dictionary<string, MethodAndParameterInfo> methodAndParameterInfoMap;
-
-        HashSet<Guid> registeredGuids = new();
-
-        public IReadOnlyList<MethodInfo> ExtensionMethods => registeredMethods;
-        
-        public MethodAndParameterInfo GetMethodAndParameterInfo(string name)
-        {
-            if (methodAndParameterInfoMap == null)
-                InitMethodCache();
-            if (methodAndParameterInfoMap.TryGetValue(name, out var result))
-                return result;
-            return MethodAndParameterInfo.Empty;
-        }
-
-        private MethodAndParameterInfo GenerateMethodAndParameterInfo(string name)
-        {
-            var methods = registeredMethods.Where(x => x.Name == name).ToArray();
-            if (methods.Length == 0)
-                return MethodAndParameterInfo.Empty;
-            var result = new MethodAndParameterInfo(
-                methods,
-                methods.Select(x => x.GetParameters()).ToArray());
+        if (methodAndParameterInfoMap == null)
+            InitMethodCache();
+        if (methodAndParameterInfoMap.TryGetValue(name, out var result))
             return result;
-        }
+        return MethodAndParameterInfo.Empty;
+    }
 
-        public void AddType(Type type)
-        {
-            var guid = type.GUID;
-            if (registeredGuids.Contains(guid))
-                return;
-            registeredGuids.Add(guid);
-            var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public);
-            var len = methods.Length;
-            for (var i = 0; i < len; ++i)
-            {
-                var m = methods[i];
-                if (!m.IsDefined(typeof(ExtensionAttribute), true))
-                    continue;
-                registeredMethods.Add(m);
-            }
-        }
+    private MethodAndParameterInfo GenerateMethodAndParameterInfo(string name)
+    {
+        var methods = registeredMethods.Where(x => x.Name == name).ToArray();
+        if (methods.Length == 0)
+            return MethodAndParameterInfo.Empty;
+        var result = new MethodAndParameterInfo(
+            methods,
+            methods.Select(x => x.GetParameters()).ToArray());
+        return result;
+    }
 
-        public void InitMethodCache()
+    public void AddType(Type type)
+    {
+        var guid = type.GUID;
+        if (registeredGuids.Contains(guid))
+            return;
+        registeredGuids.Add(guid);
+        var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public);
+        var len = methods.Length;
+        for (var i = 0; i < len; ++i)
         {
-            var allNames = registeredMethods.Select(x => x.Name).Distinct().ToArray();
-            methodAndParameterInfoMap = allNames.ToDictionary(x => x, y => GenerateMethodAndParameterInfo(y));
+            var m = methods[i];
+            if (!m.IsDefined(typeof(ExtensionAttribute), true))
+                continue;
+            registeredMethods.Add(m);
         }
+    }
+
+    public void InitMethodCache()
+    {
+        var allNames = registeredMethods.Select(x => x.Name).Distinct().ToArray();
+        methodAndParameterInfoMap = allNames.ToDictionary(x => x, y => GenerateMethodAndParameterInfo(y));
     }
 }

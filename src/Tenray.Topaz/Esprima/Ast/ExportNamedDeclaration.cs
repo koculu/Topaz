@@ -1,32 +1,31 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ExportNamedDeclaration : ExportDeclaration
 {
-    public sealed class ExportNamedDeclaration : ExportDeclaration
+    private readonly NodeList<ExportSpecifier> _specifiers;
+
+    public readonly StatementListItem? Declaration;
+    public readonly Literal? Source;
+
+    public ExportNamedDeclaration(
+        StatementListItem? declaration,
+        in NodeList<ExportSpecifier> specifiers,
+        Literal? source)
+        : base(Nodes.ExportNamedDeclaration)
     {
-        private readonly NodeList<ExportSpecifier> _specifiers;
+        Declaration = declaration;
+        _specifiers = specifiers;
+        Source = source;
+    }
 
-        public readonly StatementListItem? Declaration;
-        public readonly Literal? Source;
+    public ref readonly NodeList<ExportSpecifier> Specifiers => ref _specifiers;
 
-        public ExportNamedDeclaration(
-            StatementListItem? declaration,
-            in NodeList<ExportSpecifier> specifiers,
-            Literal? source)
-            : base(Nodes.ExportNamedDeclaration)
-        {
-            Declaration = declaration;
-            _specifiers = specifiers;
-            Source = source;
-        }
+    public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Declaration, _specifiers, Source);
 
-        public ref readonly NodeList<ExportSpecifier> Specifiers => ref _specifiers;
-
-        public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Declaration, _specifiers, Source);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitExportNamedDeclaration(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitExportNamedDeclaration(this);
     }
 }

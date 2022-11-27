@@ -1,17 +1,17 @@
 ﻿using NUnit.Framework;
 using Tenray.Topaz.API;
 
-namespace Tenray.Topaz.Test
+namespace Tenray.Topaz.Test;
+
+public sealed class WhileLoopTests
 {
-    public sealed class WhileLoopTests
+    [Test]
+    public void WhileLoop()
     {
-        [Test]
-        public void WhileLoop()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let i = 0
 while (i < 10) {
     ++i;
@@ -28,17 +28,17 @@ else if (j == 6) break;
 model.i = i
 model.j = j
 ");
-            Assert.AreEqual(10, model.i);
-            Assert.AreEqual(6, model.j);
-        }
+        Assert.AreEqual(10, model.i);
+        Assert.AreEqual(6, model.j);
+    }
 
-        [Test]
-        public void DoWhileLoop()
-        {
-            var engine = new TopazEngine();
-            dynamic model = new JsObject();
-            engine.SetValue("model", model);
-            engine.ExecuteScript(@"
+    [Test]
+    public void DoWhileLoop()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
 let i = 0
 do {
     ++i;
@@ -56,8 +56,7 @@ else if (j == 6) break;
 model.i = i
 model.j = j
 ");
-            Assert.AreEqual(10, model.i);
-            Assert.AreEqual(6, model.j);
-        }
+        Assert.AreEqual(10, model.i);
+        Assert.AreEqual(6, model.j);
     }
 }

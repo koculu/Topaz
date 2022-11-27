@@ -1,29 +1,28 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class MethodDefinition : ClassProperty
 {
-    public sealed class MethodDefinition : ClassProperty
+    public readonly bool Static;
+
+    public MethodDefinition(
+        Expression key,
+        bool computed,
+        FunctionExpression value,
+        PropertyKind kind,
+        bool isStatic)
+        : base(Nodes.MethodDefinition)
     {
-        public readonly bool Static;
+        Static = isStatic;
+        Key = key;
+        Computed = computed;
+        Value = value;
+        Kind = kind;
+    }
 
-        public MethodDefinition(
-            Expression key,
-            bool computed,
-            FunctionExpression value,
-            PropertyKind kind,
-            bool isStatic)
-            : base(Nodes.MethodDefinition)
-        {
-            Static = isStatic;
-            Key = key;
-            Computed = computed;
-            Value = value;
-            Kind = kind;
-        }
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitMethodDefinition(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitMethodDefinition(this);
     }
 }

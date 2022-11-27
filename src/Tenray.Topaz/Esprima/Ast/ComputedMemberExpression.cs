@@ -1,10 +1,9 @@
-﻿namespace Esprima.Ast
+﻿namespace Esprima.Ast;
+
+public sealed class ComputedMemberExpression : MemberExpression
 {
-    public sealed class ComputedMemberExpression : MemberExpression
+    public ComputedMemberExpression(Expression obj, Expression property, bool optional)
+        : base(obj, property, true, optional)
     {
-        public ComputedMemberExpression(Expression obj, Expression property, bool optional)
-            : base(obj, property, true, optional)
-        {
-        }
     }
 }

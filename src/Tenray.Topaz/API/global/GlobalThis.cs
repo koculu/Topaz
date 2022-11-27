@@ -2,87 +2,86 @@
 using System.Collections;
 using Tenray.Topaz.Core;
 
-namespace Tenray.Topaz.API
+namespace Tenray.Topaz.API;
+
+public sealed class GlobalThis : IDictionary
 {
-    public sealed class GlobalThis : IDictionary
+    private const string NullString = "null";
+
+    ScriptExecutor Scope { get; }
+
+    public GlobalThis(ITopazEngineScope scope)
     {
-        private const string NullString = "null";
+        Scope = (ScriptExecutor)scope;
+    }
 
-        ScriptExecutor Scope { get; }
+    public bool IsFixedSize => false;
 
-        public GlobalThis(ITopazEngineScope scope)
-        {
-            Scope = (ScriptExecutor)scope;
-        }
+    public bool IsReadOnly => Scope.IsReadOnly;
 
-        public bool IsFixedSize => false;
+    public ICollection Keys => Scope.GetKeysInTheScope();
 
-        public bool IsReadOnly => Scope.IsReadOnly;
+    public ICollection Values => Scope.GetValuesInTheScope();
 
-        public ICollection Keys => Scope.GetKeysInTheScope();
+    public int Count => Scope.GetVariableCountInTheScope();
 
-        public ICollection Values => Scope.GetValuesInTheScope();
+    public bool IsSynchronized => false;
 
-        public int Count => Scope.GetVariableCountInTheScope();
+    public object SyncRoot => null;
 
-        public bool IsSynchronized => false;
-
-        public object SyncRoot => null;
-
-        public object this[object key] {
-            get
-            {
-                if (key == null)
-                    key = NullString;
-                if (Scope.TryGetVariableInTheScope(key.ToString(), out var value))
-                    return value.Value;
-                return Scope.GetNullOrUndefined();
-            }
-            set
-            {
-                if (key == null)
-                    key = NullString;
-                Scope.AddOrUpdateVariableValueInTheScope(key.ToString(), value, VariableKind.Var);
-            }
-        }
-        
-        public void Add(object key, object value)
-        {
-            this[key] = value;
-        }
-
-        public void Clear()
-        {
-            Scope.ClearScope();
-        }
-
-        public bool Contains(object key)
+    public object this[object key] {
+        get
         {
             if (key == null)
                 key = NullString;
-            return Scope.TryGetVariableInTheScope(key.ToString(), out _);
+            if (Scope.TryGetVariableInTheScope(key.ToString(), out var value))
+                return value.Value;
+            return Scope.GetNullOrUndefined();
         }
-
-        public IDictionaryEnumerator GetEnumerator()
-        {
-            return Scope.GetScopeEnumerator();
-        }
-
-        public void Remove(object key)
+        set
         {
             if (key == null)
                 key = NullString;
-            Scope.RemoveVariableInTheScope(key.ToString());
+            Scope.AddOrUpdateVariableValueInTheScope(key.ToString(), value, VariableKind.Var);
         }
+    }
+    
+    public void Add(object key, object value)
+    {
+        this[key] = value;
+    }
 
-        public void CopyTo(Array array, int index)
-        {
-            Scope.CopyScopeVariablesTo(array, index);
-        }
+    public void Clear()
+    {
+        Scope.ClearScope();
+    }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Scope.GetScopeEnumerator();
-        }
+    public bool Contains(object key)
+    {
+        if (key == null)
+            key = NullString;
+        return Scope.TryGetVariableInTheScope(key.ToString(), out _);
+    }
+
+    public IDictionaryEnumerator GetEnumerator()
+    {
+        return Scope.GetScopeEnumerator();
+    }
+
+    public void Remove(object key)
+    {
+        if (key == null)
+            key = NullString;
+        Scope.RemoveVariableInTheScope(key.ToString());
+    }
+
+    public void CopyTo(Array array, int index)
+    {
+        Scope.CopyScopeVariablesTo(array, index);
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return Scope.GetScopeEnumerator();
     }
 }

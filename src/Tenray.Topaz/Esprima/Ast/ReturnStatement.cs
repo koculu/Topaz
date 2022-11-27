@@ -1,21 +1,20 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ReturnStatement : Statement
 {
-    public sealed class ReturnStatement : Statement
+    public readonly Expression? Argument;
+
+    public ReturnStatement(Expression? argument) : base(Nodes.ReturnStatement)
     {
-        public readonly Expression? Argument;
+        Argument = argument;
+    }
 
-        public ReturnStatement(Expression? argument) : base(Nodes.ReturnStatement)
-        {
-            Argument = argument;
-        }
+    public override NodeCollection ChildNodes => new(Argument);
 
-        public override NodeCollection ChildNodes => new(Argument);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitReturnStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitReturnStatement(this);
     }
 }

@@ -3,10 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+public interface IInvokable
 {
-    public interface IInvokable
-    {
-        object Invoke(IReadOnlyList<object> args);
-    }
+    object Invoke(IReadOnlyList<object> args);
 }

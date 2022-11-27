@@ -1,28 +1,27 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class NewExpression : Expression
 {
-    public sealed class NewExpression : Expression
+    private readonly NodeList<Expression> _arguments;
+    public readonly Expression Callee;
+
+    public NewExpression(
+        Expression callee,
+        in NodeList<Expression> args)
+        : base(Nodes.NewExpression)
     {
-        private readonly NodeList<Expression> _arguments;
-        public readonly Expression Callee;
+        Callee = callee;
+        _arguments = args;
+    }
 
-        public NewExpression(
-            Expression callee,
-            in NodeList<Expression> args)
-            : base(Nodes.NewExpression)
-        {
-            Callee = callee;
-            _arguments = args;
-        }
+    public ref readonly NodeList<Expression> Arguments => ref _arguments;
 
-        public ref readonly NodeList<Expression> Arguments => ref _arguments;
+    public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Callee, Arguments);
 
-        public override NodeCollection ChildNodes => GenericChildNodeYield.Yield(Callee, Arguments);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitNewExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitNewExpression(this);
     }
 }

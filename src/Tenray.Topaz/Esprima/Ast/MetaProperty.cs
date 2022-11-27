@@ -1,23 +1,22 @@
 ﻿using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class MetaProperty : Expression
 {
-    public sealed class MetaProperty : Expression
+    public readonly Identifier Meta;
+    public readonly Identifier Property;
+
+    public MetaProperty(Identifier meta, Identifier property) : base(Nodes.MetaProperty)
     {
-        public readonly Identifier Meta;
-        public readonly Identifier Property;
+        Meta = meta;
+        Property = property;
+    }
 
-        public MetaProperty(Identifier meta, Identifier property) : base(Nodes.MetaProperty)
-        {
-            Meta = meta;
-            Property = property;
-        }
+    public override NodeCollection ChildNodes => new(Meta, Property);
 
-        public override NodeCollection ChildNodes => new(Meta, Property);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitMetaProperty(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitMetaProperty(this);
     }
 }

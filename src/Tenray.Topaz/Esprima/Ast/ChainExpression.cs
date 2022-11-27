@@ -1,24 +1,23 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class ChainExpression : Expression
 {
-    public sealed class ChainExpression : Expression
+    /// <summary>
+    /// CallExpression | ComputedMemberExpression | StaticMemberExpression
+    /// </summary>
+    public readonly Expression Expression;
+
+    public ChainExpression(Expression expression) : base(Nodes.ChainExpression)
     {
-        /// <summary>
-        /// CallExpression | ComputedMemberExpression | StaticMemberExpression
-        /// </summary>
-        public readonly Expression Expression;
+        Expression = expression;
+    }
 
-        public ChainExpression(Expression expression) : base(Nodes.ChainExpression)
-        {
-            Expression = expression;
-        }
+    public override NodeCollection ChildNodes => NodeCollection.Empty;
 
-        public override NodeCollection ChildNodes => NodeCollection.Empty;
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitChainExpression(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitChainExpression(this);
     }
 }

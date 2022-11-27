@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Tenray.Topaz.Interop
+namespace Tenray.Topaz.Interop;
+
+public interface IDelegateInvoker
 {
-    public interface IDelegateInvoker
-    {
-        object Invoke(object function, IReadOnlyList<object> args);
-    }
+    object Invoke(object function, IReadOnlyList<object> args);
 }

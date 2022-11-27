@@ -1,29 +1,28 @@
 using Esprima.Utils;
 
-namespace Esprima.Ast
+namespace Esprima.Ast;
+
+public sealed class TryStatement : Statement
 {
-    public sealed class TryStatement : Statement
+    public readonly Statement Block;
+    public readonly CatchClause? Handler;
+    public readonly Statement? Finalizer;
+
+    public TryStatement(
+        Statement block,
+        CatchClause? handler,
+        Statement? finalizer) :
+        base(Nodes.TryStatement)
     {
-        public readonly Statement Block;
-        public readonly CatchClause? Handler;
-        public readonly Statement? Finalizer;
+        Block = block;
+        Handler = handler;
+        Finalizer = finalizer;
+    }
 
-        public TryStatement(
-            Statement block,
-            CatchClause? handler,
-            Statement? finalizer) :
-            base(Nodes.TryStatement)
-        {
-            Block = block;
-            Handler = handler;
-            Finalizer = finalizer;
-        }
+    public override NodeCollection ChildNodes => new(Block, Handler, Finalizer);
 
-        public override NodeCollection ChildNodes => new(Block, Handler, Finalizer);
-
-        protected internal override void Accept(AstVisitor visitor)
-        {
-            visitor.VisitTryStatement(this);
-        }
+    protected internal override void Accept(AstVisitor visitor)
+    {
+        visitor.VisitTryStatement(this);
     }
 }
