@@ -15,11 +15,15 @@ using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz;
 
-internal sealed class TopazFunction : IConvertible
+internal sealed class TopazFunction : IConvertible, ITopazFunction
 {
     internal ScriptExecutor ScriptExecutor { get; }
 
-    internal string Name { get; private set; }
+    public string Name { get; private set; }
+
+    public int Length => GetArgumentsLength();
+
+    public string this[int index] => GetArgumentName(index);
 
     FunctionDeclaration expr1;
 
@@ -52,7 +56,7 @@ internal sealed class TopazFunction : IConvertible
     {
         token.ThrowIfCancellationRequested();
         var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
-        var parameters = 
+        var parameters =
             expr1?.Params ??
             expr2?.Params ??
             expr3.Params;
@@ -76,7 +80,7 @@ internal sealed class TopazFunction : IConvertible
                 p = r.Argument;
                 isRest = true;
             }
-            
+
             if (p is ObjectPattern objectPattern)
             {
                 // dont process Object Pattern for missing arguments!
@@ -97,8 +101,8 @@ internal sealed class TopazFunction : IConvertible
             if (isRest)
             {
                 var restLen = args.Count - i;
-                
-                var rested = restLen < 0 ? 
+
+                var rested = restLen < 0 ?
                     Array.Empty<object>() :
                     new object[restLen];
                 for (var j = 0; j < restLen; ++j)
@@ -116,7 +120,7 @@ internal sealed class TopazFunction : IConvertible
                     VariableKind.Var);
             }
         }
-        
+
         var result = scriptExecutor.ExecuteStatement(
             expr1?.Body ??
             expr2?.Body ??
@@ -308,7 +312,7 @@ internal sealed class TopazFunction : IConvertible
     {
         if (!conversionType.IsSubclassOf(typeof(Delegate)))
             throw new NotSupportedException();
-        
+
         var topazParameters =
            expr1?.Params ??
            expr2?.Params ??
@@ -324,4 +328,49 @@ internal sealed class TopazFunction : IConvertible
         return DynamicDelagateFactory.CreateDynamicDelegate(argTypes, returnType,
             (args) => Execute(args, default), ScriptExecutor.TopazEngine.ValueConverter);
     }
+
+    int GetArgumentsLength()
+    {
+        var parameters =
+            expr1?.Params ??
+            expr2?.Params ??
+            expr3.Params;
+        return parameters.Count;
+    }
+
+    string GetArgumentName(int index)
+    {
+        var parameters =
+            expr1?.Params ??
+            expr2?.Params ??
+            expr3.Params;
+        if (index < 0 || index >= parameters.Count)
+            return null;
+
+        var p = parameters[index];
+        if (p is AssignmentPattern assignmentPattern)
+        {
+            // ex: (x = 1) => x * x
+            p = assignmentPattern.Left;
+        }
+        else if (p is RestElement r)
+        {
+            p = r.Argument;
+        }
+
+        if (p is ObjectPattern)
+        {
+            // Object pattern argument string extraction is not supported!
+            return null;
+        }
+        var id = p as Identifier;
+        if (id == null)
+            return null;
+        return id.Name;
+    }
+
+    public object Invoke(CancellationToken token, params object[] args) => Execute(args, token);
+
+    public ValueTask<object> InvokeAsync(CancellationToken token, params object[] args)
+        => ExecuteAsync(args, token);
 }

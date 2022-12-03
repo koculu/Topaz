@@ -24,7 +24,7 @@ public interface ITopazEngine
     /// Engine Options.
     /// </summary>
     TopazEngineOptions Options { get; set; }
-    
+
     /// <summary>
     /// Global Scope.
     /// </summary>
@@ -132,14 +132,14 @@ public interface ITopazEngine
     /// <param name="name"></param>
     /// <param name="typeProxy"></param>
     void AddType<T>(string name = null, ITypeProxy typeProxy = null);
-    
+
     /// <summary>
     /// Adds a type to be used in Javascript.
     /// </summary>
     /// <param name="type"></param>
     /// <param name="name"></param>
     /// <param name="typeProxy"></param>
-    void AddType(Type type,string name = null, ITypeProxy typeProxy = null);
+    void AddType(Type type, string name = null, ITypeProxy typeProxy = null);
 
     /// <summary>
     /// Adds extension methods defined in type.
