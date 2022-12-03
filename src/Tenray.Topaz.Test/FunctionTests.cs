@@ -247,4 +247,40 @@ model.a = a
         Assert.AreEqual(7, model.p);
         Assert.AreEqual(14, model.q);
     }
+
+    [Test]
+    public void FunctionInformation()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
+function f1(a, b, c)
+{
+}
+function f2(a, b=34, c)
+{
+}
+model.f1 = f1
+model.f2 = f2
+");
+        var f1 = model.f1 as ITopazFunction;
+        var f2 = model.f2 as ITopazFunction;
+
+        Assert.AreEqual("f1", f1.Name);
+        Assert.AreEqual(3, f1.Length);
+        Assert.AreEqual("a", f1[0]);
+        Assert.AreEqual("b", f1[1]);
+        Assert.AreEqual("c", f1[2]);
+
+        Assert.AreEqual("f2", f2.Name);
+        Assert.AreEqual(3, f2.Length);
+        Assert.AreEqual("a", f2[0]);
+        Assert.AreEqual("b", f2[1]);
+        Assert.AreEqual("c", f2[2]);
+        f1.Invoke(new(), 1, 2, 3);
+        f2.Invoke(new(), 1, 2, 5.7);
+        f1.InvokeAsync(new(), 1, true, 3, 5);
+        f2.InvokeAsync(new(), "test", 2, 3);
+    }
 }
