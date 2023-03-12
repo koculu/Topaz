@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Tenray.Topaz.Benchmark;
 
-[SimpleJob(RunStrategy.ColdStart, targetCount: 10)]
+[SimpleJob(RunStrategy.ColdStart, iterationCount: 10)]
 public class Benchmark5
 {
     public string Code = @"
