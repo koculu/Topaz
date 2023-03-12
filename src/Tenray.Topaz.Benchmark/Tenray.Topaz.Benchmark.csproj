@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.13.2" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.5" />
     <PackageReference Include="Bogus" Version="34.0.2" />
-    <PackageReference Include="Jint" Version="3.0.0-beta-2043" />
-    <PackageReference Include="Microsoft.ClearScript" Version="7.3.5" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.3.5" />
-    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.3.5" />
+    <PackageReference Include="Jint" Version="3.0.0-beta-2047" />
+    <PackageReference Include="Microsoft.ClearScript" Version="7.4.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.linux-x64" Version="7.4.0" />
+    <PackageReference Include="Microsoft.ClearScript.V8.Native.win-x64" Version="7.4.0" />
   </ItemGroup>
 
   <ItemGroup>
