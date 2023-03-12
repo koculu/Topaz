@@ -310,6 +310,30 @@ model.Y = sum()
     }
 
     [Test]
+    public void TestRestFunctionArgumentsAsync()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScriptAsync(@"
+function sum(...arguments) {
+    var result = 0,
+        argumentIndex,
+        argumentCount = arguments.length;
+
+    for (argumentIndex = 0; argumentIndex < argumentCount; argumentIndex++) {
+        result += arguments[argumentIndex];
+    }
+
+    return result;
+}
+model.X = sum(3,5,7)
+model.Y = sum()
+").Wait();
+        Assert.That(model.X, Is.EqualTo(15));
+        Assert.That(model.Y, Is.EqualTo(0));
+    }
+    [Test]
     public void TestSpecialFunctionArguments()
     {
         var engine = new TopazEngine();
@@ -336,4 +360,30 @@ model.Y = sum()
         Assert.That(model.Y, Is.EqualTo(0));
     }
 
+    [Test]
+    public void TestSpecialFunctionArgumentsAsync()
+    {
+        var engine = new TopazEngine();
+        engine.Options.DefineSpecialArgumentsObjectOnEachFunctionCall = true;
+
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScriptAsync(@"
+function sum() {
+    var result = 0,
+        argumentIndex,
+        argumentCount = arguments.length;
+
+    for (argumentIndex = 0; argumentIndex < argumentCount; argumentIndex++) {
+        result += arguments[argumentIndex];
+    }
+
+    return result;
+}
+model.X = await sum(3,5,7)
+model.Y = await sum()
+").Wait();
+        Assert.That(model.X, Is.EqualTo(15));
+        Assert.That(model.Y, Is.EqualTo(0));
+    }
 }

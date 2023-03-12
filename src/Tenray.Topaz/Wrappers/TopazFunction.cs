@@ -198,11 +198,11 @@ internal sealed class TopazFunction : IConvertible, ITopazFunction
                 var restLen = args.Count - i;
 
                 var rested = restLen < 0 ?
-                    Array.Empty<object>() :
-                    new object[restLen];
+                    new JsArray(0) :
+                    new JsArray(restLen);
                 for (var j = 0; j < restLen; ++j)
                 {
-                    rested[j] = args[i + j];
+                    rested.AddArrayValue(args[i + j]);
                 }
                 scriptExecutor.DefineVariable(id,
                     rested,
