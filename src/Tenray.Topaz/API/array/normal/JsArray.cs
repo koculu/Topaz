@@ -8,8 +8,28 @@ namespace Tenray.Topaz.API;
 
 public sealed partial class JsArray : JsObject, IJsArray, IList<object>
 {
-    readonly List<object> arraylist = new();
-    
+    readonly List<object> arraylist;
+
+    public JsArray()
+    {
+        arraylist = new();
+    }
+
+    public JsArray(int capacity)
+    {
+        arraylist = new(capacity);
+    }
+
+    public JsArray(IReadOnlyList<object> items)
+    {
+        var len = items.Count;
+        var list = arraylist = new(len);
+        for (var i = 0; i < len; ++i)
+        {
+            list.Add(items[i]);
+        }
+    }
+
     public void AddArrayValues(IEnumerable enumerable)
     {
         foreach (var item in enumerable)
@@ -18,8 +38,7 @@ public sealed partial class JsArray : JsObject, IJsArray, IList<object>
 
     public void AddArrayValue(object value)
     {
-        var list = arraylist;
-        list.Add(value);
+        arraylist.Add(value);
     }
 
     public void SetArrayValue(int index, object value)
@@ -70,8 +89,7 @@ public sealed partial class JsArray : JsObject, IJsArray, IList<object>
         set
         {
             SetMinimumArraySize(arraylist, index + 1);
-            var list = arraylist;                
-            list[index] = value;
+            arraylist[index] = value;
         }
     }
 
@@ -93,10 +111,9 @@ public sealed partial class JsArray : JsObject, IJsArray, IList<object>
 
     protected override IEnumerable GetObjectKeysInternal()
     {
-        var list = arraylist;
-        return Enumerable.Range(0, list.Count);
+        return Enumerable.Range(0, arraylist.Count);
     }
-    
+
     int ICollection<object>.Count => arraylist.Count;
 
     bool ICollection<object>.IsReadOnly => false;

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tenray.Topaz.API;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
 using Tenray.Topaz.Options;
@@ -49,7 +50,7 @@ internal sealed partial class ScriptExecutor
     /// Variables dictionary that support thread safe access.
     /// </summary>
     internal ConcurrentDictionary<string, Variable> SafeVariables;
-    
+
     /// <summary>
     /// Variables dictionary for scopes that does not require thread safety.
     /// Provides faster variable access.
@@ -175,7 +176,8 @@ internal sealed partial class ScriptExecutor
     private void MarkCanNotReturnToPool()
     {
         var scope = this;
-        while (scope != null) {
+        while (scope != null)
+        {
             scope.CanReturnToPool = false;
             scope = scope.ParentScope;
         }
@@ -208,9 +210,14 @@ internal sealed partial class ScriptExecutor
         return new ScriptExecutor(TopazEngine, this, isThreadSafe.Value);
     }
 
-    internal ScriptExecutor NewFunctionInnerBlockScope()
+    internal ScriptExecutor NewFunctionInnerBlockScope(IReadOnlyList<object> args)
     {
         var result = TopazEngine.ScriptExecutorPool.Get(TopazEngine, this, ScopeType.FunctionInnerBlock);
+
+        if (Options.DefineSpecialArgumentsObjectOnEachFunctionCall)
+        {
+            result.DefineVariable("arguments", new JsArray(args), VariableKind.Var);
+        }
         result.CanReturnToPool = true;
         return result;
     }
@@ -253,7 +260,7 @@ internal sealed partial class ScriptExecutor
             Nodes.AwaitExpression => AwaitExpressionHandler.Execute(this, statement, token),
             Nodes.AssignmentPattern => AssignmentPatternHandler.Execute(this, statement, token),
             Nodes.NewExpression => NewExpressionHandler.Execute(this, statement, token),
-            
+
             Nodes.ReturnStatement => new ReturnWrapper(
                 ExecuteExpressionAndGetValue(((ReturnStatement)statement).Argument, token)),
             Nodes.BreakStatement => BreakWrapper.Instance,
@@ -351,7 +358,7 @@ internal sealed partial class ScriptExecutor
             Nodes.ForInStatement => await ForInStatementHandler.ExecuteAsync(this, statement, token),
             Nodes.FunctionDeclaration => FunctionDeclarationHandler.Execute(this, statement),
             Nodes.IfStatement => await IfStatementHandler.ExecuteAsync(this, statement, token),
-            
+
             Nodes.SwitchStatement => await SwitchStatementHandler.ExecuteAsync(this, statement, token),
             Nodes.ThrowStatement => await ThrowStatementHandler.ExecuteAsync(this, statement, token),
             Nodes.TryStatement => await TryStatementHandler.ExecuteAsync(this, statement, token),

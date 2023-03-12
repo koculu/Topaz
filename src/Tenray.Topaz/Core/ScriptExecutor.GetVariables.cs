@@ -83,7 +83,7 @@ internal sealed partial class ScriptExecutor
             return identifier.GetVariableValue(this);
         else if (value is TopazMemberAccessor memberAccessor)
             return memberAccessor.Execute(this);
-        else if(value is TopazArrayWrapper arrayWrapper)
+        else if (value is TopazArrayWrapper arrayWrapper)
             value = arrayWrapper.UnwrapArray();
         else if (value is TopazObjectWrapper objectWrapper)
             value = objectWrapper.UnwrapObject();
@@ -91,7 +91,7 @@ internal sealed partial class ScriptExecutor
         return value;
     }
 
-    internal object GetVariableNameOrValue(object value , bool getVariableName)
+    internal object GetVariableNameOrValue(object value, bool getVariableName)
     {
         if (getVariableName && value is TopazIdentifier identifier)
         {
