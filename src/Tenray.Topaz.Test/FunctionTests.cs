@@ -283,4 +283,57 @@ model.f2 = f2
         f1.InvokeAsync(new(), 1, true, 3, 5);
         f2.InvokeAsync(new(), "test", 2, 3);
     }
+
+    [Test]
+    public void TestRestFunctionArguments()
+    {
+        var engine = new TopazEngine();
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
+function sum(...arguments) {
+    var result = 0,
+        argumentIndex,
+        argumentCount = arguments.length;
+
+    for (argumentIndex = 0; argumentIndex < argumentCount; argumentIndex++) {
+        result += arguments[argumentIndex];
+    }
+
+    return result;
+}
+model.X = sum(3,5,7)
+model.Y = sum()
+");
+        Assert.That(model.X, Is.EqualTo(15));
+        Assert.That(model.Y, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void TestSpecialFunctionArguments()
+    {
+        var engine = new TopazEngine();
+        engine.Options.DefineSpecialArgumentsObjectOnEachFunctionCall = true;
+
+        dynamic model = new JsObject();
+        engine.SetValue("model", model);
+        engine.ExecuteScript(@"
+function sum() {
+    var result = 0,
+        argumentIndex,
+        argumentCount = arguments.length;
+
+    for (argumentIndex = 0; argumentIndex < argumentCount; argumentIndex++) {
+        result += arguments[argumentIndex];
+    }
+
+    return result;
+}
+model.X = sum(3,5,7)
+model.Y = sum()
+");
+        Assert.That(model.X, Is.EqualTo(15));
+        Assert.That(model.Y, Is.EqualTo(0));
+    }
+
 }

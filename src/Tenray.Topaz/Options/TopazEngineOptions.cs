@@ -88,4 +88,13 @@ public sealed class TopazEngineOptions
     /// Default value is based on Engine's thread safety.
     /// </summary>
     public bool UseThreadSafeJsObjects { get; set; }
+
+    /// <summary>
+    /// arguments is an Array-like object accessible inside
+    /// functions that contains the values of the arguments passed to that function.
+    /// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
+    /// Note: In modern code, rest parameters should be preferred.
+    /// Default value is false.
+    /// </summary>
+    public bool DefineSpecialArgumentsObjectOnEachFunctionCall { get; set; }
 }

@@ -8,6 +8,7 @@ using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
@@ -55,7 +56,7 @@ internal sealed class TopazFunction : IConvertible, ITopazFunction
     public object Execute(IReadOnlyList<object> args, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
+        var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope(args);
         var parameters =
             expr1?.Params ??
             expr2?.Params ??
@@ -148,7 +149,7 @@ internal sealed class TopazFunction : IConvertible, ITopazFunction
     public async ValueTask<object> ExecuteAsync(IReadOnlyList<object> args, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
-        var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope();
+        var scriptExecutor = ScriptExecutor.NewFunctionInnerBlockScope(args);
         var parameters =
             expr1?.Params ??
             expr2?.Params ??
