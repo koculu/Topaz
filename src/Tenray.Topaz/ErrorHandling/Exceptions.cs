@@ -87,7 +87,7 @@ internal static class Exceptions
 
     internal static void ThrowCannotCallDelegateArgumentMismatch(IReadOnlyList<object> args)
     {
-        var argString = string.Join(", ", args);            
+        var argString = string.Join(", ", args);
         throw new TopazException(
                 $"Type Error: Delegate method call argument mismatch. delegate({argString})");
     }
@@ -191,5 +191,14 @@ internal static class Exceptions
     internal static object ThrowBinaryOperatorIsNotSupportedOn(BinaryOperator binaryOperator, object d1, object d2)
     {
         throw new TopazException($"TypeError: Binary operator {GetArgumentString(binaryOperator)} is not supported on values '{GetArgumentString(d1)}' and '{GetArgumentString(d2)}'.");
+    }
+
+    internal static void ThrowCannotSetObjectMember(object obj, object member, object value, bool computed)
+    {
+        if (computed)
+        {
+            throw new TopazException($"Cannot set object member {obj}[{member}] = {value}");
+        }
+        throw new TopazException($"Cannot set object member {obj}.{member} = {value}");
     }
 }

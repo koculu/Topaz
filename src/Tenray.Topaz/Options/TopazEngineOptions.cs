@@ -33,6 +33,12 @@ public sealed class TopazEngineOptions
     public bool AllowUndefinedReferenceAccess { get; set; } = true;
 
     /// <summary>
+    /// If set true, when the object member set operation fails,
+    /// throw an exception to inform user.
+    /// </summary>
+    public bool ThrowExceptionWhenCannotSetObjectMember { get; set; } = true;
+
+    /// <summary>
     /// C# is a type-safe language but Javascript is not.
     /// Topaz encapsulates the differences by using auto type conversions.
     /// If you want explicit behavior for literal number evaluation,

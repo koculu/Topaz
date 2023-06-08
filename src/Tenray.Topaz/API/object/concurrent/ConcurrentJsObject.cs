@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API;
@@ -17,7 +14,8 @@ public partial class ConcurrentJsObject : IJsObject, IDictionary
     // Hence, serialization and deserialization becomes flaky. Find out a solution!
     readonly ConcurrentDictionary<string, object> dictionary = new();
 
-    public object this[object key] { 
+    public object this[object key]
+    {
         get
         {
             if (key == null)
@@ -26,7 +24,7 @@ public partial class ConcurrentJsObject : IJsObject, IDictionary
                 return value;
             return Undefined.Value;
         }
-        set 
+        set
         {
             Add(key, ConvertJsonElementToConcurrentJsObject(value));
         }
