@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net7.0</TargetFrameworks>
+    <RootNamespace>Tenray.Topaz</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

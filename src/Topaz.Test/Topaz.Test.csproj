@@ -4,6 +4,7 @@
     <TargetFrameworks>net7.0</TargetFrameworks>
 
     <IsPackable>false</IsPackable>
+    <RootNamespace>Tenray.Topaz</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
