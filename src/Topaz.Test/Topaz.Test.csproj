@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tenray.Topaz\Tenray.Topaz.csproj" />
+    <ProjectReference Include="..\Topaz\Topaz.csproj" />
   </ItemGroup>
 
 </Project>

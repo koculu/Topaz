@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31105.61
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenray.Topaz", "Tenray.Topaz\Tenray.Topaz.csproj", "{77BFA01C-C1C4-4CC1-ACDC-E22E9F2A6EF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Topaz", "Topaz\Topaz.csproj", "{77BFA01C-C1C4-4CC1-ACDC-E22E9F2A6EF5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenray.Topaz.Test", "Tenray.Topaz.Test\Tenray.Topaz.Test.csproj", "{F89547A1-9041-4BFA-845C-3F1BFA593132}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Topaz.Test", "Topaz.Test\Topaz.Test.csproj", "{F89547A1-9041-4BFA-845C-3F1BFA593132}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tenray.Topaz.Benchmark", "Tenray.Topaz.Benchmark\Tenray.Topaz.Benchmark.csproj", "{A2856228-A6C3-4969-B009-6F5074A9D4D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Topaz.Benchmark", "Topaz.Benchmark\Topaz.Benchmark.csproj", "{A2856228-A6C3-4969-B009-6F5074A9D4D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F21A4085-E7BB-420E-B2B9-26EB2E85F1DF}"
 	ProjectSection(SolutionItems) = preProject
