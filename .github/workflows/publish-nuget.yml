@@ -30,7 +30,7 @@ jobs:
       run: dotnet test --no-build --configuration Release --verbosity normal
       working-directory: ./src
     - name: Publish the package to nuget.org
-      run: dotnet nuget push Tenray.Topaz/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push Topaz/bin/Release/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
       working-directory: ./src
