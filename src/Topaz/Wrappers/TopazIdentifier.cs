@@ -1,5 +1,4 @@
-﻿using System;
-using Tenray.Topaz.Core;
+﻿using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz;

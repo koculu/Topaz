@@ -1,16 +1,11 @@
 ﻿using Esprima.Ast;
-using Microsoft.CSharp.RuntimeBinder;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.API;
 using Tenray.Topaz.Core;
-using Tenray.Topaz.ErrorHandling;
 using Tenray.Topaz.Expressions;
 using Tenray.Topaz.Interop;
 

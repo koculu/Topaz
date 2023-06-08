@@ -1,7 +1,5 @@
 ﻿using Esprima.Ast;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using Tenray.Topaz.API;
 using Tenray.Topaz.Core;

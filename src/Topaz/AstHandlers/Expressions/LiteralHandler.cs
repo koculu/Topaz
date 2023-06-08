@@ -1,6 +1,5 @@
 ﻿using Esprima;
 using Esprima.Ast;
-using System;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.Expressions;

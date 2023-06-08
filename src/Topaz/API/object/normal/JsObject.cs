@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz.API;

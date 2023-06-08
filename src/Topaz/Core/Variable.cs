@@ -1,6 +1,4 @@
-﻿using Esprima.Ast;
-
-namespace Tenray.Topaz.Core;
+﻿namespace Tenray.Topaz.Core;
 
 internal sealed class Variable
 {

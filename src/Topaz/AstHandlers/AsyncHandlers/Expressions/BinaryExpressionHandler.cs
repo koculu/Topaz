@@ -1,11 +1,7 @@
 ﻿using Esprima.Ast;
-using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
-using Tenray.Topaz.ErrorHandling;
 
 namespace Tenray.Topaz.Expressions;
 

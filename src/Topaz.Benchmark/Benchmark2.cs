@@ -1,8 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Jint;
 using Microsoft.ClearScript.V8;
-using Tenray.Topaz.API;
-using Tenray.Topaz.Interop;
 
 namespace Tenray.Topaz.Benchmark;
 

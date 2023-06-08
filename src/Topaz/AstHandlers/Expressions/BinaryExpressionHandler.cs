@@ -1,7 +1,5 @@
 ﻿using Esprima.Ast;
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;

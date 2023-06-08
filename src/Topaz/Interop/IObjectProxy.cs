@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Tenray.Topaz.Interop;
+﻿namespace Tenray.Topaz.Interop;
 
 public interface IObjectProxy
 {

@@ -1,5 +1,4 @@
-﻿using Esprima.Ast;
-using Tenray.Topaz.Core;
+﻿using Tenray.Topaz.Core;
 
 namespace Tenray.Topaz;
 

@@ -2,7 +2,6 @@
 using Jint;
 using Microsoft.ClearScript.V8;
 using System.Collections.Generic;
-using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Benchmark;
 

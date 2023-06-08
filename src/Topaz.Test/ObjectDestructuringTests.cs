@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System;
 using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Test;

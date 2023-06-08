@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Bogus;
-using Jint;
 using Microsoft.ClearScript.V8;
 using System;
 using System.Collections.Generic;

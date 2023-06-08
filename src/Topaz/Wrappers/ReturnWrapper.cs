@@ -1,6 +1,4 @@
-﻿using Esprima.Ast;
-
-namespace Tenray.Topaz;
+﻿namespace Tenray.Topaz;
 
 internal sealed class ReturnWrapper
 {

@@ -1,5 +1,4 @@
 ﻿using Esprima.Ast;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.Core;
