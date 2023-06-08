@@ -1,4 +1,4 @@
-![img](https://raw.githubusercontent.com/koculu/Topaz/main/src/Tenray.Topaz/docs/Topaz/images/logo1.png)
+![img](https://raw.githubusercontent.com/koculu/Topaz/main/src/Topaz/docs/Topaz/images/logo1.png)
 
 # Topaz
 Multithreaded Javascript Engine for .NET
