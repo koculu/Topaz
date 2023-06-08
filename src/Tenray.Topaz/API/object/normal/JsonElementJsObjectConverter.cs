@@ -23,7 +23,7 @@ internal static class JsonElementJsObjectConverter
         };
     }
 
-    private static object ConvertToArray(JsonElement jsonElement)
+    static object ConvertToArray(JsonElement jsonElement)
     {
         var result = new JsArray();
         var i = 0;
@@ -34,7 +34,7 @@ internal static class JsonElementJsObjectConverter
         return result;
     }
 
-    private static JsObject ConvertToDynamicObject(JsonElement jsonElement)
+    static JsObject ConvertToDynamicObject(JsonElement jsonElement)
     {
         var obj = new JsObject();
         foreach (var el in jsonElement.EnumerateObject())

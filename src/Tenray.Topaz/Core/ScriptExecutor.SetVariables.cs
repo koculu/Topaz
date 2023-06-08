@@ -7,8 +7,8 @@ namespace Tenray.Topaz.Core;
 internal sealed partial class ScriptExecutor
 {
     public void AddOrUpdateVariableValueAndKindInTheScope(
-        string name, 
-        object value, 
+        string name,
+        object value,
         VariableKind kind,
         VariableState state = VariableState.None)
     {
@@ -37,7 +37,7 @@ internal sealed partial class ScriptExecutor
                 {
                     old.SetValueAndKind(value, kind, state);
                     return old;
-                });                
+                });
         }
         else
         {
@@ -95,7 +95,7 @@ internal sealed partial class ScriptExecutor
         }
         else
         {
-            if (scope.IsFrozen && 
+            if (scope.IsFrozen &&
                 !scope.UnsafeVariables.ContainsKey(name))
                 Exceptions.ThrowScopeIsFrozen(scope, name);
 
@@ -223,7 +223,7 @@ internal sealed partial class ScriptExecutor
     {
         var obj = GetValue(instance);
         var member = GetVariableNameOrValue(property, !computed);
-        
+
         if (obj == null)
         {
             if (Options.AllowNullReferenceMemberAccess)
@@ -248,6 +248,8 @@ internal sealed partial class ScriptExecutor
             Exceptions.ThrowReferenceIsUndefined(instance);
         }
 
-        TopazEngine.TrySetObjectMember(obj, member, value, computed);
+        if (!TopazEngine.TrySetObjectMember(obj, member, value, computed) &&
+            Options.ThrowExceptionWhenCannotSetObjectMember)
+            Exceptions.ThrowCannotSetObjectMember(obj, member, value, computed);
     }
 }
