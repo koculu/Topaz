@@ -1,46 +1,47 @@
 ![img](https://raw.githubusercontent.com/koculu/Topaz/main/src/Topaz/docs/Topaz/images/logo1.png)
 
 # Topaz
-Multithreaded Javascript Engine for .NET
+Topaz is a high-performance, multithreaded JavaScript engine for the .NET platform. It is designed to overcome the limitations of existing JavaScript engines by providing robust multithreading support and syntax-level options that simplify script language usage. With Topaz, you can seamlessly execute JavaScript scripts on the server-side with blazing speed and harness the full power of the .NET runtime.
 
 [![Downloads](https://img.shields.io/nuget/dt/Topaz)](https://www.nuget.org/packages/Topaz/)
 
-## Why another Javascript Engine?
+# Why another Javascript Engine?
 
-1. Existing Javascript Engines run scripts in single-thread. That is acceptable for desktop environments but not pleasing for server-side execution. Topaz does not restrict multi-thread usage.
+While existing JavaScript engines adequately handle script execution in single-threaded desktop environments, they often fall short when it comes to server-side execution. Topaz addresses this limitation by allowing for concurrent multithreaded usage, enabling efficient execution of JavaScript code in server applications.
 
-2. Syntax level options which simplify script language is necessary to ease scripting support of many products.
-With Topaz, you can turn off 'undefined', control asignment scope of variables and disable null reference exceptions without breaking the flow and much more.
+To gain a deeper understanding of the capabilities and versatility of Topaz, I encourage you to check out the [TopazView](https://github.com/koculu/TopazView) project.
 
-3. The scripting engine should be lock free.
+# Syntax-Level Options
 
-4. It must be blazingly fast in both execution and load.
+Topaz offers syntax-level options that streamline the scripting support for various products. These options provide flexibility in managing variables, such as controlling assignment scope and disabling null reference exceptions, without disrupting the script's flow. By incorporating these options, Topaz ensures a more intuitive and convenient scripting experience.
 
-## What kind of engine Topaz is?
-Topaz does not convert Javascript code into machine code directly. It parses abstract syntax tree and executes instructions in the .NET runtime.
+# Lock-Free Scripting Engine
 
-The Javascript engines like v8 convert Javascript into machine code.
-There are v8 wrappers like [ClearScript](https://github.com/microsoft/ClearScript) to make use of v8 functionality in the .NET runtime.
+One of the key goals of Topaz is to provide a lock-free scripting engine. By minimizing locking mechanisms, Topaz optimizes performance and eliminates potential bottlenecks, resulting in faster and more efficient script execution. This design choice makes Topaz an ideal choice for high-performance server applications that require concurrent execution of JavaScript code.
 
-However, that process requires marshaling and locking and also requires a lot of resources. In server-side applications using such an engine does not perform well.
+# How Does Topaz Work?
 
-Topaz will not be a JS engine that supports entire Javascript runtime features, but it will be a lightweight script interpreter which provides the full power of .NET runtime into Javascript language.
+Unlike traditional JavaScript engines like V8, which convert JavaScript code directly into machine code, Topaz takes a different approach. It parses the abstract syntax tree of the JavaScript code and executes instructions within the .NET runtime environment. By leveraging the power of the .NET runtime, Topaz achieves a seamless integration between JavaScript and .NET, enabling JavaScript variables to be treated as native .NET types.
 
-Topaz Runtime is actually the .NET runtime, therefore every variable written in the script is a .NET type. if you write `const a = 3.0` the `a` variable's type will be double and so on.
+While Topaz may not support the entire spectrum of JavaScript runtime features, it serves as a lightweight script interpreter that harnesses the full capabilities of the .NET runtime. This approach ensures compatibility with existing .NET libraries and provides access to the vast ecosystem of tools and functionalities available in the .NET ecosystem.
 
-## What will be supported in Topaz?
+# Key Features
+* Multithreaded JavaScript execution for enhanced performance in server-side applications.
+* Syntax-level options that simplify script language usage, providing greater flexibility and control.
+* Lock-free scripting engine for optimal performance in concurrent execution scenarios.
+* Seamless integration with the .NET runtime, allowing JavaScript variables to be treated as native .NET types.
 
-Topaz will support everything that will make benefits.
+# Getting Started
+Getting started with Topaz is quick and easy. Simply install the Topaz NuGet package and start leveraging the power of the multithreaded JavaScript engine for your .NET projects.
 
-For example, Javascript Array is very useful for data operations and it is fully implemented and available.
+Join our vibrant community of developers and contribute to the project's growth by reporting issues, suggesting improvements, or submitting pull requests.
 
-The latest Javascript Language features are mostly implemented.
+# License
+Topaz is released under the MIT License. Feel free to use, modify, and distribute the project according to the terms of the license.
 
-For now, there is no class support, because it is not intended to write big applications using Topaz. In the future, we might add class support.
+# The performance of Topaz
 
-## How is the performance of Topaz?
-
-Overall Topaz's performance is better than Clearscript and Jint's. However, there might be different scenarios in which some slower engines can perform better. 
+Topaz is designed to deliver excellent performance in JavaScript execution, surpassing that of other engines such as ClearScript and Jint. While we have focused on optimizing Topaz for a wide range of scenarios, it's worth noting that performance can vary based on specific use cases.
 
 ### Environment:
 ```
@@ -211,32 +212,26 @@ Comments:
 Topaz is significantly faster than Jint on this benchmark. Jint functions are not thread-safe even when they do not manipulate any shared object.
 Topaz functions can be safely called from multiple threads in parallel.
 
-## Story of Topaz
-I have developed a server-side HTML page rendering application using Razor. After a while, I have realized Razor was not flexible for my microservice architecture and business needs.
+## The Evolution of Topaz
 
-Then I switched to [ClearScript](https://github.com/microsoft/ClearScript). Clearscript uses Google's v8 C++ engine using locks and marshaling everywhere which slows down things. I barely served 100 requests per second on my desktop. Moreover, memory consumption was too high: 800 MB for a couple of page rendering.
+The story of Topaz is one of continuous improvement and the pursuit of excellence. It all started when I developed a server-side HTML page rendering application using Razor. However, as my microservice architecture and business needs evolved, I realized that Razor wasn't as flexible as I had hoped.
 
-Then I switched to [Jint](https://github.com/sebastienros/jint). Jint is very successful in terms of performance (I get ~1600 page views per second) and memory consumption is also good. (~80 MB)
-Jint is excellent with its extreme support for Javascript native data structures.
-The only downside of Jint is it does not support parallel execution on even simple function calls. I had to lock my page request. That was not acceptable for my business.
+In my quest for a more optimized solution, I turned to ClearScript. While ClearScript relied on Google's v8 C++ engine, it suffered from performance issues due to locks and marshaling, resulting in sluggish response times. Even on my desktop, I could barely serve 100 requests per second, and memory consumption soared to 800 MB for just a few page renderings.
 
-Thanks to Sebastien Ros. He has written an excellent [Esprima](https://github.com/sebastienros/esprima-dotnet) port which makes writing JS runtime a piece of cake.
+Seeking a better alternative, I discovered Jint. Jint proved to be highly performant, boasting approximately 1600 page views per second, with a modest memory footprint of around 80 MB. Jint's remarkable support for JavaScript native data structures was impressive. However, its lack of parallel execution for even simple function calls meant I had to lock my page requests, which proved unacceptable for my business requirements.
 
-So I decided to write my own!
+Fortunately, I came across the remarkable work of Sebastien Ros, who had created an excellent Esprima port. This discovery inspired me to embark on a journey of creating my own solution.
 
-This is how Topaz was born.
+And so, Topaz was born.
 
-I hear you are saying tell me the numbers.
+I can hear you asking for the numbers, so here they are:
 
-Here is the answer:
+With Topaz, server-side rendering performance soars to an impressive 3700 requests per second, while memory consumption remains at approximately 80 MB. These initial figures demonstrate Topaz's superiority over Jint in terms of performance. What's more, Topaz boasts built-in support for multi-threading, eliminating the need for manual locking. The server-side rendering application I developed using Topaz surpasses Razor's runtime rendering with twice the speed of execution. Gone are the few seconds of annoying Razor initialization. With Topaz, everything is ready at first glance.
 
-Topaz Performance on server-side rendering hits 3700 per second. Memory consumption is ~80MB. It is a good start. Topaz performs better than Jint in performance. Moreover, it supports multi-threading out of the box!
-The server-side rendering application that I wrote using Topaz surpasses Razor runtime rendering with x2 faster execution.
-Additionally, Razor initialization takes a few seconds that is annoying. Topaz is ready at first glance!
+But this is only the beginning. There is still ample room for further performance improvements, and a plethora of exciting features in the backlog eagerly await implementation.
 
-That is just the beginning. There is still room for performance improvements. Furthermore, a lot of features in the backlog are waiting for implementation.
+Stay connected and witness the evolution of Topaz.
 
-Stay in touch.
 
 ## How can I use Topaz?
 
@@ -651,3 +646,7 @@ If you want to explicitly handle number types in the script runtime
 you may choose false.
 
 Both options have pros and cons, choose wisely.
+
+## Acknowledgments
+
+We would like to express our gratitude to the open-source community for their invaluable contributions and support in making Topaz a powerful and efficient JavaScript engine for the .NET platform. We also extend our thanks to the developers of existing JavaScript engines and wrappers for inspiring our work.
