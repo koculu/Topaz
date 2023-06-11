@@ -13,7 +13,7 @@ public static class JsObjectConverter
     /// <param name="option">JsObject creation option</param>
     /// <returns></returns>
     public static IJsObject ToJsObject(this object sourceObject,
-        JsObjectConverterOption option = JsObjectConverterOption.UseLowerCasePropertyNames)
+        JsObjectConverterOption option = JsObjectConverterOption.None)
     {
         if (sourceObject == null)
             return null;
