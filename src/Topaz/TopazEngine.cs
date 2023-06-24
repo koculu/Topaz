@@ -50,7 +50,7 @@ public sealed class TopazEngine : ITopazEngine
         ObjectProxyRegistry = setup.ObjectProxyRegistry ?? new DictionaryObjectProxyRegistry();
         extensionMethodRegistry = new();
         ValueConverter = setup.ValueConverter ?? new DefaultValueConverter();
-        DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter );
+        DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter);
         DelegateInvoker = setup.DelegateInvoker ?? new DelegateInvoker(ValueConverter);
         MemberAccessPolicy = setup.MemberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
     }
@@ -84,7 +84,7 @@ public sealed class TopazEngine : ITopazEngine
     {
         GlobalScope.SetValueAndKind(
             name ?? type.FullName,
-            typeProxy ?? 
+            typeProxy ??
             TypeProxyUsingReflection.GetTypeProxy(type) ??
             new TypeProxyUsingReflection(type, ValueConverter, name),
             VariableKind.Const);
@@ -160,7 +160,7 @@ public sealed class TopazEngine : ITopazEngine
         }
 
         if (ObjectProxyRegistry
-                .TryGetObjectProxy(instance.GetType(), out var proxy) &&
+                .TryGetObjectProxy(instance, out var proxy) &&
             proxy
                 .TryGetObjectMember(instance, member,
                     out value, isIndexedProperty))

@@ -104,26 +104,10 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             {
                 if (isIndexedProperty && instance is IJsArray jsArray)
                 {
-                    if (member is double d)
-                    {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
-                        {
-                            return jsArray.TryGetArrayValue(converted, out value);
-                        }
-                    }
-                    else if (member is long l)
-                    {
-                        return jsArray.TryGetArrayValue((int)l, out value);
-                    }
-                    else if (member is int i)
-                    {
-                        return jsArray.TryGetArrayValue(i, out value);
-                    }
-                    else if (member is string s && int.TryParse(s, out var parsedIndex))
-                    {
-                        return jsArray.TryGetArrayValue(parsedIndex, out value);
-                    }
+                    if (JsArrayObjectProxy.TryGetIndexedProperty(jsArray, member, out value))
+                        return true;
+                    if (value != null)
+                        return false;
                 }
                 if (jsObject.TryGetValue(member, out value))
                     return true;
@@ -160,29 +144,6 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
                     else if (member is int i)
                     {
                         value = list[i];
-                        return true;
-                    }
-                }
-
-                if (instance is IList<object> objectList)
-                {
-                    if (member is double d)
-                    {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
-                        {
-                            value = objectList[converted];
-                            return true;
-                        }
-                    }
-                    else if (member is long l)
-                    {
-                        value = objectList[(int)l];
-                        return true;
-                    }
-                    else if (member is int i)
-                    {
-                        value = objectList[i];
                         return true;
                     }
                 }
@@ -228,8 +189,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             return false;
         }
 
-        var memberName = member as string;
-        if (memberName == null)
+        if (member is not string memberName)
         {
             // member should be a string if we have reached this far.
             // This indicates wrong usage of the function, hence throws exception
@@ -361,30 +321,8 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             {
                 if (isIndexedProperty && instance is IJsArray jsArray)
                 {
-                    if (member is double d)
-                    {
-                        var converted = Convert.ToInt32(d);
-                        if (converted == d)
-                        {
-                            jsArray.SetArrayValue(converted, value);
-                            return true;
-                        }
-                    }
-                    else if (member is long l)
-                    {
-                        jsArray.SetArrayValue((int)l, value);
+                    if (JsArrayObjectProxy.TrySetIndexedProperty(jsArray, member, value))
                         return true;
-                    }
-                    else if (member is int i)
-                    {
-                        jsArray.SetArrayValue(i, value);
-                        return true;
-                    }
-                    else if (member is string s && int.TryParse(s, out var parsedIndex))
-                    {
-                        jsArray.SetArrayValue(parsedIndex, value);
-                        return true;
-                    }
                 }
                 jsObject.SetValue(member, value);
                 return true;
@@ -488,8 +426,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             return false;
         }
 
-        var memberName = member as string;
-        if (memberName == null)
+        if (member is not string memberName)
         {
             // member should be a string if we have reached this far.
             // This indicates wrong usage of the function, hence throws exception
