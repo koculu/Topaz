@@ -51,12 +51,15 @@ public static class ArgumentMatcher
         var argsLen = args.Count;
         var paramLen = parameters.Length;
 
+        if (paramLen == 0)
+        {
+            convertedArgs = null;
+            return argsLen == 0;
+        }
+
         var hasDefaultValue = false;
         var defaultValueIndex = paramLen;
-        var hasParamArrayAttribute = false;
-        var paramArrayAttributeIndex = paramLen;
-        Type paramArrayInnerType = null;
-        IList paramsCollection = null;
+
         for (var j = 0; j < paramLen; ++j)
         {
             var p = parameters[j];
@@ -68,15 +71,12 @@ public static class ArgumentMatcher
                     defaultValueIndex = j;
                 }
             }
-            hasParamArrayAttribute = p.IsDefined(typeof(ParamArrayAttribute), true);
-            if (hasParamArrayAttribute)
-            {
-                paramsCollection = (IList)Activator
-                    .CreateInstance(p.ParameterType, Math.Max(0, argsLen - j));
-                paramArrayInnerType = p.ParameterType.GetElementType();
-                paramArrayAttributeIndex = j;
-            }
         }
+
+        var lastParam = parameters[paramLen - 1];
+        var hasParamArrayAttribute =
+                lastParam.ParameterType.IsArray &&
+                lastParam.IsDefined(typeof(ParamArrayAttribute));
 
         if (!hasParamArrayAttribute && !hasDefaultValue && argsLen != paramLen)
         {
@@ -84,11 +84,27 @@ public static class ArgumentMatcher
             return false;
         }
 
+        var paramArrayAttributeIndex = paramLen;
+        if (hasParamArrayAttribute)
+        {
+            paramArrayAttributeIndex = paramLen - 1;
+        }
+
         var minimumAcceptableArgsLen = Math.Min(paramArrayAttributeIndex, defaultValueIndex);
         if (argsLen < minimumAcceptableArgsLen)
         {
             convertedArgs = null;
             return false;
+        }
+
+        IList paramsCollection = null;
+        Type paramArrayInnerType = null;
+        if (hasParamArrayAttribute)
+        {
+            paramsCollection = (IList)Activator
+                .CreateInstance(lastParam.ParameterType,
+                Math.Max(0, argsLen - paramArrayAttributeIndex));
+            paramArrayInnerType = lastParam.ParameterType.GetElementType();
         }
 
         var argsCopy = args.ToArray();
@@ -157,7 +173,7 @@ public static class ArgumentMatcher
         for (var i = 0; i < allParametersLen; ++i)
         {
 
-            var parameters = allParameters[i]; 
+            var parameters = allParameters[i];
             if (TryFindBestMatchWithTypeConversion(valueConverter, args, parameters, out convertedArgs))
             {
                 index = i;
