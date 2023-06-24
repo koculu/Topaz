@@ -264,7 +264,7 @@ public static class AstJson
                 EnumMap.GetValue(value.GetType(),
                     t => t.GetRuntimeFields()
                         .Where(f => f.IsStatic)
-                        .ToDictionary(f => (T) f.GetValue(null),
+                        .ToDictionary(f => (T)f.GetValue(null),
                             f => f.GetCustomAttribute<EnumMemberAttribute>() is EnumMemberAttribute a
                                 ? a.Value
                                 : f.Name.ToLowerInvariant()));
@@ -325,7 +325,7 @@ public static class AstJson
         {
             using (StartNodeObject(program))
             {
-                Member("body", program.Body, e => (Node) e);
+                Member("body", program.Body, e => (Node)e);
                 Member("sourceType", program.SourceType);
             }
         }
@@ -425,7 +425,7 @@ public static class AstJson
             using (StartNodeObject(switchCase))
             {
                 Member("test", switchCase.Test);
-                Member("consequent", switchCase.Consequent, e => (Node) e);
+                Member("consequent", switchCase.Consequent, e => (Node)e);
             }
         }
 
@@ -564,7 +564,7 @@ public static class AstJson
             using (StartNodeObject(newExpression))
             {
                 Member("callee", newExpression.Callee);
-                Member("arguments", newExpression.Arguments, e => (Node) e);
+                Member("arguments", newExpression.Arguments, e => (Node)e);
             }
         }
 
@@ -633,7 +633,7 @@ public static class AstJson
 
         protected internal override void VisitFunctionExpression(IFunction function)
         {
-            using (StartNodeObject((Node) function))
+            using (StartNodeObject((Node)function))
             {
                 Member("id", function.Id);
                 Member("params", function.Params);
@@ -709,7 +709,7 @@ public static class AstJson
         {
             using (StartNodeObject(importDeclaration))
             {
-                Member("specifiers", importDeclaration.Specifiers, e => (Node) e);
+                Member("specifiers", importDeclaration.Specifiers, e => (Node)e);
                 Member("source", importDeclaration.Source);
             }
         }
@@ -974,7 +974,7 @@ public static class AstJson
         {
             using (StartNodeObject(blockStatement))
             {
-                Member("body", blockStatement.Body, e => (Statement) e);
+                Member("body", blockStatement.Body, e => (Statement)e);
             }
         }
     }

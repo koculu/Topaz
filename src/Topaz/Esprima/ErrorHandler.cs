@@ -24,14 +24,14 @@ public class ErrorHandler : IErrorHandler
         }
     }
 
-    public ParserException CreateError(int index, int line, int col, string description)
+    public ParserException CreateError(int index, int line, int column, string message)
     {
-        return new ParserException(new ParseError(description, Source, index, new Position(line, col)));
+        return new ParserException(new ParseError(message, Source, index, new Position(line, column)));
     }
 
-    public void TolerateError(int index, int line, int col, string description)
+    public void TolerateError(int index, int line, int column, string message)
     {
-        var error = CreateError(index, line, col, description);
+        var error = CreateError(index, line, column, message);
         if (Tolerant)
         {
             RecordError(error);

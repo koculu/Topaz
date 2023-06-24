@@ -9,7 +9,7 @@ internal sealed class TopazObjectWrapper
 
     internal IJsObject WrappedObject { get; }
 
-    bool isUnwrapped = false;
+    bool isUnwrapped;
 
     internal TopazObjectWrapper(
         ScriptExecutor scriptExecutor,

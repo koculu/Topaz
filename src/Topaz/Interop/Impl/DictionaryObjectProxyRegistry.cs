@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tenray.Topaz.API;
 
 namespace Tenray.Topaz.Interop;
 
 public sealed class DictionaryObjectProxyRegistry : IObjectProxyRegistry
 {
-    Dictionary<Type, IObjectProxy> proxyRegistryMap = new();
+    readonly Dictionary<Type, IObjectProxy> proxyRegistryMap = new();
 
     public void AddObjectProxy(Type type, IObjectProxy proxy)
     {
@@ -23,6 +24,11 @@ public sealed class DictionaryObjectProxyRegistry : IObjectProxyRegistry
         {
             proxy = null;
             return false;
+        }
+        if (instance is JsArray)
+        {
+            proxy = JsArrayObjectProxy.Instance;
+            return true;
         }
         return proxyRegistryMap.TryGetValue(instance.GetType(), out proxy);
     }

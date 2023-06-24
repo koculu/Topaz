@@ -210,7 +210,7 @@ public sealed class Scanner
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsRestrictedWord(string? id)
     {
-        return "eval".Equals(id) || "arguments".Equals(id);
+        return "eval".Equals(id, StringComparison.Ordinal) || "arguments".Equals(id, StringComparison.Ordinal);
     }
 
     // https://tc39.github.io/ecma262/#sec-keywords
@@ -514,7 +514,7 @@ public sealed class Scanner
             }
         }
 
-        result = (char) code;
+        result = (char)code;
         return true;
     }
 
@@ -712,11 +712,11 @@ public sealed class Scanner
         {
             type = TokenType.Keyword;
         }
-        else if ("null".Equals(id))
+        else if ("null".Equals(id, StringComparison.Ordinal))
         {
             type = TokenType.NullLiteral;
         }
-        else if ("true".Equals(id) || "false".Equals(id))
+        else if ("true".Equals(id, StringComparison.Ordinal) || "false".Equals(id, StringComparison.Ordinal))
         {
             type = TokenType.BooleanLiteral;
         }
@@ -857,7 +857,7 @@ public sealed class Scanner
                         {
                             // 1-character punctuators.
                             str = Source[Index].ToString();
-                            if ("<>=!+-*%&|^/".IndexOf(str, StringComparison.Ordinal) >= 0)
+                            if ("<>=!+-*%&|^/".Contains(str))
                             {
                                 ++Index;
                             }
@@ -1010,7 +1010,7 @@ public sealed class Scanner
         if (Character.IsOctalDigit(prefix))
         {
             octal = true;
-            sb.Append("0").Append(Source[Index++]);
+            sb.Append('0').Append(Source[Index++]);
         }
         else
         {
@@ -1275,22 +1275,22 @@ public sealed class Scanner
                             str.Append(unescaped2);
                             break;
                         case 'n':
-                            str.Append("\n");
+                            str.Append('\n');
                             break;
                         case 'r':
-                            str.Append("\r");
+                            str.Append('\r');
                             break;
                         case 't':
-                            str.Append("\t");
+                            str.Append('\t');
                             break;
                         case 'b':
-                            str.Append("\b");
+                            str.Append('\b');
                             break;
                         case 'f':
-                            str.Append("\f");
+                            str.Append('\f');
                             break;
                         case 'v':
-                            str.Append("\x0B");
+                            str.Append('\v');
                             break;
                         case '8':
                         case '9':
@@ -1304,7 +1304,7 @@ public sealed class Scanner
                                 var octToDec = OctalToDecimal(ch);
 
                                 octal = octToDec.Octal || octal;
-                                str.Append((char) octToDec.Code);
+                                str.Append((char)octToDec.Code);
                             }
                             else
                             {
@@ -1402,13 +1402,13 @@ public sealed class Scanner
                     switch (ch)
                     {
                         case 'n':
-                            cooked.Append("\n");
+                            cooked.Append('\n');
                             break;
                         case 'r':
-                            cooked.Append("\r");
+                            cooked.Append('\r');
                             break;
                         case 't':
-                            cooked.Append("\t");
+                            cooked.Append('\t');
                             break;
                         case 'u':
                             if (Source[Index] == '{')
@@ -1449,13 +1449,13 @@ public sealed class Scanner
 
                             break;
                         case 'b':
-                            cooked.Append("\b");
+                            cooked.Append('\b');
                             break;
                         case 'f':
-                            cooked.Append("\f");
+                            cooked.Append('\f');
                             break;
                         case 'v':
-                            cooked.Append("\v");
+                            cooked.Append('\v');
                             break;
 
                         default:
@@ -1468,7 +1468,7 @@ public sealed class Scanner
                                 }
                                 else
                                 {
-                                    cooked.Append("\0");
+                                    cooked.Append('\0');
                                 }
                             }
                             else if (Character.IsDecimalDigit(ch))
@@ -1504,7 +1504,7 @@ public sealed class Scanner
                 }
 
                 LineStart = Index;
-                cooked.Append("\n");
+                cooked.Append('\n');
             }
             else
             {
@@ -1551,7 +1551,7 @@ public sealed class Scanner
         var tmp = pattern;
         var self = this;
 
-        if (flags.IndexOf('u') >= 0)
+        if (flags.Contains('u'))
         {
             tmp = Regex
                 // Replace every Unicode escape sequence with the equivalent
@@ -1577,7 +1577,7 @@ public sealed class Scanner
 
                     if (codePoint <= 0xFFFF)
                     {
-                        return ParserExtensions.CharToString((char) codePoint);
+                        return ParserExtensions.CharToString((char)codePoint);
                     }
 
                     return astralSubstitute;
@@ -1598,7 +1598,7 @@ public sealed class Scanner
         }
         catch
         {
-            tmp = EscapeFailingRegex(tmp);
+            tmp = Scanner.EscapeFailingRegex(tmp);
 
             try
             {
@@ -1627,7 +1627,7 @@ public sealed class Scanner
                 {
                     if (index > 0 && newPattern[index - 1] != '\\')
                     {
-                        newPattern = newPattern.Substring(0, index) + @"\r?" + newPattern.Substring(index);
+                        newPattern = string.Concat(newPattern.AsSpan(0, index), @"\r?", newPattern.AsSpan(index));
                         index += 4;
                     }
                 }
@@ -1643,7 +1643,7 @@ public sealed class Scanner
         }
     }
 
-    public string EscapeFailingRegex(string pattern)
+    public static string EscapeFailingRegex(string pattern)
     {
         // .NET 4.x doesn't support [^] which should match any character including newline
         // c.f. https://github.com/sebastienros/esprima-dotnet/issues/146
@@ -1782,15 +1782,15 @@ public sealed class Scanner
 
         var body = ScanRegExpBody();
         var flags = ScanRegExpFlags();
-        var flagsValue = (string) flags.Value!;
-        var value = TestRegExp((string) body.Value!, flagsValue);
+        var flagsValue = (string)flags.Value!;
+        var value = TestRegExp((string)body.Value!, flagsValue);
 
         return new Token
         {
             Type = TokenType.RegularExpression,
             Value = value,
             Literal = body.Literal + flags.Literal,
-            RegexValue = new RegexValue((string) body.Value!, flagsValue),
+            RegexValue = new RegexValue((string)body.Value!, flagsValue),
             LineNumber = LineNumber,
             LineStart = LineStart,
             Start = start,

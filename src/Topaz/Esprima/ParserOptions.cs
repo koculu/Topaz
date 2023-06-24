@@ -32,12 +32,12 @@ public sealed class ParserOptions
     /// <summary>
     /// Gets or sets whether the tokens are included in the parsed tree.
     /// </summary>
-    public bool Tokens { get; set; } = false;
+    public bool Tokens { get; set; }
 
     /// <summary>
     /// Gets or sets whether the comments are included in the parsed tree.
     /// </summary>
-    public bool Comment { get; set; } = false;
+    public bool Comment { get; set; }
 
     /// <summary>
     /// Gets or sets whether the parser is tolerant to errors.

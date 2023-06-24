@@ -146,7 +146,7 @@ internal sealed class JsonTextWriter : JsonWriter
         Write(n.ToString(CultureInfo.InvariantCulture), TokenKind.Scalar);
     }
 
-    private bool Pretty => _indent != "";
+    private bool Pretty => _indent.Length != 0;
 
     private void Eol()
     {
@@ -303,7 +303,7 @@ internal sealed class JsonTextWriter : JsonWriter
                         if (ch < ' ')
                         {
                             writer.Write("\\u");
-                            writer.Write(((int) ch).ToString("x4", CultureInfo.InvariantCulture));
+                            writer.Write(((int)ch).ToString("x4", CultureInfo.InvariantCulture));
                         }
                         else
                         {

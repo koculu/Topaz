@@ -17,7 +17,7 @@ public sealed class InvokerUsingReflection : IInvokable
     readonly ProxyOptions options;
 
     public IValueConverter ValueConverter { get; }
-    
+
     public Type[] GenericMethodArguments { get; set; }
 
     /// <summary>
@@ -91,7 +91,7 @@ public sealed class InvokerUsingReflection : IInvokable
             .ThrowCannotFindFunctionMatchingGivenArguments(
             Name, args);
         return null;
-    }        
+    }
 
     private object TryInvokeExtensionMethod(IReadOnlyList<object> args)
     {
@@ -123,7 +123,7 @@ public sealed class InvokerUsingReflection : IInvokable
                out var index))
             {
                 var bestMethod = mpinfo.MethodInfos[index];
-                return bestMethod.Invoke(null, args as object[] ?? args.ToArray());
+                return bestMethod.Invoke(null, args as object[]);
             }
             Exceptions
                 .ThrowCannotFindFunctionMatchingGivenArguments(
@@ -228,7 +228,7 @@ public sealed class InvokerUsingReflection : IInvokable
         {
             return typeof(object);
         }
-        var enumerable1= instanceType.GetInterface("System.Collections.Generic.IEnumerable`1");
+        var enumerable1 = instanceType.GetInterface("System.Collections.Generic.IEnumerable`1");
         if (enumerable1 == null)
         {
             return typeof(object);

@@ -45,7 +45,7 @@ public readonly struct Location : IEquatable<Location>
     {
         return Start.Equals(other.Start)
                && End.Equals(other.End)
-               && string.Equals(Source, other.Source);
+               && string.Equals(Source, other.Source, StringComparison.Ordinal);
     }
 
     public override int GetHashCode()

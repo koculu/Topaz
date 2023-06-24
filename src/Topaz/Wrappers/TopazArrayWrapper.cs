@@ -9,7 +9,7 @@ internal sealed class TopazArrayWrapper
 
     internal IJsArray WrappedArray { get; }
 
-    bool isUnwrapped = false;
+    bool isUnwrapped;
 
     internal TopazArrayWrapper(ScriptExecutor scriptExecutor, IJsArray array)
     {
@@ -19,7 +19,7 @@ internal sealed class TopazArrayWrapper
 
     internal object UnwrapArray()
     {
-        var array = WrappedArray; 
+        var array = WrappedArray;
         if (array == null)
             return null;
         if (isUnwrapped)

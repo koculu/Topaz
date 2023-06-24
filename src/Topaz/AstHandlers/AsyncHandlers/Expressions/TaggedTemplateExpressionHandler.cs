@@ -30,6 +30,6 @@ internal static partial class TaggedTemplateExpressionHandler
             args.Add(await scriptExecutor.ExecuteExpressionAndGetValueAsync(list[i], token));
         }
         var callee = await scriptExecutor.ExecuteExpressionAndGetValueAsync(tag, token);
-        return scriptExecutor.CallFunction(callee, args.ToArray(), false, token);
+        return await scriptExecutor.CallFunctionAsync(callee, args.ToArray(), false, token);
     }
 }

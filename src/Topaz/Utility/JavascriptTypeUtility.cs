@@ -2,7 +2,7 @@
 
 namespace Tenray.Topaz;
 
-internal sealed class JavascriptTypeUtility
+internal static class JavascriptTypeUtility
 {
     internal static object AndLogicalOperator(object left, object right)
     {
@@ -26,7 +26,7 @@ internal sealed class JavascriptTypeUtility
         if (value is double d)
             return d != 0 && !double.IsNaN(d);
         if (value is string s)
-            return s == string.Empty;
+            return s.Length != 0;
         if (value is char c)
             return c != 0;
         if (value is short sh)
@@ -60,7 +60,7 @@ internal sealed class JavascriptTypeUtility
         return value?.GetType()
             .GetMethod(method, BindingFlags.Public | BindingFlags.Instance) != null;
     }
-    
+
     internal static bool IsBinaryOperationAllowed(object left, object right)
     {
         if (left == null || right == null)
