@@ -53,7 +53,7 @@ public sealed class TopazEngineOptions
     /// 
     /// Default option value is false.
     /// </summary>
-    public bool LiteralNumbersAreConvertedToDouble { get; set; } = false;
+    public bool LiteralNumbersAreConvertedToDouble { get; set; }
 
     /// <summary>
     /// If true, arithmetic operations will change numeric value types to double to avoid overflows.

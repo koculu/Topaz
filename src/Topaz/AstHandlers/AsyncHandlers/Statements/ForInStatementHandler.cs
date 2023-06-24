@@ -27,7 +27,7 @@ internal static partial class ForInStatementHandler
                 token.ThrowIfCancellationRequested();
                 var bodyScope = scriptExecutor.NewBlockScope();
                 variableDeclaration.Declarations[0].Init = new ValueWrapper(key);
-                bodyScope.ExecuteStatement(variableDeclaration, token);
+                await bodyScope.ExecuteStatementAsync(variableDeclaration, token);
                 var result = await bodyScope.ExecuteStatementAsync(body, token);
                 bodyScope.ReturnToPool();
                 if (result is ReturnWrapper)
@@ -45,7 +45,7 @@ internal static partial class ForInStatementHandler
             token.ThrowIfCancellationRequested();
             var bodyScope = scriptExecutor.NewBlockScope();
             variableDeclaration.Declarations[0].Init = new ValueWrapper(key);
-            bodyScope.ExecuteStatement(variableDeclaration, token);
+            await bodyScope.ExecuteStatementAsync(variableDeclaration, token);
             var breaked = false;
             for (var i = 0; i < len; ++i)
             {

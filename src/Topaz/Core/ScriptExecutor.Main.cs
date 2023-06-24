@@ -14,7 +14,7 @@ namespace Tenray.Topaz.Core;
 
 internal sealed partial class ScriptExecutor
 {
-    private static int lastScriptExecutorId = 0;
+    private static int lastScriptExecutorId;
 
     public int Id { get; private set; }
 
@@ -171,7 +171,7 @@ internal sealed partial class ScriptExecutor
         }
     }
 
-    private bool CanReturnToPool = false;
+    private bool CanReturnToPool;
 
     private void MarkCanNotReturnToPool()
     {

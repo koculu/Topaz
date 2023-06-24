@@ -6,7 +6,7 @@ namespace Tenray.Topaz.API;
 /// <summary>
 /// Fast object proxy for JsArray. The remaining methods and properties would be accessed via default object proxy.
 /// </summary>
-internal class JsArrayObjectProxy : IObjectProxy
+internal sealed class JsArrayObjectProxy : IObjectProxy
 {
     public static IObjectProxy Instance = new JsArrayObjectProxy();
 

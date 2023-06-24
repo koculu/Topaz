@@ -28,14 +28,14 @@ public sealed class DelegateInvoker : IDelegateInvoker
     }
 
     public object Invoke(
-        object value,
+        object function,
         IReadOnlyList<object> args)
     {
-        if (value is Delegate)
+        if (function is Delegate)
         {
-            return InvokeMethodByName(value, "Invoke", args);
+            return InvokeMethodByName(function, "Invoke", args);
         }
-        return Exceptions.ThrowCannotCallFunction(value);
+        return Exceptions.ThrowCannotCallFunction(function);
     }
 
     private object InvokeMethodByName(

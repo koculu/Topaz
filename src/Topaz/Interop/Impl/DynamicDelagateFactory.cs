@@ -7,23 +7,18 @@ namespace Tenray.Topaz.Interop;
 
 public static class DynamicDelagateFactory
 {
-    private static MemberInfo[] voidMethods;
-    private static MemberInfo[] nonVoidMethods;
-
-    static DynamicDelagateFactory()
-    {
-        voidMethods = typeof(DynamicDelagateProxy)
+    static MemberInfo[] voidMethods = typeof(DynamicDelagateProxy)
             .GetMember("CallAction", BindingFlags.NonPublic | BindingFlags.Instance);
-        nonVoidMethods = typeof(DynamicDelagateProxy)
+
+    static MemberInfo[] nonVoidMethods = typeof(DynamicDelagateProxy)
             .GetMember("CallFunc", BindingFlags.NonPublic | BindingFlags.Instance);
-    }
 
     public static object CreateDynamicDelegate(
         Type[] args,
         Type returnType,
         Func<object[], object> actualFunction,
         IValueConverter valueConverter
-        )            
+        )
     {
         var isVoid = returnType == typeof(void);
         if (!isVoid)
@@ -36,7 +31,7 @@ public static class DynamicDelagateFactory
             .FirstOrDefault();
         if (targetMethod == null)
             throw new TopazException($"Can not create dynamic delegate. Argument length {args.Length} is not supported.");
-        
+
         var parameters = new ParameterExpression[args.Length];
         var convertedParameters = new Expression[args.Length];
         for (var i = 0; i < args.Length; ++i)
@@ -57,6 +52,6 @@ public static class DynamicDelagateFactory
             : Expression.Convert(body, returnType);
         var expr = Expression
             .Lambda(convertedBody, parameters.ToArray());
-        return expr.Compile();            
+        return expr.Compile();
     }
 }

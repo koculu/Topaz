@@ -68,6 +68,6 @@ internal sealed partial class ScriptExecutor
             return;
         var name = identifier.Name;
         DefineVariable(name, value, kind, state);
-        identifier?.TopazIdentifier.InvalidateLocalCache();
+        identifier.TopazIdentifier.InvalidateLocalCache();
     }
 }

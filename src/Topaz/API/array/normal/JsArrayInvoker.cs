@@ -8,7 +8,7 @@ namespace Tenray.Topaz.API;
 /// <summary>
 /// Fast invoker for critical methods. The remaining methods would be invoked via default invoker.
 /// </summary>
-internal class JsArrayInvoker : IInvokable
+internal sealed class JsArrayInvoker : IInvokable
 {
     readonly JsArray JsArray;
 

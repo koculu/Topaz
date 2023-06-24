@@ -11,7 +11,7 @@ namespace Tenray.Topaz;
 
 public sealed class TopazEngine : ITopazEngine
 {
-    private static int lastTopazEngineId = 0;
+    private static int lastTopazEngineId;
 
     private readonly ScriptExecutor globalScope;
 
