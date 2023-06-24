@@ -39,9 +39,9 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
     public object Instance { get; }
 
     public Type ProxiedType { get; }
-    
+
     public ExtensionMethodRegistry ExtensionMethodRegistry { get; }
-    
+
     public IValueConverter ValueConverter { get; }
 
     public ProxyOptions ProxyOptions { get; }
@@ -139,10 +139,9 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
                     return true;
                 }
             }
-
-            if (instance is IList list)
+            else if (isIndexedProperty)
             {
-                if (isIndexedProperty)
+                if (instance is IList list)
                 {
                     if (member is double d)
                     {
@@ -164,8 +163,30 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
                         return true;
                     }
                 }
-            }
 
+                if (instance is IList<object> objectList)
+                {
+                    if (member is double d)
+                    {
+                        var converted = Convert.ToInt32(d);
+                        if (converted == d)
+                        {
+                            value = objectList[converted];
+                            return true;
+                        }
+                    }
+                    else if (member is long l)
+                    {
+                        value = objectList[(int)l];
+                        return true;
+                    }
+                    else if (member is int i)
+                    {
+                        value = objectList[i];
+                        return true;
+                    }
+                }
+            }
         }
 
         var instanceType = instance.GetType();
@@ -264,7 +285,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             if (property.GetMethod == null ||
                 property.GetMethod.IsPrivate)
                 return false;
-            
+
             var getter = new Func<object, object>((instance) =>
             {
                 return property.GetValue(instance);
@@ -318,7 +339,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
         {
             return invokerContext.ToInvoker(instance);
         });
-        _cachedGetters.TryAdd(cacheKey, methodGetter); 
+        _cachedGetters.TryAdd(cacheKey, methodGetter);
         value = methodGetter(instance);
         return true;
     }
