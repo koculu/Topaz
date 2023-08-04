@@ -32,7 +32,7 @@ internal static partial class VariableDeclarationHandler
                     (x, y, token) =>
                     {
                         scope.DefineVariable(x, y, kind);
-                        return ValueTask.CompletedTask;
+                        return default;
                     },
                     token);
                 continue;
@@ -50,7 +50,7 @@ internal static partial class VariableDeclarationHandler
                     (x, y, token) =>
                     {
                         scope.DefineVariable(x, y, kind);
-                        return ValueTask.CompletedTask;
+                        return default;
                     },
                     token);
                 continue;

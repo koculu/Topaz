@@ -182,7 +182,7 @@ internal sealed class TopazFunction : IConvertible, ITopazFunction
                     (x, y, token) =>
                     {
                         scriptExecutor.DefineVariable(x, y, VariableKind.Var);
-                        return ValueTask.CompletedTask;
+                        return default;
                     },
                     token);
                 continue;

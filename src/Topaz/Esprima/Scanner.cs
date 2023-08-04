@@ -1627,7 +1627,11 @@ public sealed class Scanner
                 {
                     if (index > 0 && newPattern[index - 1] != '\\')
                     {
+#if NET6_0_OR_GREATER
                         newPattern = string.Concat(newPattern.AsSpan(0, index), @"\r?", newPattern.AsSpan(index));
+#else
+                        newPattern = newPattern.Substring(0, index) + @"\r?" + newPattern.Substring(index);
+#endif
                         index += 4;
                     }
                 }

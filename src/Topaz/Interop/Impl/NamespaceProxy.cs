@@ -19,13 +19,13 @@ public sealed class NamespaceProxy : ITypeProxy
     /// The type names including namespaces that is allowed.
     /// If this is null, no whitelist check happens.
     /// </summary>
-    public IReadOnlySet<string> Whitelist;
+    public ISet<string> Whitelist;
 
     /// <summary>
     /// Generic type search up to given parameter count
     /// </summary>
     public int MaxGenericTypeArgumentCount { get; }
-    
+
     /// <summary>
     /// If enabled, sub namespaces are accessible.
     /// </summary>
@@ -47,8 +47,8 @@ public sealed class NamespaceProxy : ITypeProxy
     public Type ProxiedType { get; }
 
     public NamespaceProxy(
-        string name, 
-        IReadOnlySet<string> whitelist,
+        string name,
+        ISet<string> whitelist,
         bool allowSubNamespaces,
         IValueConverter valueConverter,
         int maxGenericTypeArgumentCount = 5,
@@ -84,7 +84,8 @@ public sealed class NamespaceProxy : ITypeProxy
         var type = FindType(fullname);
         if (type == null)
         {
-            if (AllowSubNamespaces) {
+            if (AllowSubNamespaces)
+            {
                 value = new NamespaceProxy(fullname,
                                            Whitelist,
                                            true,

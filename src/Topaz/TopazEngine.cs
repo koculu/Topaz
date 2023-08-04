@@ -95,7 +95,7 @@ public sealed class TopazEngine : ITopazEngine
         extensionMethodRegistry.AddType(type);
     }
 
-    public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist = null, bool allowSubNamespaces = false, string name = null)
+    public void AddNamespace(string @namespace, ISet<string> whitelist = null, bool allowSubNamespaces = false, string name = null)
     {
         GlobalScope.SetValueAndKind(
             name ?? @namespace,
