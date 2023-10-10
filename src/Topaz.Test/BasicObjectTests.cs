@@ -55,12 +55,27 @@ model.p1 = a.p1
             Assert.AreEqual(6, values.Count);
             Assert.AreEqual(js, deserialized);
         }
-        
+
         Assert.AreEqual(1, js.a1);
         Assert.AreEqual(2, js.a2);
         Assert.AreEqual(3, js.a3);
         Assert.AreEqual(4, js[new DateTime()]);
         Assert.AreEqual(5, js[null]);
         Assert.IsNull(model.p1);
+    }
+
+    [TestCase]
+    public void TestInQuery()
+    {
+        var engine = new TopazEngine();
+        engine.ExecuteScript("let obj = { a: { b: '123' }}");
+        Assert.That(engine.ExecuteExpression("'b' in obj.a"), Is.True);
+        Assert.That(engine.ExecuteExpression("obj.a.Contains('b')"), Is.True);
+        Assert.That(engine.ExecuteExpression("obj.a.hasOwn('b')"), Is.True);
+        Assert.That(engine.ExecuteExpression("obj.a.hasOwnProperty('b')"), Is.True);
+        Assert.That(engine.ExecuteExpression("'c' in obj.a"), Is.False);
+        Assert.That(engine.ExecuteExpression("obj.a.Contains('c')"), Is.False);
+        Assert.That(engine.ExecuteExpression("obj.a.hasOwn('c')"), Is.False);
+        Assert.That(engine.ExecuteExpression("obj.a.hasOwnProperty('c')"), Is.False);
     }
 }

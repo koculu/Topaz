@@ -111,4 +111,14 @@ model.d = d(9)
         Assert.AreEqual(37, model.c);
         Assert.AreEqual(81, model.d);
     }
+
+    [Test]
+    public void TestLambdaFunction()
+    {
+        var engine = new TopazEngine();
+        bool isCalled = false;
+        engine.SetValue("print", (string text) => { isCalled = true; });
+        engine.ExecuteExpression("print('text')");
+        Assert.IsTrue(isCalled);
+    }
 }
