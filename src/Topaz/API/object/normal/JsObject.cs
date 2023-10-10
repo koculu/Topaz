@@ -12,7 +12,8 @@ public partial class JsObject : IJsObject, IDictionary
 
     readonly DictionarySlim<string, object> dictionary = new();
 
-    public object this[object key] {
+    public object this[object key]
+    {
         get
         {
             if (key == null)
@@ -45,8 +46,10 @@ public partial class JsObject : IJsObject, IDictionary
         }
     }
 
-    public ICollection Values {
-        get {
+    public ICollection Values
+    {
+        get
+        {
             var list = new List<object>(dictionary.Count);
             foreach (var entry in dictionary)
             {
@@ -158,8 +161,14 @@ public partial class JsObject : IJsObject, IDictionary
         return false;
     }
 
+#pragma warning disable IDE1006 // Naming Styles
     public virtual string toString()
     {
         return "[object Object]";
     }
+
+    public bool hasOwnProperty(object key) => Contains(key);
+
+    public bool hasOwn(object key) => Contains(key);
+#pragma warning restore IDE1006 // Naming Styles
 }

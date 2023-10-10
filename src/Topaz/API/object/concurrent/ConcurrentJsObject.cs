@@ -140,4 +140,15 @@ public partial class ConcurrentJsObject : IJsObject, IDictionary
     {
         return false;
     }
+
+#pragma warning disable IDE1006 // Naming Styles
+    public virtual string toString()
+    {
+        return "[object Object]";
+    }
+
+    public bool hasOwnProperty(object key) => Contains(key);
+
+    public bool hasOwn(object key) => Contains(key);
+#pragma warning restore IDE1006 // Naming Styles
 }
