@@ -14,18 +14,32 @@ internal static partial class AwaitExpressionHandler
         var result = scriptExecutor.ExecuteStatement(expr.Argument, token);
         if (result is Task task)
         {
-            return GetTaskResult(task);
+            task.Wait(token);
+            var type = task.GetType();
+            var returnType = type.GetMethod("GetAwaiter").ReturnType.GetMethod("GetResult").ReturnType;
+            if (returnType != typeof(void) && returnType.FullName != "System.Threading.Tasks.VoidTaskResult")
+                return GetTaskResult(task);
+            return null;
         }
-        else if (result is ValueTask valueTask)
+
+        if (result is ValueTask valueTask)
         {
-            return GetTaskResult(valueTask.AsTask());
+            valueTask.AsTask().Wait(token);
+            return null;
+        }
+
+        var type2 = result.GetType();
+        if (type2.IsGenericType && typeof(ValueTask<>) == type2.GetGenericTypeDefinition())
+        {
+            dynamic r = result;
+            r.AsTask().Wait(token);
+            return r.Result;
         }
         return result;
     }
 
     internal static object GetTaskResult(Task task)
     {
-        task.Wait();
         var property = task.GetType().GetProperty("Result",
             BindingFlags.Public | BindingFlags.Instance);
         if (property == null)
