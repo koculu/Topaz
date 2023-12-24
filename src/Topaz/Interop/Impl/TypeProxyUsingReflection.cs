@@ -11,16 +11,18 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
 {
     public IValueConverter ValueConverter { get; }
 
+    public IMemberInfoProvider MemberInfoProvider { get; }
+
     public string Name { get; }
 
     public Type ProxiedType { get; }
-    
+
     public ProxyOptions ProxyOptions { get; }
 
     readonly ConstructorInfo[] _constructors;
 
     readonly ParameterInfo[][] _constructorParameters;
-    
+
     readonly PropertyInfo[] _indexedProperties;
 
     readonly ParameterInfo[][] _indexedPropertyParameters;
@@ -32,7 +34,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
     static readonly ConcurrentDictionary<Type, TypeProxyUsingReflection> CreatedTypeProxies = new();
 
     private const string GENERIC_ARGUMENTS_METHOD = "GenericArguments";
-    
+
     private const string STATIC_GENERIC_ARGUMENTS_METHOD = "StaticGenericArguments";
 
     readonly static MethodAndParameterInfo genericMethodSelectorParameterInfo = new MethodAndParameterInfo(
@@ -47,11 +49,13 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
     public TypeProxyUsingReflection(
         Type proxiedType,
         IValueConverter valueConverter,
+        IMemberInfoProvider memberInfoProvider,
         string name = null,
         ProxyOptions proxyOptions = ProxyOptions.Default)
     {
         Name = name ?? proxiedType.FullName;
         ValueConverter = valueConverter;
+        MemberInfoProvider = memberInfoProvider;
         ProxiedType = proxiedType;
         ProxyOptions = proxyOptions;
         if (proxyOptions.HasFlag(ProxyOptions.AllowConstructor) &&
@@ -96,8 +100,8 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
             return CreateDelegate(type, args);
 
         if (args.Count == 0)
-            return Activator.CreateInstance(type);            
-        
+            return Activator.CreateInstance(type);
+
         if (!options.HasFlag(ProxyOptions.AutomaticTypeConversion))
             return Activator.CreateInstance(type, args);
         var constructors = _constructors;
@@ -202,8 +206,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
             value = cachedGetter();
             return true;
         }
-        var members = ProxiedType
-            .GetMember(memberName, BindingFlags.Public | BindingFlags.Static);
+        var members = MemberInfoProvider.GetStaticMembers(ProxiedType, memberName);
         if (members.Length == 0)
         {
             if (memberName == GENERIC_ARGUMENTS_METHOD)
@@ -222,7 +225,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
         {
             if (!allowProperty)
                 return false;
-            if (property.GetMethod == null ||  
+            if (property.GetMethod == null ||
                 property.GetMethod.IsPrivate)
                 return false;
             var getter = new Func<object>(() =>
@@ -269,7 +272,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
             return false;
         }
 
-        var invokerContext = 
+        var invokerContext =
             new InvokerUsingReflectionContext(Name + "." + memberName, methods, options, ValueConverter);
         var methodGetter = new Func<object>(() =>
         {
@@ -306,7 +309,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
                 out var convertedArgs))
             {
                 var indexedProperty = _indexedProperties[index];
-                if (indexedProperty.SetMethod == null || 
+                if (indexedProperty.SetMethod == null ||
                     indexedProperty.SetMethod.IsPrivate)
                     return false;
                 _indexedProperties[index].SetValue(null, value, convertedArgs);
@@ -329,8 +332,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
             return true;
         }
 
-        var members = ProxiedType
-            .GetMember(memberName, BindingFlags.Public | BindingFlags.Static);
+        var members = MemberInfoProvider.GetStaticMembers(ProxiedType, memberName);
         if (members.Length == 0)
             return false;
         var firstMember = members[0];
@@ -374,7 +376,7 @@ public sealed class TypeProxyUsingReflection : ITypeProxy
         }
         return false;
     }
-    
+
     public static object GetTypeProxy(Type type)
     {
         CreatedTypeProxies.TryGetValue(type, out var proxy);

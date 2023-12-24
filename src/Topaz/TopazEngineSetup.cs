@@ -22,4 +22,6 @@ public sealed class TopazEngineSetup
     public IMemberAccessPolicy MemberAccessPolicy { get; set; }
 
     public IValueConverter ValueConverter { get; set; }
+
+    public IMemberInfoProvider MemberInfoProvider { get; set; }
 }
