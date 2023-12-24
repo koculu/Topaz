@@ -44,6 +44,8 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
 
     public IValueConverter ValueConverter { get; }
 
+    public IMemberInfoProvider MemberInfoProvider { get; }
+
     public ProxyOptions ProxyOptions { get; }
 
     readonly PropertyInfo[] _indexedProperties;
@@ -69,11 +71,13 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
         Type proxiedType,
         ExtensionMethodRegistry extensionMethodRegistry,
         IValueConverter valueConverter,
+        IMemberInfoProvider memberInfoProvider,
         ProxyOptions proxyOptions = ProxyOptions.Default)
     {
         ProxiedType = proxiedType;
         ExtensionMethodRegistry = extensionMethodRegistry;
         ValueConverter = valueConverter;
+        MemberInfoProvider = memberInfoProvider;
         ProxyOptions = proxyOptions;
 
         if (proxiedType != null &&
@@ -203,8 +207,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             value = cachedGetter(instance);
             return true;
         }
-        var members = instanceType
-            .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
+        var members = MemberInfoProvider.GetInstanceMembers(instance, memberName);
         if (members.Length == 0)
         {
             if (!options.HasFlag(ProxyOptions.AllowMethod))
@@ -441,8 +444,7 @@ public sealed class ObjectProxyUsingReflection : IObjectProxy
             return true;
         }
 
-        var members = instanceType
-            .GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
+        var members = MemberInfoProvider.GetInstanceMembers(instance, memberName);
         if (members.Length == 0)
             return false;
         var firstMember = members[0];

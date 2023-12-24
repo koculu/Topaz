@@ -25,16 +25,21 @@ public sealed class NamespaceProxy : ITypeProxy
     /// Generic type search up to given parameter count
     /// </summary>
     public int MaxGenericTypeArgumentCount { get; }
-    
+
     /// <summary>
     /// If enabled, sub namespaces are accessible.
     /// </summary>
     public bool AllowSubNamespaces { get; }
 
     /// <summary>
-    /// ValueConverter to be passed to created TypeProxy.
+    /// ValueConverter to be passed to the created TypeProxy.
     /// </summary>
     public IValueConverter ValueConverter { get; }
+
+    /// <summary>
+    /// MemberInfoProvider to be passed to the created TypeProxy.
+    /// </summary>
+    public IMemberInfoProvider MemberInfoProvider { get; }
 
     /// <summary>
     /// ProxyOptions to be passed to created TypeProxy.
@@ -47,10 +52,11 @@ public sealed class NamespaceProxy : ITypeProxy
     public Type ProxiedType { get; }
 
     public NamespaceProxy(
-        string name, 
+        string name,
         IReadOnlySet<string> whitelist,
         bool allowSubNamespaces,
         IValueConverter valueConverter,
+        IMemberInfoProvider memberInfoProvider,
         int maxGenericTypeArgumentCount = 5,
         ProxyOptions proxyOptions = ProxyOptions.Default)
     {
@@ -58,6 +64,7 @@ public sealed class NamespaceProxy : ITypeProxy
         Whitelist = whitelist;
         AllowSubNamespaces = allowSubNamespaces;
         ValueConverter = valueConverter;
+        MemberInfoProvider = memberInfoProvider;
         MaxGenericTypeArgumentCount = maxGenericTypeArgumentCount;
         ProxyOptions = proxyOptions;
     }
@@ -84,11 +91,13 @@ public sealed class NamespaceProxy : ITypeProxy
         var type = FindType(fullname);
         if (type == null)
         {
-            if (AllowSubNamespaces) {
+            if (AllowSubNamespaces)
+            {
                 value = new NamespaceProxy(fullname,
                                            Whitelist,
                                            true,
                                            ValueConverter,
+                                           MemberInfoProvider,
                                            MaxGenericTypeArgumentCount,
                                            ProxyOptions);
                 return true;
@@ -111,7 +120,7 @@ public sealed class NamespaceProxy : ITypeProxy
 
         value = TypeProxyUsingReflection.GetTypeProxy(type);
         if (value == null)
-            value = new TypeProxyUsingReflection(type, ValueConverter, fullname, ProxyOptions);
+            value = new TypeProxyUsingReflection(type, ValueConverter, MemberInfoProvider, fullname, ProxyOptions);
         return true;
     }
 
