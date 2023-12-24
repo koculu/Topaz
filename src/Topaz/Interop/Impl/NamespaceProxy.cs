@@ -32,9 +32,14 @@ public sealed class NamespaceProxy : ITypeProxy
     public bool AllowSubNamespaces { get; }
 
     /// <summary>
-    /// ValueConverter to be passed to created TypeProxy.
+    /// ValueConverter to be passed to the created TypeProxy.
     /// </summary>
     public IValueConverter ValueConverter { get; }
+
+    /// <summary>
+    /// MemberInfoProvider to be passed to the created TypeProxy.
+    /// </summary>
+    public IMemberInfoProvider MemberInfoProvider { get; }
 
     /// <summary>
     /// ProxyOptions to be passed to created TypeProxy.
@@ -51,6 +56,7 @@ public sealed class NamespaceProxy : ITypeProxy
         ISet<string> whitelist,
         bool allowSubNamespaces,
         IValueConverter valueConverter,
+        IMemberInfoProvider memberInfoProvider,
         int maxGenericTypeArgumentCount = 5,
         ProxyOptions proxyOptions = ProxyOptions.Default)
     {
@@ -58,6 +64,7 @@ public sealed class NamespaceProxy : ITypeProxy
         Whitelist = whitelist;
         AllowSubNamespaces = allowSubNamespaces;
         ValueConverter = valueConverter;
+        MemberInfoProvider = memberInfoProvider;
         MaxGenericTypeArgumentCount = maxGenericTypeArgumentCount;
         ProxyOptions = proxyOptions;
     }
@@ -90,6 +97,7 @@ public sealed class NamespaceProxy : ITypeProxy
                                            Whitelist,
                                            true,
                                            ValueConverter,
+                                           MemberInfoProvider,
                                            MaxGenericTypeArgumentCount,
                                            ProxyOptions);
                 return true;
@@ -112,7 +120,7 @@ public sealed class NamespaceProxy : ITypeProxy
 
         value = TypeProxyUsingReflection.GetTypeProxy(type);
         if (value == null)
-            value = new TypeProxyUsingReflection(type, ValueConverter, fullname, ProxyOptions);
+            value = new TypeProxyUsingReflection(type, ValueConverter, MemberInfoProvider, fullname, ProxyOptions);
         return true;
     }
 

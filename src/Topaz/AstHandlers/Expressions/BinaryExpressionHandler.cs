@@ -1,5 +1,6 @@
 ﻿using Esprima.Ast;
 using System;
+using System.Collections;
 using System.Threading;
 using Tenray.Topaz.Core;
 using Tenray.Topaz.ErrorHandling;
@@ -221,6 +222,13 @@ internal static partial class BinaryExpressionHandler
         ScriptExecutor scriptExecutor, BinaryOperator @operator,
         object left, object right)
     {
+        if (@operator == BinaryOperator.In)
+        {
+            if (right is IDictionary dic)
+                return dic.Contains(left);
+            Exceptions.ThrowCannotUseInOperatorToSearchForIn(left, right);
+        }
+
         // Try to avoid slow dynamic operator execution by type casting
         if (left is double d1)
         {
@@ -314,12 +322,7 @@ internal static partial class BinaryExpressionHandler
             BinaryOperator.RightShift => allowNumeric ? Convert.ToInt32(left ?? 0) >> Convert.ToInt32(right ?? 0) : 0,
             BinaryOperator.UnsignedRightShift => allowNumeric ? Convert.ToInt32(left ?? 0) >> Convert.ToInt32(right ?? 0) : 0,
             BinaryOperator.InstanceOf => left?.GetType().FullName == right?.ToString(),
-            BinaryOperator.In =>
-                JavascriptTypeUtility.HasObjectMethod(right, "ContainsKey") ?
-                    right.ContainsKey(left) :
-                JavascriptTypeUtility.HasObjectMethod(right, "Contains") ?
-                    right.Contains(left) :
-                    Exceptions.ThrowCannotUseInOperatorToSearchForIn(left, right),
+            BinaryOperator.In => Exceptions.ThrowCannotUseInOperatorToSearchForIn(left, right),
             BinaryOperator.LogicalAnd =>
                 JavascriptTypeUtility.AndLogicalOperator(left, right),
             BinaryOperator.LogicalOr =>

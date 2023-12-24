@@ -13,12 +13,27 @@ internal static partial class AwaitExpressionHandler
         var result = await scriptExecutor.ExecuteStatementAsync(expr.Argument, token);
         if (result == null)
             return null;
-        if (result is Task || result is ValueTask)
+        if (result is Task task)
+        {
+            var type = task.GetType();
+            var returnType = type.GetMethod("GetAwaiter").ReturnType.GetMethod("GetResult").ReturnType;
+            if (returnType != typeof(void) && returnType.FullName != "System.Threading.Tasks.VoidTaskResult")
+                return await (dynamic)task;
+            await task;
+            return null;
+        }
+
+        if (result is ValueTask valueTask)
+        {
+            await valueTask;
+            return null;
+        }
+
+        var type2 = result.GetType();
+        if (type2.IsGenericType && typeof(ValueTask<>) == type2.GetGenericTypeDefinition())
         {
             dynamic awaitable = result;
-            if (result.GetType().IsGenericType)
-                return await awaitable;
-            await awaitable;
+            return await awaitable;
         }
         return result;
     }

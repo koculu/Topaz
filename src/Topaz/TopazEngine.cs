@@ -35,6 +35,8 @@ public sealed class TopazEngine : ITopazEngine
 
     public IValueConverter ValueConverter { get; }
 
+    public IMemberInfoProvider MemberInfoProvider { get; }
+
     internal ScriptExecutorPool ScriptExecutorPool = new();
 
     public TopazEngine(TopazEngineSetup setup = null)
@@ -49,8 +51,9 @@ public sealed class TopazEngine : ITopazEngine
             Options.UseThreadSafeJsObjects = setup.IsThreadSafe;
         ObjectProxyRegistry = setup.ObjectProxyRegistry ?? new DictionaryObjectProxyRegistry();
         extensionMethodRegistry = new();
+        MemberInfoProvider = setup.MemberInfoProvider ?? new MemberInfoProvider();
         ValueConverter = setup.ValueConverter ?? new DefaultValueConverter();
-        DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter);
+        DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter, MemberInfoProvider);
         DelegateInvoker = setup.DelegateInvoker ?? new DelegateInvoker(ValueConverter);
         MemberAccessPolicy = setup.MemberAccessPolicy ?? new DefaultMemberAccessPolicy(this);
     }
@@ -86,7 +89,7 @@ public sealed class TopazEngine : ITopazEngine
             name ?? type.FullName,
             typeProxy ??
             TypeProxyUsingReflection.GetTypeProxy(type) ??
-            new TypeProxyUsingReflection(type, ValueConverter, name),
+            new TypeProxyUsingReflection(type, ValueConverter, MemberInfoProvider, name),
             VariableKind.Const);
     }
 
@@ -99,7 +102,7 @@ public sealed class TopazEngine : ITopazEngine
     {
         GlobalScope.SetValueAndKind(
             name ?? @namespace,
-            new NamespaceProxy(@namespace, whitelist, allowSubNamespaces, ValueConverter),
+            new NamespaceProxy(@namespace, whitelist, allowSubNamespaces, ValueConverter, MemberInfoProvider),
             VariableKind.Const);
     }
 
