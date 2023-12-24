@@ -33,10 +33,7 @@ internal static partial class AwaitExpressionHandler
         if (type2.IsGenericType && typeof(ValueTask<>) == type2.GetGenericTypeDefinition())
         {
             dynamic awaitable = result;
-            if (result.GetType().IsGenericType)
-                return await awaitable;
-            await awaitable;
-            return null;
+            return await awaitable;
         }
         return result;
     }
