@@ -205,14 +205,21 @@ class CustomMemberInfoProvider : IMemberInfoProvider
 {
     public MemberInfo[] GetInstanceMembers(object instance, string memberName)
     {
-        if (memberName == "MoveNextAsync")
+        // Handle special case for auto generated async enumerators or
+        // explicitly defined interface members using interface map.
+        // MoveNextAsync is not accessible through the instance's type
+        // and it is not public.
+        // https://github.com/dotnet/roslyn/issues/71406
+
+        var type = instance.GetType();
+        var interfaces = type.GetTypeInfo().GetInterfaces();
+        var list = new List<MemberInfo>();
+        foreach (var itype in interfaces)
         {
-            // Handle special case for auto generated async enumerators.
-            // MoveNextAsync is not accessible through its name and it is not public.
-            // https://github.com/dotnet/roslyn/issues/71406
-            return instance.GetType().GetMember("System.Collections.Generic.IAsyncEnumerator<System.Int32>.MoveNextAsync", BindingFlags.NonPublic | BindingFlags.Instance);
+            list.AddRange(itype.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance));
         }
-        return instance.GetType().GetMember(memberName, BindingFlags.Public | BindingFlags.Instance);
+        list.AddRange(type.GetMember(memberName, BindingFlags.Public | BindingFlags.Instance));
+        return list.ToArray();
     }
 
     public MemberInfo[] GetStaticMembers(Type type, string memberName)
