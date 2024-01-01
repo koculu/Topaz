@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Tenray.Topaz.API;
 using Tenray.Topaz.Interop;
@@ -190,7 +191,7 @@ model.result2 = await t;
 
 class CustomAwaitExpressionHandler : IAwaitExpressionHandler
 {
-    public async Task<object> HandleAwaitExpression(object awaitObject)
+    public async Task<object> HandleAwaitExpression(object awaitObject, CancellationToken token)
     {
         if (awaitObject is Task<int> task)
         {

@@ -16,7 +16,7 @@ internal static partial class AwaitExpressionHandler
         var awaitHandler = scriptExecutor.TopazEngine.AwaitExpressionHandler;
         if (awaitHandler != null)
         {
-            return await awaitHandler.HandleAwaitExpression(result);
+            return await awaitHandler.HandleAwaitExpression(result, token);
         }
         if (result is Task task)
         {

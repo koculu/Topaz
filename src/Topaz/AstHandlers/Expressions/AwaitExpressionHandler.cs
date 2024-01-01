@@ -17,7 +17,7 @@ internal static partial class AwaitExpressionHandler
             return null;
         if (awaitHandler != null)
         {
-            var task1 = awaitHandler.HandleAwaitExpression(result);
+            var task1 = awaitHandler.HandleAwaitExpression(result, token);
             task1.Wait(token);
             return task1.Result;
         }
