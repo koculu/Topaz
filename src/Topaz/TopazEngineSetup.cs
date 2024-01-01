@@ -24,4 +24,6 @@ public sealed class TopazEngineSetup
     public IValueConverter ValueConverter { get; set; }
 
     public IMemberInfoProvider MemberInfoProvider { get; set; }
+
+    public IAwaitExpressionHandler AwaitExpressionHandler { get; set; }
 }
