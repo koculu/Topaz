@@ -150,6 +150,54 @@ model.result2 = i;
 ");
         Assert.That(model.result2, Is.EqualTo(5));
     }
+
+    [Test]
+    public void CustomAwaitHandler()
+    {
+        var engine = new TopazEngine(new TopazEngineSetup { AwaitExpressionHandler = new CustomAwaitExpressionHandler() });
+        dynamic model = new JsObject();
+        engine.SetValue("test", this);
+        engine.SetValue("model", model);
+        engine.ExecuteScriptAsync(@"
+model.result1 = await test.GenericTask();
+").Wait();
+        Assert.That(model.result1, Is.EqualTo(33));
+        engine.ExecuteScript(@"
+model.result2 = await test.GenericTask();
+");
+        Assert.That(model.result2, Is.EqualTo(33));
+    }
+
+    [Test]
+    public void CustomAwaitHandler2()
+    {
+        var engine = new TopazEngine(new TopazEngineSetup { AwaitExpressionHandler = new CustomAwaitExpressionHandler() });
+        dynamic model = new JsObject();
+        engine.SetValue("test", this);
+        engine.SetValue("model", model);
+        engine.ExecuteScriptAsync(@"
+var t = test.GenericTask();
+model.result1 = await t;
+").Wait();
+        Assert.That(model.result1, Is.EqualTo(33));
+        engine.ExecuteScript(@"
+var t = test.GenericTask();
+model.result2 = await t;
+");
+        Assert.That(model.result2, Is.EqualTo(33));
+    }
+}
+
+class CustomAwaitExpressionHandler : IAwaitExpressionHandler
+{
+    public async Task<object> HandleAwaitExpression(object awaitObject)
+    {
+        if (awaitObject is Task<int> task)
+        {
+            return await task;
+        }
+        return awaitObject;
+    }
 }
 
 class CustomMemberInfoProvider : IMemberInfoProvider

@@ -11,7 +11,16 @@ internal static partial class AwaitExpressionHandler
     internal static object Execute(ScriptExecutor scriptExecutor, Node expression, CancellationToken token)
     {
         var expr = (AwaitExpression)expression;
-        var result = scriptExecutor.ExecuteStatement(expr.Argument, token);
+        var result = scriptExecutor.ExecuteExpressionAndGetValue(expr.Argument, token);
+        var awaitHandler = scriptExecutor.TopazEngine.AwaitExpressionHandler;
+        if (result == null)
+            return null;
+        if (awaitHandler != null)
+        {
+            var task1 = awaitHandler.HandleAwaitExpression(result);
+            task1.Wait(token);
+            return task1.Result;
+        }
         if (result is Task task)
         {
             task.Wait(token);
