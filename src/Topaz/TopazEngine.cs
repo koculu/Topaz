@@ -37,6 +37,8 @@ public sealed class TopazEngine : ITopazEngine
 
     public IMemberInfoProvider MemberInfoProvider { get; }
 
+    public IAwaitExpressionHandler AwaitExpressionHandler { get; }
+
     internal ScriptExecutorPool ScriptExecutorPool = new();
 
     public TopazEngine(TopazEngineSetup setup = null)
@@ -52,6 +54,7 @@ public sealed class TopazEngine : ITopazEngine
         ObjectProxyRegistry = setup.ObjectProxyRegistry ?? new DictionaryObjectProxyRegistry();
         extensionMethodRegistry = new();
         MemberInfoProvider = setup.MemberInfoProvider ?? new MemberInfoProvider();
+        AwaitExpressionHandler = setup.AwaitExpressionHandler;
         ValueConverter = setup.ValueConverter ?? new DefaultValueConverter();
         DefaultObjectProxy = setup.DefaultObjectProxy ?? new ObjectProxyUsingReflection(null, extensionMethodRegistry, ValueConverter, MemberInfoProvider);
         DelegateInvoker = setup.DelegateInvoker ?? new DelegateInvoker(ValueConverter);
