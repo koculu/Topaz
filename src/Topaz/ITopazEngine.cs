@@ -155,10 +155,9 @@ public interface ITopazEngine
     /// </summary>
     /// <param name="namespace">The full name of the namespace.</param>
     /// <param name="whitelist">The whitelist contains the types that are allowed.</param>
-    /// <param name="allowSubNamespaces">If true, subnamespaces will be accessible.</param>
-    /// <param name="name">The name that will be used in script to access given namespace.
+    /// <param name="allowSubNamespaces">If true, subnamespaces will be accessible.</param>    
     /// If this is not provided the script name will be equal to the namespace.</param>
-    public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist, bool allowSubNamespaces = false, string name = null);
+    public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist, bool allowSubNamespaces = false);
 
     /// <summary>
     /// Gets the value of the variable that is defined in the global scope.
