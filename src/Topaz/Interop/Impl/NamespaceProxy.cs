@@ -9,6 +9,8 @@ namespace Tenray.Topaz.Interop;
 /// </summary>
 public sealed class NamespaceProxy : ITypeProxy
 {
+    private Dictionary<string, NamespaceProxy> SubnamespaceProxies = new();
+
     /// <summary>
     /// Namespace name. 
     /// eg: System.Collections
@@ -51,6 +53,11 @@ public sealed class NamespaceProxy : ITypeProxy
     /// </summary>
     public Type ProxiedType { get; }
 
+    /// <summary>
+    /// If true, types of the current namespace are accessible.
+    /// </summary>
+    public bool EnableTypeRetrieval { get; set; }
+
     public NamespaceProxy(
         string name,
         IReadOnlySet<string> whitelist,
@@ -87,26 +94,34 @@ public sealed class NamespaceProxy : ITypeProxy
             return false;
         }
 
+        if (SubnamespaceProxies.TryGetValue(memberName, out var subProxy))
+        {
+            value = subProxy;
+            return true;
+        }
+
         var fullname = Name + "." + memberName;
         var type = FindType(fullname);
         if (type == null)
         {
             if (AllowSubNamespaces)
             {
-                value = new NamespaceProxy(fullname,
+                value = subProxy = new NamespaceProxy(fullname,
                                            Whitelist,
                                            true,
                                            ValueConverter,
                                            MemberInfoProvider,
                                            MaxGenericTypeArgumentCount,
                                            ProxyOptions);
+                subProxy.EnableTypeRetrieval = true;
+                SubnamespaceProxies.Add(memberName, subProxy);
                 return true;
             }
             value = null;
             return false;
         }
 
-        if (!type.IsPublic)
+        if (!EnableTypeRetrieval || !type.IsPublic)
         {
             value = null;
             return false;
@@ -124,15 +139,28 @@ public sealed class NamespaceProxy : ITypeProxy
         return true;
     }
 
+    static Type SearchType(string typeName)
+    {
+        var type = Type.GetType(typeName, false, false);
+        if (type != null) return type;
+        foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            type = a.GetType(typeName, false, false);
+            if (type != null)
+                return type;
+        }
+        return null;
+    }
+
     private Type FindType(string fullname)
     {
-        var type = Type.GetType(fullname, false, false);
+        var type = SearchType(fullname);
         if (type != null)
             return type;
         // search for generic types.
         for (var i = 1; i < MaxGenericTypeArgumentCount; ++i)
         {
-            type = Type.GetType(fullname + "`" + i, false, false);
+            type = SearchType(fullname + "`" + i);
             if (type != null)
                 return type;
         }
@@ -151,5 +179,24 @@ public sealed class NamespaceProxy : ITypeProxy
     public override string ToString()
     {
         return Name;
+    }
+
+    public void AddSubNameSpaces(Span<string> parts,
+        IReadOnlySet<string> whitelist,
+        bool allowSubNamespaces)
+    {
+        if (parts.Length == 0)
+        {
+            EnableTypeRetrieval = true;
+            return;
+        }
+        if (SubnamespaceProxies.TryGetValue(parts[0], out var proxy))
+        {
+            proxy.AddSubNameSpaces(parts.Slice(1), whitelist, allowSubNamespaces);
+            return;
+        }
+        var subProxy = new NamespaceProxy(Name + "." + parts[0], whitelist, allowSubNamespaces && parts.Length == 1, ValueConverter, MemberInfoProvider, MaxGenericTypeArgumentCount);
+        subProxy.AddSubNameSpaces(parts.Slice(1), whitelist, allowSubNamespaces);
+        SubnamespaceProxies.Add(parts[0], subProxy);
     }
 }

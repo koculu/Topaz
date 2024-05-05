@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -186,6 +187,51 @@ var t = test.GenericTask();
 model.result2 = await t;
 ");
         Assert.That(model.result2, Is.EqualTo(33));
+    }
+
+    public async Task<int> DelayedRunner(Func<TaskData, Task<int>> action, int milliseconds)
+    {
+        await Task.Delay(milliseconds);
+
+        var taskData = new TaskData();
+        var ret = await action(taskData);
+        return ret;
+    }
+
+    [Test]
+    public void AwaitChain1()
+    {
+        var engine = new TopazEngine(new TopazEngineSetup { AwaitExpressionHandler = new CustomAwaitExpressionHandler() });
+        dynamic model = new JsObject();
+        engine.SetValue("test", this);
+        engine.SetValue("model", model);
+        engine.ExecuteScriptAsync(@"
+var handler = async function(taskdata)
+{
+    return taskdata.TestMethod();
+}
+var t = await test.DelayedRunner(handler, 3);
+model.result1 = t;
+").Wait();
+        Assert.That(model.result1, Is.EqualTo(33));
+        engine.ExecuteScript(@"
+var handler = async function(taskdata)
+{
+    return taskdata.TestMethod();
+}
+var t = await test.DelayedRunner(handler, 3);
+model.result2 = await t;
+");
+        Assert.That(model.result2, Is.EqualTo(33));
+    }
+}
+
+public class TaskData
+{
+    public async Task<int> TestMethod()
+    {
+        await Task.Delay(11);
+        return 33;
     }
 }
 

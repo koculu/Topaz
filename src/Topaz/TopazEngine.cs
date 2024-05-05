@@ -101,12 +101,21 @@ public sealed class TopazEngine : ITopazEngine
         extensionMethodRegistry.AddType(type);
     }
 
-    public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist = null, bool allowSubNamespaces = false, string name = null)
+    public void AddNamespace(string @namespace, IReadOnlySet<string> whitelist = null, bool allowSubNamespaces = false)
     {
+        var parts = @namespace.Split('.');
+        var rootNamespace = parts[0];
+        if (GlobalScope.GetValue(rootNamespace) is NamespaceProxy existingProxy)
+        {
+            existingProxy.AddSubNameSpaces(parts.AsSpan(1), whitelist, allowSubNamespaces);
+            return;
+        }
+        var proxy = new NamespaceProxy(rootNamespace, whitelist, allowSubNamespaces && parts.Length == 1, ValueConverter, MemberInfoProvider);
         GlobalScope.SetValueAndKind(
-            name ?? @namespace,
-            new NamespaceProxy(@namespace, whitelist, allowSubNamespaces, ValueConverter, MemberInfoProvider),
+            rootNamespace,
+            proxy,
             VariableKind.Const);
+        proxy.AddSubNameSpaces(parts.AsSpan(1), whitelist, allowSubNamespaces);
     }
 
     public object GetValue(string name)
